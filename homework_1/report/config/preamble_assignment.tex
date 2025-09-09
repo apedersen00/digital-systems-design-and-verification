@@ -1,0 +1,122 @@
+\documentclass[oneside,11pt,a4paper]{article}
+
+%----------------------------------------------------------------------------------------
+%   USER INFORMATION
+%----------------------------------------------------------------------------------------
+\newcommand{\assignmentTitle}{Exam}
+\newcommand{\assignmentSubtitle}{Spring 2025}
+\newcommand{\studentName}{Andreas S. Pedersen}
+\newcommand{\studyID}{202104430}
+\newcommand{\courseName}{Very Large Scale Integration (VLSI) Design}
+\newcommand{\submissionDate}{\today}
+
+%----------------------------------------------------------------------------------------
+%   PAGE LAYOUT & GEOMETRY
+%----------------------------------------------------------------------------------------
+\usepackage{geometry}
+\geometry{
+    a4paper,
+    left=2.5cm,
+    right=2.5cm,
+    top=2.5cm,
+    bottom=3cm
+}
+
+%----------------------------------------------------------------------------------------
+%   HEADERS AND FOOTERS
+%----------------------------------------------------------------------------------------
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+
+% Define the header/footer style
+\fancypagestyle{fancy}{
+    \fancyhf{}
+    \fancyhead[L]{\courseName}
+    \fancyhead[R]{\assignmentTitle}
+    \fancyfoot[R]{Page \thepage\ of \pageref{LastPage}}
+    \fancyfoot[L]{\studentName}
+    \renewcommand{\headrulewidth}{0.4pt}
+    \renewcommand{\footrulewidth}{0pt}
+}
+
+% Apply to all pages
+\pagestyle{fancy}
+
+%----------------------------------------------------------------------------------------
+%   TYPOGRAPHY & ENCODING
+%----------------------------------------------------------------------------------------
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{csquotes}
+\usepackage[normalem]{ulem}
+\usepackage{lipsum}
+\setlength\parindent{0pt} % No paragraph indents
+\setlength\parskip{6pt}   % Space between paragraphs
+
+%----------------------------------------------------------------------------------------
+%   BIBLIOGRAPHY
+%----------------------------------------------------------------------------------------
+\usepackage[style=ieee, backend=biber]{biblatex}
+\addbibresource{config/references.bib}
+\nocite{*}
+
+%----------------------------------------------------------------------------------------
+%   PACKAGES FOR FIGURES, TABLES, AND MATH
+%----------------------------------------------------------------------------------------
+\usepackage{graphicx}
+\graphicspath{{imgs/}}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{siunitx}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{multirow}
+\usepackage{makecell}
+\usepackage{threeparttable}
+\usepackage{wrapfig}
+\usepackage{float}
+\usepackage{rotating}
+
+%----------------------------------------------------------------------------------------
+%   DOCUMENT STRUCTURE & FORMATTING
+%----------------------------------------------------------------------------------------
+\usepackage{titlesec}
+\usepackage{appendix}
+\usepackage{verbatim}
+\usepackage{enumitem}
+\usepackage[bottom]{footmisc}
+\usepackage{pdfpages}
+\usepackage{changepage}
+\usepackage{subfiles}
+
+\usepackage[hidelinks, colorlinks=true, linkcolor=black, citecolor=black, urlcolor=blue]{hyperref}
+
+\titleformat{\section}
+  {\normalfont\Large\bfseries}
+  {}
+  {0em}
+  {}
+
+\titleformat{\subsection}
+  {\normalfont\large\bfseries}
+  {}
+  {0em}
+  {}
+
+\titleformat{\subsubsection}
+  {\normalfont\normalsize\itshape}
+  {}
+  {0em}
+  {}
+
+\titlespacing*{\section}{0pt}{1.5\baselineskip}{1\baselineskip}
+\titlespacing*{\subsection}{0pt}{1\baselineskip}{0.5\baselineskip}
+
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{3}

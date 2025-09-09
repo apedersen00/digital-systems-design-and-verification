@@ -1,0 +1,49 @@
+% sections/00_frontpage.tex
+\documentclass[../main.tex]{subfiles} % Path to your main file
+
+\begin{document}
+
+\definecolor{rulecolor}{HTML}{435488}
+\newcommand{\colorrule}{\textcolor{rulecolor}{\rule{\linewidth}{1.5pt}}}
+
+\begin{titlepage}
+    \pagenumbering{gobble}
+
+    \centering 
+    
+    \ifdef{\universityLogo}{
+        \universityLogo
+        \vspace{1cm}
+    }
+
+    {\Large \bfseries \textsf{\courseName}}
+    
+    \vfill
+    
+    \colorrule
+    \vspace{0.6cm}
+    {\huge \bfseries \textsf{\assignmentTitle}}
+
+    \ifx\assignmentSubtitle\empty\else
+        \leavevmode\\[0.5cm]
+        {\Large \textsf{\assignmentSubtitle}}
+    \fi
+
+    \vspace{0.4cm}
+    \colorrule
+
+    \vfill
+
+    \begin{minipage}{0.8\textwidth}
+        \begin{tabularx}{\linewidth}{@{}lX@{}} % The table fills the minipage
+            \bfseries \textsf{Name:}        & \textsf{\studentName} \\
+            \bfseries \textsf{Study ID:}    & \textsf{\studyID} \\
+            \bfseries \textsf{Date:}        & \textsf{\submissionDate} \\
+        \end{tabularx}
+    \end{minipage}
+    
+    \vspace{2cm}
+
+\end{titlepage}
+
+\end{document}
