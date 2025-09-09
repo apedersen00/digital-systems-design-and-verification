@@ -1,7 +1,7 @@
 //-------------------------------------------------------------------------------------------------
 //
 //  File: sim_main.cpp
-//  Description: testbench for FIFO
+//  Description: Stimulus for testbench
 //
 //  Author:
 //      - A. Pedersen
@@ -27,26 +27,23 @@ int main(int argc, char** argv) {
     const std::unique_ptr<Vtop> top{new Vtop{contextp.get(), "TOP"}};
 
     // initialize
-    top->a = 0;
-    top->b = 0;
+    top->in     = 1;
+    top->sel    = 0;
 
-    const int IN_WIDTH = 4;
+    const int OUT_WIDTH = 16;
+    const int SEL_WIDTH = 4;
 
-    for (int i = 0; i < pow(2, IN_WIDTH); i++) {
-        for (int j = 0; j < pow(2, IN_WIDTH); j++) {
-            contextp->timeInc(10);
-            top->a = i;
-            top->b = j;
-            top->eval();
+    for (int i = 0; i < pow(2, SEL_WIDTH); i++) {
+        contextp->timeInc(10);
+        top->sel = i;
+        top->eval();
 
-            VL_PRINTF("[%03" PRId64 "] a=%d b=%d sum=%d, c_out=%d\n",
-                contextp->time(),
-                top->a,
-                top->b,
-                top->sum,
-                top->c_out
-            );
-        }
+        VL_PRINTF("[%03" PRId64 "] in=%d sel=%d out=%d\n",
+            contextp->time(),
+            top->in,
+            top->sel,
+            top->out
+        );
     }
 
     top->final();

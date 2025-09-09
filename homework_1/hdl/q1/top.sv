@@ -1,31 +1,27 @@
 //-------------------------------------------------------------------------------------------------
 //
 //  File: top.sv
-//  Description: top module for FIFO testbench
+//  Description: top module for testbench
 //
 //  Author:
 //      - A. Pedersen
 //
 //-------------------------------------------------------------------------------------------------
 
-
-
 module top
   (
-    input   logic [3:0] a,
-    input   logic [3:0] b,
-    output  logic [3:0] sum,
-    output  logic       c_out
+    input   logic         in,
+    input   logic [3:0]   sel,
+    output  logic [15:0]  out
   );
 
     // DUT instance
-    cr_adder #(
-      .Width(4)
+    demux #(
+      .OutputWidth(16)
       ) dut (
-      .a(a),
-      .b(b),
-      .sum(sum),
-      .c_out(c_out)
+      .in(in),
+      .sel(sel),
+      .out(out)
     );
 
     // Stimulus
