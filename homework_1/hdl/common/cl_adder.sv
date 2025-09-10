@@ -50,7 +50,7 @@ module cl_adder #(
       assign w_P[i] = a_i[i] | b_i[i];
 
       // CLA terms: Ci+1 = Gi + Pi*Ci
-      if (i < Width) begin
+      if (i < Width) begin : gen_cla_terms
         assign w_C[i+1] = w_G[i] | (w_P[i] & w_C[i]);
       end
     end

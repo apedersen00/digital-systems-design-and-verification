@@ -56,18 +56,18 @@ module mul_accum #(
     end
   endgenerate
 
-  cla #(
+  cl_adder #(
     .Width(2*Width+2)
-  ) cla_0 (
+  ) cl_adder_0 (
     .a_i({2'b00, intermediate_prods[0]}),
     .b_i({2'b00, intermediate_prods[1]}),
     .sum_o(sums[0]),
     .c_o()
   );
 
-  cla #(
+  cl_adder #(
     .Width(2*Width+2)
-  ) cla_1 (
+  ) cl_adder_1 (
     .a_i(sums[0]),
     .b_i({2'b00, intermediate_prods[2]}),
     .sum_o(sums[1]),
