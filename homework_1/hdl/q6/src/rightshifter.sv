@@ -33,9 +33,9 @@ module rightshifter #(
       mux #(
         .InputWidth(4)
       ) mux_x (
-        .in(in_vec[i+3:i]),
-        .select(control_i),
-        .out(d_o[i])
+        .d_i(in_vec[i+3:i]),
+        .sel_i(control_i),
+        .d_o(d_o[i])
       );
     end
   endgenerate

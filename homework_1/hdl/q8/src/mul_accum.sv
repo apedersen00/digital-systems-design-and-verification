@@ -17,7 +17,7 @@
 //    .d_i(),
 //    .e_i(),
 //    .f_i(),
-//    .prod_o()
+//    .res_o()
 //  );
 
 module mul_accum #(

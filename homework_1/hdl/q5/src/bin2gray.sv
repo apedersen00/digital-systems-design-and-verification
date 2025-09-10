@@ -14,8 +14,8 @@
 //  );
 
 module bin2gray (
-    input   logic [3:0] binary,
-    output  logic [3:0] gray
+    input   logic [3:0] binary_i,
+    output  logic [3:0] gray_o
   );
 
   logic [15:0] gray_1_table = '{
@@ -97,33 +97,33 @@ module bin2gray (
   mux #(
     .InputWidth(16)
   ) mux_gray_1 (
-    .in(gray_1_table),
-    .select(binary),
-    .out(gray[0])
+    .d_i(gray_1_table),
+    .sel_i(binary_i),
+    .d_o(gray_o[0])
   );
 
   mux #(
     .InputWidth(16)
   ) mux_gray_2 (
-    .in(gray_2_table),
-    .select(binary),
-    .out(gray[1])
+    .d_i(gray_2_table),
+    .sel_i(binary_i),
+    .d_o(gray_o[1])
   );
 
   mux #(
     .InputWidth(16)
   ) mux_gray_4 (
-    .in(gray_4_table),
-    .select(binary),
-    .out(gray[2])
+    .d_i(gray_4_table),
+    .sel_i(binary_i),
+    .d_o(gray_o[2])
   );
 
   mux #(
     .InputWidth(16)
   ) mux_gray_8 (
-    .in(gray_8_table),
-    .select(binary),
-    .out(gray[3])
+    .d_i(gray_8_table),
+    .sel_i(binary_i),
+    .d_o(gray_o[3])
   );
 
 endmodule

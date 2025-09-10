@@ -17,9 +17,9 @@ module top
 
     // DUT instance
     bin2bcd dut (
-      .binary(binary),
-      .bcd(bcd),
-      .carry(carry)
+      .binary_i(binary),
+      .bcd_o(bcd),
+      .carry_o(carry)
     );
 
     // Stimulus

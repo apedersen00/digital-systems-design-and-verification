@@ -56,7 +56,7 @@ int main(int argc, char** argv) {
     test_vectors.push_back({1, 2, 3, 4, 5, 6});
     test_vectors.push_back({10, 20, 5, 8, 100, 2});
 
-    int max_val = (1 << 8) - 1;
+    uint32_t max_val = (1 << 8) - 1;
     test_vectors.push_back({max_val, max_val, max_val, max_val, max_val, max_val});
 
     for (auto& test : test_vectors) {

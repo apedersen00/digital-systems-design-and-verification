@@ -75,6 +75,8 @@ int main(int argc, char** argv) {
         }
     }
 
+    VL_PRINTF("Testbench succesfully completed!\n\n");
+
     top->final();
     contextp->statsPrintSummary();
     Verilated::threadContextp()->coveragep()->write("logs/coverage.dat");

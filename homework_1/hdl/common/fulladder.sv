@@ -16,14 +16,14 @@
 //  );
 
 module fulladder (
-    input   logic a,
-    input   logic b,
-    input   logic c_in,
-    output  logic sum,
-    output  logic c_out
+    input   logic a_i,
+    input   logic b_i,
+    input   logic c_i,
+    output  logic sum_o,
+    output  logic c_o
   );
 
-  assign sum    = a ^ b ^ c_in;
-  assign c_out  = (a & b) | (a & c_in) | (b & c_in);
+  assign sum_o  = a_i ^ b_i ^ c_i;
+  assign c_o    = (a_i & b_i) | (a_i & c_i) | (b_i & c_i);
 
 endmodule

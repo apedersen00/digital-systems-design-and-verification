@@ -17,37 +17,37 @@
 //  ) dut (
 //    .a(),
 //    .b(),
-//    .c_in(),
+//    .c_i(),
 //    .sum(),
-//    .c_out(),
+//    .c_o(),
 //  );
 
 module cr_adder #(
     parameter Width = 4
   ) (
-    input   logic [Width-1:0] a,
-    input   logic [Width-1:0] b,
-    input   logic             c_in,
-    output  logic [Width-1:0] sum,
-    output  logic             c_out
+    input   logic [Width-1:0] a_i,
+    input   logic [Width-1:0] b_i,
+    input   logic             c_i,
+    output  logic [Width-1:0] sum_o,
+    output  logic             c_o
   );
 
   logic [Width:0] c;
-  assign c[0] = c_in;
+  assign c[0] = c_i;
 
   genvar i;
   generate
     for (i = 0; i < Width; i++) begin : adder_chain
       fulladder fa (
-        .a      (a[i]),
-        .b      (b[i]),
-        .c_in   (c[i]),
-        .sum    (sum[i]),
-        .c_out  (c[i+1])
+        .a_i      (a_i[i]),
+        .b_i      (b_i[i]),
+        .c_i      (c[i]),
+        .sum_o    (sum_o[i]),
+        .c_o      (c[i+1])
       );
     end
   endgenerate
 
-  assign c_out = c[Width];
+  assign c_o = c[Width];
 
 endmodule

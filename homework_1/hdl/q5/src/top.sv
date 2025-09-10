@@ -16,8 +16,8 @@ module top
 
     // DUT instance
     bin2gray dut (
-      .binary(binary),
-      .gray(gray)
+      .binary_i(binary),
+      .gray_o(gray)
     );
 
     // Stimulus

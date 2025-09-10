@@ -39,11 +39,11 @@ module cl_adder #(
   generate
     for (i = 0; i < Width; i++) begin : adder_chain
       fulladder fa (
-        .a      (a_i[i]),
-        .b      (b_i[i]),
-        .c_in   (w_C[i]),
-        .sum    (w_S[i]),
-        .c_out  ()
+        .a_i      (a_i[i]),
+        .b_i      (b_i[i]),
+        .c_i      (w_C[i]),
+        .sum_o    (w_S[i]),
+        .c_o  ()
       );
 
       assign w_G[i] = a_i[i] & b_i[i];

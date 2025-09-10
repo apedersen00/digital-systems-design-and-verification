@@ -71,31 +71,31 @@ module mul_8 #(
   cr_adder #(
     .Width(2*N)
   ) add_s1a (
-    .a      (term_0),
-    .b      (term_1),
-    .c_in   (1'b0),
-    .sum    (sum_stage1_a),
-    .c_out  (cout_stage1_a)
+    .a_i    (term_0),
+    .b_i    (term_1),
+    .c_i    (1'b0),
+    .sum_o  (sum_stage1_a),
+    .c_o    (cout_stage1_a)
   );
 
   cr_adder #(
     .Width(2*N)
   ) add_s1b (
-    .a      (term_2),
-    .b      (term_3),
-    .c_in   (1'b0),
-    .sum    (sum_stage1_b),
-    .c_out  (cout_stage1_b)
+    .a_i    (term_2),
+    .b_i    (term_3),
+    .c_i    (1'b0),
+    .sum_o  (sum_stage1_b),
+    .c_o    (cout_stage1_b)
   );
 
   cr_adder #(
     .Width(2*N)
   ) add_sum (
-    .a      (sum_stage1_a),
-    .b      (sum_stage1_b),
-    .c_in   (1'b0),
-    .sum    (prod_o),
-    .c_out  (cout_final)
+    .a_i    (sum_stage1_a),
+    .b_i    (sum_stage1_b),
+    .c_i    (1'b0),
+    .sum_o  (prod_o),
+    .c_o    (cout_final)
   );
 
 endmodule

@@ -11,23 +11,23 @@
 //  demux #(
 //    .OutputWidth(16)
 //    ) dut (
-//    .in(in),
-//    .sel(sel),
-//    .out(out)
+//    .d_i(),
+//    .sel_i(),
+//    .d_o()
 //  );
 
 module demux #(
     parameter OutputWidth = 16,
     parameter SelectWidth = $clog2(OutputWidth)
   ) (
-    input   logic                   in,
-    input   logic [SelectWidth-1:0] sel,
-    output  logic [OutputWidth-1:0] out
+    input   logic                   d_i,
+    input   logic [SelectWidth-1:0] sel_i,
+    output  logic [OutputWidth-1:0] d_o
   );
 
   always_comb begin
-    out = '0;
-    out[sel] = in;
+    d_o = '0;
+    d_o[sel_i] = d_i;
   end
 
 endmodule

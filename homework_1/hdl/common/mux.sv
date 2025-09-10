@@ -10,20 +10,20 @@
 //  mux #(
 //    .InputWidth(4)
 //   ) dut (
-//    .in(),
-//    .select(),
-//    .out()
+//    .d_i(),
+//    .sel_i(),
+//    .d_o()
 //  );
 
 module mux #(
     parameter InputWidth = 4,
     parameter SelectWidth = $clog2(InputWidth)
   ) (
-    input logic   [InputWidth-1:0]  in,
-    input logic   [SelectWidth-1:0] select,
-    output logic                    out
+    input  logic [InputWidth-1:0]  d_i,
+    input  logic [SelectWidth-1:0] sel_i,
+    output logic                   d_o
   );
 
-  assign out = in[select];
+  assign d_o = d_i[sel_i];
 
 endmodule

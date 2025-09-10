@@ -15,12 +15,12 @@
 //  );
 
 module mul_16 #(
-  localparam N = 16
-) (
-  input   logic [N-1:0]   a_i,
-  input   logic [N-1:0]   b_i,
-  output  logic [2*N-1:0] prod_o
-);
+    localparam N = 16
+  ) (
+    input   logic [N-1:0]   a_i,
+    input   logic [N-1:0]   b_i,
+    output  logic [2*N-1:0] prod_o
+  );
 
   // Split the 8-bit inputs to 4-bit halves
   logic [N/2-1:0] a_L, a_H, b_L, b_H;
@@ -71,31 +71,31 @@ module mul_16 #(
   cr_adder #(
     .Width(2*N)
   ) add_s1a (
-    .a      (term_0),
-    .b      (term_1),
-    .c_in   (1'b0),
-    .sum    (sum_stage1_a),
-    .c_out  (cout_stage1_a)
+    .a_i    (term_0),
+    .b_i    (term_1),
+    .c_i    (1'b0),
+    .sum_o  (sum_stage1_a),
+    .c_o    (cout_stage1_a)
   );
 
   cr_adder #(
     .Width(2*N)
   ) add_s1b (
-    .a      (term_2),
-    .b      (term_3),
-    .c_in   (1'b0),
-    .sum    (sum_stage1_b),
-    .c_out  (cout_stage1_b)
+    .a_i    (term_2),
+    .b_i    (term_3),
+    .c_i    (1'b0),
+    .sum_o  (sum_stage1_b),
+    .c_o    (cout_stage1_b)
   );
 
   cr_adder #(
     .Width(2*N)
   ) add_sum (
-    .a      (sum_stage1_a),
-    .b      (sum_stage1_b),
-    .c_in   (1'b0),
-    .sum    (prod_o),
-    .c_out  (cout_final)
+    .a_i    (sum_stage1_a),
+    .b_i    (sum_stage1_b),
+    .c_i    (1'b0),
+    .sum_o  (prod_o),
+    .c_o    (cout_final)
   );
 
 endmodule

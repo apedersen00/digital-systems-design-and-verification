@@ -53,11 +53,11 @@ module multiplier #(
     for (i = 1; i < Width; i++) begin: add_rows
       for (j = 0; j < 2*Width; j++) begin: add_bits
         fulladder fa (
-          .a     (sum[i-1][j]),
-          .b     ( (j >= i && j < i + Width) ? partial_products[i][j-i] : 1'b0 ),
-          .c_in  ( (j == 0) ? 1'b0 : carry[i][j-1] ),
-          .sum   (sum[i][j]),
-          .c_out (carry[i][j])
+          .a_i   (sum[i-1][j]),
+          .b_i   ( (j >= i && j < i + Width) ? partial_products[i][j-i] : 1'b0 ),
+          .c_i   ( (j == 0) ? 1'b0 : carry[i][j-1] ),
+          .sum_o (sum[i][j]),
+          .c_o   (carry[i][j])
         );
       end
     end

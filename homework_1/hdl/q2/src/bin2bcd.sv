@@ -1,6 +1,6 @@
 //-------------------------------------------------------------------------------------------------
 //
-//  File: bcd.sv
+//  File: bin2bcd.sv
 //  Description: 4-bit binary to BCD (Binary Coded Decimal) encoder.
 //
 //  Author:
@@ -15,9 +15,9 @@
 //  );
 
 module bin2bcd (
-    input   logic [3:0] binary,
-    output  logic [3:0] bcd,
-    output  logic       carry
+    input   logic [3:0] binary_i,
+    output  logic [3:0] bcd_o,
+    output  logic       carry_o
   );
 
   logic [15:0] bcd_1_table = '{
@@ -118,41 +118,41 @@ module bin2bcd (
   mux #(
     .InputWidth(16)
   ) mux_bcd_1 (
-    .in(bcd_1_table),
-    .select(binary),
-    .out(bcd[0])
+    .d_i(bcd_1_table),
+    .sel_i(binary_i),
+    .d_o(bcd_o[0])
   );
 
   mux #(
     .InputWidth(16)
   ) mux_bcd_2 (
-    .in(bcd_2_table),
-    .select(binary),
-    .out(bcd[1])
+    .d_i(bcd_2_table),
+    .sel_i(binary_i),
+    .d_o(bcd_o[1])
   );
 
   mux #(
     .InputWidth(16)
   ) mux_bcd_4 (
-    .in(bcd_4_table),
-    .select(binary),
-    .out(bcd[2])
+    .d_i(bcd_4_table),
+    .sel_i(binary_i),
+    .d_o(bcd_o[2])
   );
 
   mux #(
     .InputWidth(16)
   ) mux_bcd_8 (
-    .in(bcd_8_table),
-    .select(binary),
-    .out(bcd[3])
+    .d_i(bcd_8_table),
+    .sel_i(binary_i),
+    .d_o(bcd_o[3])
   );
 
   mux #(
     .InputWidth(16)
   ) mux_bcd_carry (
-    .in(bcd_carry_table),
-    .select(binary),
-    .out(carry)
+    .d_i(bcd_carry_table),
+    .sel_i(binary_i),
+    .d_o(carry_o)
   );
 
 endmodule

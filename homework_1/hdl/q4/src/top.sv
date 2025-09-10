@@ -17,7 +17,7 @@ module top
     // DUT instance
     count_ones_4 dut (
       .a_i(a),
-      .out_o(out)
+      .d_o(out)
     );
 
     // Stimulus

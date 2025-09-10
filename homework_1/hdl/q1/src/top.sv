@@ -19,9 +19,9 @@ module top
     demux #(
       .OutputWidth(16)
       ) dut (
-      .in(in),
-      .sel(sel),
-      .out(out)
+      .d_i(in),
+      .sel_i(sel),
+      .d_o(out)
     );
 
     // Stimulus

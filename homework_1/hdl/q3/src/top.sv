@@ -17,11 +17,11 @@ module top
   );
 
     // DUT instance
-    csa_8 dut (
-      .A(A),
-      .B(B),
-      .sum(sum),
-      .carry(carry)
+    cs_adder_8 dut (
+      .a_i(A),
+      .b_i(B),
+      .sum_o(sum),
+      .carry_o(carry)
     );
 
     // Stimulus
