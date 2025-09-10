@@ -51,7 +51,7 @@ VERILATOR_FLAGS += --coverage
 #VERILATOR_FLAGS += --gdbbt
 
 # Input files for Verilator
-VERILATOR_INPUT = -f input.vc src/top.sv src/demux.sv sim/sim_main.cpp
+VERILATOR_INPUT = src/top.sv src/demux.sv sim/sim_main.cpp
 
 ######################################################################
 default: run
@@ -66,9 +66,7 @@ run:
 # To compile, we can either
 # 1. Pass --build to Verilator by editing VERILATOR_FLAGS above.
 # 2. Or, run the make rules Verilator does:
-#	$(MAKE) -j -C obj_dir -f Vtop.mk
-# 3. Or, call a submakefile where we can override the rules ourselves:
-	$(MAKE) -j -C obj_dir -f ../Makefile_obj
+	$(MAKE) -j -C obj_dir -f Vtop.mk
 
 	@echo
 	@echo "-- RUN ---------------------"
