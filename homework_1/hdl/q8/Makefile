@@ -51,7 +51,7 @@ VERILATOR_FLAGS += --coverage
 #VERILATOR_FLAGS += --gdbbt
 
 # Input files for Verilator
-VERILATOR_INPUT = -f input.vc top.sv fulladder.sv cla.sv mul_accum.sv ../q7/multiplier.sv sim_main.cpp
+VERILATOR_INPUT = -f input.vc src/top.sv ../common/fulladder.sv ../common/cla.sv src/mul_accum.sv ../q7/src/multiplier.sv sim/sim_main.cpp
 
 ######################################################################
 default: run

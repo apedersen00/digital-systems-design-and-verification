@@ -51,7 +51,7 @@ VERILATOR_FLAGS += --coverage
 #VERILATOR_FLAGS += --gdbbt
 
 # Input files for Verilator
-VERILATOR_INPUT = -f input.vc top.sv rightshifter.sv mux.sv sim_main.cpp
+VERILATOR_INPUT = -f input.vc src/top.sv src/rightshifter.sv ../common/mux.sv sim/sim_main.cpp
 
 ######################################################################
 default: run
