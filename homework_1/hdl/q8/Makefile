@@ -58,9 +58,6 @@ default: run
 
 run:
 	@echo
-	@echo "-- Verilator tracing example"
-
-	@echo
 	@echo "-- VERILATE ----------------"
 	$(VERILATOR) $(VERILATOR_FLAGS) $(VERILATOR_INPUT)
 
