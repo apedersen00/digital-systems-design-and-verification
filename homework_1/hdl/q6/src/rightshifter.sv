@@ -1,7 +1,7 @@
 //-------------------------------------------------------------------------------------------------
 //
 //  File: rightshifter.sv
-//  Description: Parametric implementation of a right-only barrel shifter
+//  Description: Parametric implementation of a right-only shifter
 //
 //  Author:
 //      - A. Pedersen
