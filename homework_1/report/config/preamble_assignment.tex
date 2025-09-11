@@ -3,11 +3,11 @@
 %----------------------------------------------------------------------------------------
 %   USER INFORMATION
 %----------------------------------------------------------------------------------------
-\newcommand{\assignmentTitle}{Exam}
-\newcommand{\assignmentSubtitle}{Spring 2025}
+\newcommand{\assignmentTitle}{Homework 1}
+\newcommand{\assignmentSubtitle}{Fall 2025}
 \newcommand{\studentName}{Andreas S. Pedersen}
-\newcommand{\studyID}{202104430}
-\newcommand{\courseName}{Very Large Scale Integration (VLSI) Design}
+\newcommand{\studyID}{aspasp@kth.se}
+\newcommand{\courseName}{IL2234: Digital Systems Design and Verification Using HDL}
 \newcommand{\submissionDate}{\today}
 
 %----------------------------------------------------------------------------------------
@@ -45,6 +45,9 @@
 %----------------------------------------------------------------------------------------
 %   TYPOGRAPHY & ENCODING
 %----------------------------------------------------------------------------------------
+\usepackage{minted}
+\usepackage[skins,minted]{tcolorbox}
+
 \usepackage[T1]{fontenc}
 \usepackage{lmodern}
 \usepackage[utf8]{inputenc}
@@ -54,6 +57,9 @@
 \usepackage{lipsum}
 \setlength\parindent{0pt} % No paragraph indents
 \setlength\parskip{6pt}   % Space between paragraphs
+
+\usepackage{microtype}
+\DisableLigatures[<,>]{encoding=T1,family=tt*}
 
 %----------------------------------------------------------------------------------------
 %   BIBLIOGRAPHY
@@ -120,3 +126,91 @@
 
 \setcounter{secnumdepth}{3}
 \setcounter{tocdepth}{3}
+
+% ------- MINTED
+
+\definecolor{mintedbackground}{rgb}{0.95,0.95,0.95}
+\definecolor{mintedframe}{rgb}{0.3,0.55,0.55}
+
+\setminted[cpp]{
+    bgcolor=mintedbackground,
+    fontfamily=tt,
+    linenos=true,
+    numberblanklines=true,
+    numbersep=12pt,
+    numbersep=5pt,
+    gobble=0,
+    frame=leftline,
+    framesep=2mm,
+    funcnamehighlighting=true,
+    tabsize=4,
+    obeytabs=false,
+    mathescape=false,
+    samepage=false,
+    showspaces=false,
+    texcl=false,
+    baselinestretch=1.2,
+    fontsize=\footnotesize,
+    breaklines=true,
+}
+
+\setminted[text]{
+    bgcolor=mintedbackground,
+    fontfamily=tt,
+    linenos=true,
+    numberblanklines=true,
+    numbersep=12pt,
+    numbersep=5pt,
+    gobble=0,
+    frame=leftline,
+    framesep=2mm,
+    funcnamehighlighting=true,
+    tabsize=4,
+    obeytabs=false,
+    mathescape=false,
+    samepage=false,
+    showspaces=false,
+    showtabs =false,
+    texcl=false,
+    baselinestretch=1.2,
+    fontsize=\footnotesize,
+    breaklines=true,
+}
+
+\newtcblisting{myminted}[2][]{listing engine=minted, listing only,#1, title=#2, minted language=cpp, colback=mintedbackground}
+
+\newtcblisting{svminted}[2][]{listing engine=minted, listing only,#1, title=#2, minted language=systemverilog, colback=mintedbackground}
+
+\newtcblisting{mintedterminal}[2][]{enhanced, listing engine=minted, 
+listing only,#1, title=#2, minted language=text, 
+coltitle=mintedbackground!30!black, 
+fonttitle=\ttfamily\footnotesize,
+sharp corners, top=0mm, bottom=0mm,
+title code={\path[draw=mintedframe,dashed, fill=mintedbackground](title.south west)--(title.south east);},
+frame code={\path[draw=mintedframe, fill=mintedbackground](frame.south west) rectangle (frame.north east);}
+}
+
+% SystemVerilog configuration
+\setminted[systemverilog]{
+    bgcolor=mintedbackground,
+    fontfamily=tt,
+    linenos=true,
+    numberblanklines=true,
+    numbersep=12pt,
+    numbersep=5pt,
+    gobble=0,
+    frame=leftline,
+    framesep=2mm,
+    funcnamehighlighting=true,
+    tabsize=4,
+    obeytabs=false,
+    mathescape=false,
+    samepage=false,
+    showspaces=false,
+    texcl=false,
+    baselinestretch=1.2,
+    fontsize=\footnotesize,
+    breaklines=true,
+}
+
+\newtcblisting{svminted}[2][]{listing engine=minted, listing only,#1, title=#2, minted language=systemverilog, colback=mintedbackground}

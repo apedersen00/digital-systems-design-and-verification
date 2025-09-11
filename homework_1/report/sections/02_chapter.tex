@@ -2,8 +2,31 @@
 
 \begin{document}
 
-\section{Question 1}
+\section{Question 6}
 
-\lipsum[1-4]
+Model using HDL a design that can be used to implement an arithmetic right shift. Your design has to be parametric and have N-bit input, where $N \geq 4$. It should also allow to shift up to 3 positions. Do \textbf{not} use the \texttt{<<<}, \texttt{>>>} operators.
+
+Draw a schematic of your design. Assume a value for the parameter $N = 5$.
+
+\subsection*{Solution}
+
+The functionality can be implemented using an array of N-to-1 multiplexers.
+
+\begin{svminted}{module_name.sv}
+module example(
+    input  logic clk,
+    input  logic rst_n,
+    output logic valid
+);
+    // Your SystemVerilog code here
+endmodule
+\end{svminted}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=1.0\linewidth]{assets/q6.png}
+    \caption{$N = 5$ right shifter implemented using an array of multiplexers.}
+    \label{q6}
+\end{figure}
 
 \end{document}
