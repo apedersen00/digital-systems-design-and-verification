@@ -1,14 +1,15 @@
 //-------------------------------------------------------------------------------------------------
 //
 //  File: multiplier.sv
-//  Description: Parametric multiplier using an array of AND gates and full adders
+//  Description: Parametric Baugh-Wooley multiplier. Design is based on the first reference.
 //
 //  Author:
 //      - A. Pedersen
 //
 //  References:
-//      - https://www.youtube.com/watch?v=_ONOKFXkfN0
-//      - https://www.youtube.com/watch?v=O34KquoMpT0
+//      - https://www.ece.uvic.ca/~fayez/courses/ceng465/lab_465/project2/multiplier.pdf
+//      - https://github.com/fpozzana/Baugh-Wooley_multiplier
+//      - https://publish.obsidian.md/cynixia/Baugh-Wooley+Algorithm
 //
 //-------------------------------------------------------------------------------------------------
 
@@ -23,46 +24,135 @@
 module multiplier #(
     parameter Width = 8
   ) (
-    input   logic [Width-1:0]   a_i,    // Multiplicand
-    input   logic [Width-1:0]   b_i,    // Multiplier
-    output  logic [2*Width-1:0] prod_o  // Product
-  );
+    input logic [Width-1:0]     a_i,    // Multiplicand
+    input logic [Width-1:0]     b_i,    // Multiplier
+    output logic [2*Width-1:0]  prod_o  // Product
+);
 
-  logic [Width-1:0] partial_products [Width-1:0];
+  // A Baugh-Wooley (BW) multiplier is a "matrix" of white/gray BW cells.
+  // To handle wire routing we define matrices for the sum and carry signals.
 
+  logic [Width-1:0][Width-1:0] sum_matrix;
+  logic [Width-1:0][Width-1:0] carry_matrix;
+
+  logic [Width-1:0] final_sum_vector;
+  logic [Width-1:0] final_carry_vector;
+
+  // This generate logic is quite ugly.
   genvar i, j;
-
-  // We start off by generating the partial products with a "cross" array of AND gates
   generate
-    for (i = 0; i < Width; i++) begin
-      for (j = 0; j < Width; j++) begin
-        assign partial_products[i][j] = a_i[j] & b_i[i];
+    for (i = 0; i < Width; i++) begin: rows
+      for (j = 0; j < Width; j++) begin: cols
+
+        if (i > 0 && i < Width - 1 && j < Width - 1) begin
+          bw_white_cell bw_cell (
+            .a_i  ( b_i[i]                ),
+            .b_i  ( a_i[j]                ),
+            .c_i  ( carry_matrix[i-1][j]  ),
+            .s_i  ( sum_matrix[i-1][j+1]  ),
+            .s_o  ( sum_matrix[i][j]      ),
+            .c_o  ( carry_matrix[i][j]    )
+          );
+        end
+
+        else if (i == 0 && j < Width - 1) begin
+          bw_white_cell bw_cell (
+            .a_i  ( b_i[0]                ),
+            .b_i  ( a_i[j]                ),
+            .c_i  ( 1'b0                  ),
+            .s_i  ( 1'b0                  ),
+            .s_o  ( sum_matrix[i][j]      ),
+            .c_o  ( carry_matrix[i][j]    )
+          );
+        end
+
+        else if (i == Width - 1 && j < Width - 1) begin
+          bw_gray_cell bw_cell (
+            .a_i  ( b_i[Width-1]          ),
+            .b_i  ( a_i[j]                ),
+            .c_i  ( carry_matrix[i-1][j]  ),
+            .s_i  ( sum_matrix[i-1][j+1]  ),
+            .s_o  ( sum_matrix[i][j]      ),
+            .c_o  ( carry_matrix[i][j]    )
+          );
+        end
+
+        else if (j == Width - 1 && i < Width - 1) begin
+          bw_gray_cell bw_cell (
+            .a_i  ( b_i[i]                ),
+            .b_i  ( a_i[Width-1]          ),
+            .c_i  ( 1'b0                  ),
+            .s_i  ( 1'b0                  ),
+            .s_o  ( sum_matrix[i][j]      ),
+            .c_o  ( carry_matrix[i][j]    )
+          );
+        end
+
+        else if (i == Width - 1 && j == Width - 1) begin
+          bw_white_cell bw_cell (
+            .a_i  ( b_i[Width-1]          ),
+            .b_i  ( a_i[Width-1]          ),
+            .c_i  ( 1'b0                  ),
+            .s_i  ( 1'b0                  ),
+            .s_o  ( sum_matrix[i][j]      ),
+            .c_o  ( carry_matrix[i][j]    )
+          );
+        end
+
       end
     end
   endgenerate
 
-  // Sum and carry vecotrs for the adder array
-  logic [2*Width-1:0] sum   [Width:0];
-  logic [2*Width-1:0] carry [Width:0];
-
-  // Initialize first row
-  assign sum[0]   = {{(Width){1'b0}}, partial_products[0]};
-  assign carry[0] = '0;
-
+  // Final row of full adders
   generate
-    for (i = 1; i < Width; i++) begin: add_rows
-      for (j = 0; j < 2*Width; j++) begin: add_bits
-        fulladder fa (
-          .a_i   (sum[i-1][j]),
-          .b_i   ( (j >= i && j < i + Width) ? partial_products[i][j-i] : 1'b0 ),
-          .c_i   ( (j == 0) ? 1'b0 : carry[i][j-1] ),
-          .sum_o (sum[i][j]),
-          .c_o   (carry[i][j])
+    for (i = 0; i < Width; i++) begin: final_adder_row
+
+      if (i == 0) begin
+        fulladder f0 (
+          .a_i    ( 1'b1                      ),
+          .b_i    ( carry_matrix[Width-1][i]  ),
+          .c_i    ( sum_matrix[Width-1][i+1]  ),
+          .sum_o  ( final_sum_vector[i]       ),
+          .c_o    ( final_carry_vector[i]     )
         );
       end
+
+      else if (i == Width - 1) begin
+        fulladder f1 (
+          .a_i    ( final_carry_vector[i-1]   ),
+          .b_i    ( carry_matrix[Width-1][i]  ),
+          .c_i    ( 1'b1                      ),
+          .sum_o  ( final_sum_vector[i]       ),
+          .c_o    ( final_carry_vector[i]     )
+        );
+      end
+
+      else begin
+        fulladder f2 (
+          .a_i    ( final_carry_vector[i-1]   ),
+          .b_i    ( carry_matrix[Width-1][i]  ),
+          .c_i    ( sum_matrix[Width-1][i+1]  ),
+          .sum_o  ( final_sum_vector[i]       ),
+          .c_o    ( final_carry_vector[i]     )
+        );
+      end
+
     end
   endgenerate
 
-  assign prod_o = sum[Width-1];
+  // Generate output bit vector
+  generate
+    for (i = 0; i < 2 * Width; i++) begin: output_vec
+
+      if (i < Width) begin
+        assign prod_o[i] = sum_matrix[i][0];
+      end
+
+      else begin
+        assign prod_o[i] = final_sum_vector[i-Width];
+      end
+
+    end
+  endgenerate
 
 endmodule
