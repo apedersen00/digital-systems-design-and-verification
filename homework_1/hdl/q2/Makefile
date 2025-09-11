@@ -45,6 +45,8 @@ VERILATOR_FLAGS += --trace-vcd
 VERILATOR_FLAGS += --assert -Wno-EOFNEWLINE
 # Generate coverage analysis
 VERILATOR_FLAGS += --coverage
+# Build quiet
+VERILATOR_FLAGS += --quiet
 # Run Verilator in debug mode
 #VERILATOR_FLAGS += --debug
 # Add this trace to get a backtrace in gdb
@@ -57,18 +59,11 @@ VERILATOR_INPUT = src/top.sv ../common/mux.sv src/bin2bcd.sv sim/sim_main.cpp
 default: run
 
 run:
-	@echo
-	@echo "-- VERILATE ----------------"
-	$(VERILATOR) $(VERILATOR_FLAGS) $(VERILATOR_INPUT)
+	@echo "Verilating..."
+	@$(VERILATOR) $(VERILATOR_FLAGS) $(VERILATOR_INPUT) 2>&1 | grep -i "error:\|warning:" || true
 
-	@echo
-	@echo "-- BUILD -------------------"
-# To compile, we can either
-# 1. Pass --build to Verilator by editing VERILATOR_FLAGS above.
-# 2. Or, run the make rules Verilator does:
-#	$(MAKE) -j -C obj_dir -f Vtop.mk
-# 3. Or, call a submakefile where we can override the rules ourselves:
-	$(MAKE) -j -C obj_dir -f Vtop.mk
+	@echo "Building..."
+	@$(MAKE) -s -j -C obj_dir -f Vtop.mk 2>&1 | grep -i "error:\|warning:" || true
 
 	@echo
 	@echo "-- RUN ---------------------"
