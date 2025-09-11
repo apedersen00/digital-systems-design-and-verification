@@ -10,17 +10,7 @@ Draw a schematic of your design. Assume a value for the parameter $N = 5$.
 
 \subsection*{Solution}
 
-The functionality can be implemented using an array of N-to-1 multiplexers.
-
-\begin{svminted}{module\_name.sv}
-module example(
-    input  logic clk,
-    input  logic rst_n,
-    output logic valid
-);
-    // Your SystemVerilog code here
-endmodule
-\end{svminted}
+The functionality can be implemented using an array of N-to-1 multiplexers. Denoting the input and output bit-vectors $d_i$ and $d_o$ respectively, and the 2-bit select line for $s$, the circuit schematic when $N = 5$ is shown in [Figure \ref{q6}].
 
 \begin{figure}[h]
     \centering
@@ -28,5 +18,15 @@ endmodule
     \caption{$N = 5$ right shifter implemented using an array of multiplexers.}
     \label{q6}
 \end{figure}
+
+The output from the testbench of the implemented circuit is shown below.
+
+\begin{mintedterminal}{Q6 - Testbench Output}
+[10] Starting simulation...
+[010] Input=10101010 Control=0 Output=10101010
+[020] Input=10101010 Control=1 Output=01010101
+[030] Input=10101010 Control=2 Output=00101010
+[040] Input=10101010 Control=3 Output=00010101
+\end{mintedterminal}
 
 \end{document}
