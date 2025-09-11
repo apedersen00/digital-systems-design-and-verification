@@ -16,7 +16,7 @@ module top
     input   logic [7:0]   d,
     input   logic [7:0]   e,
     input   logic [7:0]   f,
-    output  logic [17:0]  res
+    output  logic [16:0]  res
   );
 
     // DUT instance

@@ -12,13 +12,6 @@ Draw a schematic of your design. Assume a value for the parameter $N = 5$.
 
 The functionality can be implemented using an array of N-to-1 multiplexers. Denoting the input and output bit-vectors $d_i$ and $d_o$ respectively, and the 2-bit select line for $s$, the circuit schematic when $N = 5$ is shown in [Figure \ref{q6}].
 
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=1.0\linewidth]{assets/q6.png}
-    \caption{$N = 5$ right shifter implemented using an array of multiplexers.}
-    \label{q6}
-\end{figure}
-
 The output from the testbench of the implemented circuit is shown below.
 
 \begin{mintedterminal}{Q6 - Testbench Output}
@@ -28,6 +21,13 @@ The output from the testbench of the implemented circuit is shown below.
 [030] Input=10101010 Control=2 Output=00101010
 [040] Input=10101010 Control=3 Output=00010101
 \end{mintedterminal}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=1.0\linewidth]{assets/q6.png}
+    \caption{$N = 5$ right shifter implemented using an array of multiplexers.}
+    \label{q6}
+\end{figure}
 
 \newpage
 
@@ -40,6 +40,22 @@ Draw the schematic of your design. Assume a value for the parameter $N = 5$.
 \subsection*{Solution}
 
 To implement signed multiplication the Baugh-Wooley multiplication algorithm is used. A Baugh-Wooley multiplier is implemented as a grid of "Baugh-Wooley cells". Two types of cells are used, white and gray [Figure \ref{fig:bw_cell}]. The complete circuit diagram is seen in [Figure \ref{q7}].
+
+The testbench iterates through all 8-bit input values and confirms the correct result is produced by the multiplier. An example snippet is shown below.
+
+\begin{mintedterminal}{Q7 - Testbench Output}
+[655270] a=127 b=118 prod=14986
+[655280] a=127 b=119 prod=15113
+[655290] a=127 b=120 prod=15240
+[655300] a=127 b=121 prod=15367
+[655310] a=127 b=122 prod=15494
+[655320] a=127 b=123 prod=15621
+[655330] a=127 b=124 prod=15748
+[655340] a=127 b=125 prod=15875
+[655350] a=127 b=126 prod=16002
+[655360] a=127 b=127 prod=16129
+Testbench succesfully completed!
+\end{mintedterminal}
 
 \begin{figure}[h]
     \centering
@@ -84,5 +100,7 @@ $$
 Draw a schematic of your design. Assume a value for the $N = $ parameter.
 
 \subsection*{Solution}
+
+
 
 \end{document}

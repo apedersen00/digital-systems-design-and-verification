@@ -59,10 +59,12 @@ int main(int argc, char** argv) {
     test_vectors.push_back({0, 0, 0, 0, 0, 0});
     test_vectors.push_back({1, 2, 3, 4, 5, 6});
     test_vectors.push_back({10, 20, 5, 8, 100, 2});
-    test_vectors.push_back({-1, 10, -5, 4, 1, -1}); // Added a negative test case
+    test_vectors.push_back({-1, 10, -5, 4, 1, -1});
 
     int8_t max_val = 127;
+    int8_t min_val = -128;
     test_vectors.push_back({max_val, max_val, max_val, max_val, max_val, max_val});
+    test_vectors.push_back({min_val, min_val, min_val, min_val, min_val, min_val});
 
     for (auto& test : test_vectors) {
         test.expected_res = (int64_t)test.a * test.b + (int64_t)test.c * test.d + (int64_t)test.e * test.f;
@@ -81,7 +83,7 @@ int main(int argc, char** argv) {
 
         top->eval();
 
-        res = sign_extend(top->res, 18);
+        res = sign_extend(top->res, 17);
 
         if (res != test.expected_res) {
             VL_PRINTF("\n*** Error! ***\n");
@@ -106,7 +108,7 @@ int main(int argc, char** argv) {
 #endif
 
     }
-    
+
     VL_PRINTF("\nSimulation finished.\n");
 
     top->final();

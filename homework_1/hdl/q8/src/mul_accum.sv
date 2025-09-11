@@ -29,7 +29,7 @@ module mul_accum #(
     input   logic [Width-1:0]   d_i,      // input vector
     input   logic [Width-1:0]   e_i,      // input vector
     input   logic [Width-1:0]   f_i,      // input vector
-    output  logic [2*Width+1:0] res_o     // result vector
+    output  logic [2*Width:0]   res_o     // result vector
   );
 
   logic [Width-1:0] input_mat [5:0];
@@ -41,7 +41,7 @@ module mul_accum #(
   assign input_mat[5] = f_i;
 
   logic [2*Width-1:0] intermediate_prods [2:0];
-  logic [2*Width+1:0] sums [1:0];
+  logic [2*Width:0]   sums [1:0];
 
   genvar i;
   generate
@@ -57,19 +57,19 @@ module mul_accum #(
   endgenerate
 
   cl_adder #(
-    .Width(2*Width+2)
+    .Width(2*Width+1)
   ) cl_adder_0 (
-    .a_i({ {2{intermediate_prods[0][-1]}}, intermediate_prods[0]}),
-    .b_i({ {2{intermediate_prods[1][-1]}}, intermediate_prods[1]}),
+    .a_i({ {1{intermediate_prods[0][-1]}}, intermediate_prods[0]}),
+    .b_i({ {1{intermediate_prods[1][-1]}}, intermediate_prods[1]}),
     .sum_o(sums[0]),
     .c_o()
   );
 
   cl_adder #(
-    .Width(2*Width+2)
+    .Width(2*Width+1)
   ) cl_adder_1 (
     .a_i(sums[0]),
-    .b_i({ {2{intermediate_prods[2][-1]}}, intermediate_prods[2]}),
+    .b_i({ {1{intermediate_prods[2][-1]}}, intermediate_prods[2]}),
     .sum_o(sums[1]),
     .c_o()
   );
