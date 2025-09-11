@@ -22,13 +22,18 @@ std::string to_binary(unsigned int value) {
     return std::bitset<N>(value).to_string();
 }
 
-// Legacy function required only so linking works on Cygwin and MSVC++
-double sc_time_stamp() { return 0; }
+int32_t sign_extend(uint64_t value, int bits) {
+    int shift = 8 * sizeof(int32_t) - bits;
+    int32_t shifted_value = (int32_t)(value << shift);
+    return shifted_value >> shift;
+}
 
 struct TestCase {
-    uint32_t a, b, c, d, e, f;
-    uint64_t expected_res;
+    int8_t a, b, c, d, e, f;
+    int64_t expected_res;
 };
+
+double sc_time_stamp() { return 0; }
 
 int main(int argc, char** argv) {
     Verilated::mkdir("logs");
@@ -50,18 +55,20 @@ int main(int argc, char** argv) {
 
     std::vector<TestCase> test_vectors;
     int passed = 0;
-    const int IN_WIDTH = 8;
 
     test_vectors.push_back({0, 0, 0, 0, 0, 0});
     test_vectors.push_back({1, 2, 3, 4, 5, 6});
     test_vectors.push_back({10, 20, 5, 8, 100, 2});
+    test_vectors.push_back({-1, 10, -5, 4, 1, -1}); // Added a negative test case
 
-    uint32_t max_val = (1 << 8) - 1;
+    int8_t max_val = 127;
     test_vectors.push_back({max_val, max_val, max_val, max_val, max_val, max_val});
 
     for (auto& test : test_vectors) {
-        test.expected_res = test.a * test.b + test.c * test.d + test.e * test.f;
+        test.expected_res = (int64_t)test.a * test.b + (int64_t)test.c * test.d + (int64_t)test.e * test.f;
     }
+
+    static int32_t res;
 
     for (auto& test : test_vectors) {
         contextp->timeInc(10);
@@ -71,31 +78,36 @@ int main(int argc, char** argv) {
         top->d = test.d;
         top->e = test.e;
         top->f = test.f;
-        
+
         top->eval();
-        if (top->res != test.expected_res) {
+
+        res = sign_extend(top->res, 18);
+
+        if (res != test.expected_res) {
             VL_PRINTF("\n*** Error! ***\n");
-            VL_PRINTF("    EXPECTED: %d * %d + %d * %d + %d * %d = %d\n", test.a, test.b, test.c, test.d, test.e, test.f, test.expected_res);
-            VL_PRINTF("    GOT: %d\n", top->res);
-            VL_PRINTF("    at time %" PRId64 "\n\n", contextp->time());
-            break;
+            VL_PRINTF("   INPUTS:     a=%d, b=%d, c=%d, d=%d, e=%d, f=%d\n", test.a, test.b, test.c, test.d, test.e, test.f);
+            VL_PRINTF("   EXPECTED:   %lld\n", test.expected_res);
+            VL_PRINTF("   GOT:        %d\n", res);
+            VL_PRINTF("   at time %" PRId64 "\n\n", contextp->time());
         }
 
 #if DEBUG == 1
-        VL_PRINTF("[%03" PRId64 "] a=%d b=%d c=%d d=%d e=%d f=%d prod=%d expected=%d\n",
+        VL_PRINTF("[%03" PRId64 "] a=%d b=%d c=%d d=%d e=%d f=%d res=%d expected=%d\n",
             contextp->time(),
-            top->a,
-            top->b,
-            top->c,
-            top->d,
-            top->e,
-            top->f,
-            top->res,
+            (int8_t)top->a,
+            (int8_t)top->b,
+            (int8_t)top->c,
+            (int8_t)top->d,
+            (int8_t)top->e,
+            (int8_t)top->f,
+            res,
             test.expected_res
         );
 #endif
 
     }
+    
+    VL_PRINTF("\nSimulation finished.\n");
 
     top->final();
     contextp->statsPrintSummary();

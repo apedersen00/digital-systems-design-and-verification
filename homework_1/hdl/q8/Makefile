@@ -42,7 +42,7 @@ VERILATOR_FLAGS += -Wall
 # Make waveforms
 VERILATOR_FLAGS += --trace-vcd
 # Check SystemVerilog assertions
-VERILATOR_FLAGS += --assert -Wno-EOFNEWLINE -Wno-UNOPTFLAT -Wno-PINCONNECTEMPTY
+VERILATOR_FLAGS += --assert -Wno-EOFNEWLINE -Wno-UNOPTFLAT -Wno-PINCONNECTEMPTY -Wno-GENUNNAMED -Wno-UNUSEDSIGNAL
 # Generate coverage analysis
 VERILATOR_FLAGS += --coverage
 # Run Verilator in debug mode
@@ -51,7 +51,7 @@ VERILATOR_FLAGS += --coverage
 #VERILATOR_FLAGS += --gdbbt
 
 # Input files for Verilator
-VERILATOR_INPUT = src/top.sv ../common/fulladder.sv ../common/cl_adder.sv src/mul_accum.sv ../q7/src/multiplier.sv sim/sim_main.cpp
+VERILATOR_INPUT = src/top.sv ../common/fulladder.sv ../common/cl_adder.sv src/mul_accum.sv ../q7/src/multiplier.sv ../q7/src/bw_white_cell.sv ../q7/src/bw_gray_cell.sv sim/sim_main.cpp
 
 ######################################################################
 default: run
