@@ -101,6 +101,22 @@ Draw a schematic of your design. Assume a value for the $N = $ parameter.
 
 \subsection*{Solution}
 
+The module is implemented using the previous Baugh-Wooley multiplier and multiple carry-lookahead adders. The schematic is shown in
 
+\begin{mintedterminal}{Q7 - Testbench Output}
+[010] a=0 b=0 c=0 d=0 e=0 f=0 res=0 expected=0
+[020] a=1 b=2 c=3 d=4 e=5 f=6 res=44 expected=44
+[030] a=10 b=20 c=5 d=8 e=100 f=2 res=440 expected=440
+[040] a=-1 b=10 c=-5 d=4 e=1 f=-1 res=-31 expected=-31
+[050] a=127 b=127 c=127 d=127 e=127 f=127 res=48387 expected=48387
+[060] a=-128 b=-128 c=-128 d=-128 e=-128 f=-128 res=49152 expected=49152
+\end{mintedterminal}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.4\linewidth]{assets/q8.png}
+    \caption{Block diagram of the 6 number multiply/accumulate module with $N = $.}
+    \label{q8}
+\end{figure}
 
 \end{document}
