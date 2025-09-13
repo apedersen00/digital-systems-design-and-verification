@@ -11,6 +11,7 @@
 #include <math.h>
 #include <bitset>
 #include <memory>
+#include <random>
 #include <verilated.h>
 #include "Vtop.h"
 
@@ -38,41 +39,46 @@ int main(int argc, char** argv) {
     top->a = 0;
     top->b = 0;
 
-    const int IN_WIDTH = 10;
+    const int IN_WIDTH  = 16;
+    const int NUM_TESTS = 1000000;
+    bool error_found    = false;
     static int true_prod;
-    bool error_found = false;
 
-    for (int i = 0; i < pow(2, IN_WIDTH); i++) {
-        for (int j = 0; j < pow(2, IN_WIDTH); j++) {
-            contextp->timeInc(10);
-            top->a = i;
-            top->b = j;
-            top->eval();
+    // init random number generator
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<> distrib(0, (1 << IN_WIDTH) - 1);
 
-            true_prod = i * j;
+    for (int i = 0; i < NUM_TESTS; i++) {
+        int a = distrib(gen);
+        int b = distrib(gen);
 
-            if (top->prod != true_prod) {
-                VL_PRINTF("\n*** Error! ***\n");
-                VL_PRINTF("    EXPECTED: %d * %d = %d\n", i, j, true_prod);
-                VL_PRINTF("    GOT: %d\n", top->prod);
-                VL_PRINTF("    at time %" PRId64 "\n\n", contextp->time());
+        contextp->timeInc(10);
+        top->a = a;
+        top->b = b;
+        top->eval();
 
-                error_found = true;
-                break;
-            }
+        true_prod = a * b;
 
-#if DEBUG == 1
-            VL_PRINTF("[%03" PRId64 "] a=%d b=%d prod=%d\n",
-                contextp->time(),
-                top->a,
-                top->b,
-                top->prod
-            );
-#endif
-        }
-        if (error_found) {
+        if (top->prod != true_prod) {
+            VL_PRINTF("\n*** Error! ***\n");
+            VL_PRINTF("    EXPECTED: %d * %d = %d\n", a, b, true_prod);
+            VL_PRINTF("    GOT: %d\n", top->prod);
+            VL_PRINTF("    at time %" PRId64 "\n\n", contextp->time());
+
+            error_found = true;
             break;
         }
+
+#if DEBUG == 1
+        VL_PRINTF("[%03" PRId64 "] a=%d b=%d prod=%d\n",
+            contextp->time(),
+            top->a,
+            top->b,
+            top->prod
+        );
+#endif
+
     }
 
     top->final();

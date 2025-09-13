@@ -15,12 +15,12 @@
 //  );
 
 module mul_8 #(
-  localparam N = 8
-) (
-  input   logic [N-1:0]   a_i,
-  input   logic [N-1:0]   b_i,
-  output  logic [2*N-1:0] prod_o
-);
+    localparam N = 8
+  ) (
+    input   logic [N-1:0]   a_i,
+    input   logic [N-1:0]   b_i,
+    output  logic [2*N-1:0] prod_o
+  );
 
   // Split the 8-bit inputs to 4-bit halves
   logic [N/2-1:0] a_L, a_H, b_L, b_H;
