@@ -101,7 +101,7 @@ Draw a schematic of your design. Assume a value for the $N = $ parameter.
 
 \subsection*{Solution}
 
-The module is implemented using the previous Baugh-Wooley multiplier and multiple carry-lookahead adders. The schematic is shown in
+The module is implemented using the previous Baugh-Wooley multiplier and multiple carry-lookahead adders. The schematic is shown in [Figure \ref{q8}] and the testbench output is shown below.
 
 \begin{mintedterminal}{Q7 - Testbench Output}
 [010] a=0 b=0 c=0 d=0 e=0 f=0 res=0 expected=0
@@ -117,6 +117,32 @@ The module is implemented using the previous Baugh-Wooley multiplier and multipl
     \includegraphics[width=0.4\linewidth]{assets/q8.png}
     \caption{Block diagram of the 6 number multiply/accumulate module with $N = $.}
     \label{q8}
+\end{figure}
+
+\newpage
+
+\section{Question 9}
+
+Model using HDL an unsigned multiplier that can be used to multiply two 16-bit numbers. The multiplier should be built usnig components of multiple 4-bit multipliers. The 4-bit multiplier can be modelled behaviorally by using the (*) operator.
+
+Draw a schematic of your design.
+
+\subsection*{Solution}
+
+We first construct a 8-bit multiplier from four 4-bit multipliers and three 16-bit adders as shown in [Figure \ref{q9_1}]. Denoting the 8-bit inputs $a$, $b$, they are split into 4-bit halves $a_L, a_H, b_L, b_H$. The halves are fed into the 4-bit multipliers and their products are bit-shifted and added to produce the final 16-bit product. The same approach is taken to create the 16-bit multiplier, but instead of using behaviorally modelled 4-bit multipliers and 16-bit adders, it uses the 8-bit multiplier from [Figure \ref{q9_1}] and 32-bit adders. The block diagram is shown in [Figure \ref{q9_2}].
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.6\linewidth]{assets/mul_8.png}
+    \caption{Block diagram of 8-bit multiplier made from 4-bit multiplier and 16-bit adder modules.}
+    \label{q9_1}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.6\linewidth]{assets/mul_16.png}
+    \caption{Block diagram of 16-bit multiplier made from 8-bit multiplier and 32-bit adder modules.}
+    \label{q9_2}
 \end{figure}
 
 \end{document}
