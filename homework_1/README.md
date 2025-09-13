@@ -4,9 +4,11 @@ Solutions for all question in Homework 1.
 
 HDL is written to comply with the [lowRISC SystemVerilog style guidelines](https://github.com/lowRISC/style-guides).
 
+Testbench output and schematics are seen in the report.
+
 ## Verilator
 
-Fueled by a bitter distaste for Vivado I do simulation/verification using [Verilator](https://github.com/verilator/verilator). Verilator is a _super fast_ open-source Verilog/SystemVerilog simulator. Verilator compiles Verilog code to C++, therefore the testbenches can also be written in C++ (nice).
+Fueled by a bitter distaste for Vivado and waveform driven verification, I do simulation/verification using [Verilator](https://github.com/verilator/verilator). Verilator is a _super fast_ open-source Verilog/SystemVerilog simulator. Verilator compiles Verilog code to C++, therefore the testbenches can also be written in C++ (nice).
 
 Another advantage is that testbenches can be run using `Make`.
 

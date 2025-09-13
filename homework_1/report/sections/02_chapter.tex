@@ -2,6 +2,145 @@
 
 \begin{document}
 
+\section{Question 1}
+
+Model using HDL a look-up table using a 1-to-16 de-multiplexer that can act as a 4-bit one-hot (active-high outputs) decoder. The design should take as input a 4-bit binary value and output the one-hot equivalent.
+
+\subsection*{Solution}
+
+The testbench output of the module is shown below.
+
+\begin{mintedterminal}{Q1 - Testbench Output}
+[10] Starting simulation...
+[010] in=1 sel=0 out=1
+[020] in=1 sel=1 out=2
+[030] in=1 sel=2 out=4
+[040] in=1 sel=3 out=8
+[050] in=1 sel=4 out=16
+[060] in=1 sel=5 out=32
+[070] in=1 sel=6 out=64
+[080] in=1 sel=7 out=128
+[090] in=1 sel=8 out=256
+[100] in=1 sel=9 out=512
+[110] in=1 sel=10 out=1024
+[120] in=1 sel=11 out=2048
+[130] in=1 sel=12 out=4096
+[140] in=1 sel=13 out=8192
+[150] in=1 sel=14 out=16384
+[160] in=1 sel=15 out=32768
+\end{mintedterminal}
+
+\newpage
+
+\section{Question 2}
+
+Model using HDL a design that uses 16-to-1 multiplexers and implements a 4-bit binary to BCD (Binary-coded decimal) encoder.
+
+\subsection*{Solution}
+
+The testbench output of the module is shown below.
+
+\begin{mintedterminal}{Q2 - Testbench Output}
+[10] Starting simulation...
+[010] binary=0000 bcd=0000 carry=0
+[020] binary=0001 bcd=0001 carry=0
+[030] binary=0010 bcd=0010 carry=0
+[040] binary=0011 bcd=0011 carry=0
+[050] binary=0100 bcd=0100 carry=0
+[060] binary=0101 bcd=0101 carry=0
+[070] binary=0110 bcd=0110 carry=0
+[080] binary=0111 bcd=0111 carry=0
+[090] binary=1000 bcd=1000 carry=0
+[100] binary=1001 bcd=1001 carry=0
+[110] binary=1010 bcd=0000 carry=1
+[120] binary=1011 bcd=0001 carry=1
+[130] binary=1100 bcd=0010 carry=1
+[140] binary=1101 bcd=0011 carry=1
+[150] binary=1110 bcd=0100 carry=1
+[160] binary=1111 bcd=0101 carry=1
+\end{mintedterminal}
+
+\newpage
+
+\section{Question 3}
+
+Model a design using HDL that implements an 8-bit unsigned carry select adder (CSA). The CSA should be built using 4-bit adders. The design of the adder is given to you.
+
+\subsection*{Solution}
+
+The testbench output of the module is shown below.
+
+\begin{mintedterminal}{Q3 - Testbench Output}
+[24810] A=248 B=0 sum=248 carry=0
+[24820] A=248 B=1 sum=249 carry=0
+[24830] A=248 B=2 sum=250 carry=0
+[24840] A=248 B=3 sum=251 carry=0
+[24850] A=248 B=4 sum=252 carry=0
+[24860] A=248 B=5 sum=253 carry=0
+[24870] A=248 B=6 sum=254 carry=0
+[24880] A=248 B=7 sum=255 carry=0
+[24890] A=248 B=8 sum=0 carry=1
+[24900] A=248 B=9 sum=1 carry=1
+\end{mintedterminal}
+
+\newpage
+
+\section{Question 4}
+
+Model a design using HDL that can count the number of 1s ina  4-bit binary number. For example, the 4'b0101 should output 3'b010.
+
+\begin{mintedterminal}{Q4 - Testbench Output}
+[10] Starting simulation...
+[010] A=0000 B=0
+[020] A=0001 B=1
+[030] A=0010 B=1
+[040] A=0011 B=2
+[050] A=0100 B=1
+[060] A=0101 B=2
+[070] A=0110 B=2
+[080] A=0111 B=3
+[090] A=1000 B=1
+[100] A=1001 B=2
+[110] A=1010 B=2
+[120] A=1011 B=3
+[130] A=1100 B=2
+[140] A=1101 B=3
+[150] A=1110 B=3
+[160] A=1111 B=4
+\end{mintedterminal}
+
+\newpage
+
+\section{Question 5}
+
+Model using HDL a design that uses a 16-to-1 multiplexer and implements a 4-bit binary to gray encoder.
+
+\subsection*{Solution}
+
+Model a design using HDL that can count the number of 1s ina  4-bit binary number. For example, the 4'b0101 should output 3'b010.
+
+\begin{mintedterminal}{Q5 - Testbench Output}
+[10] Starting simulation...
+[010] Binary=0000 Gray=0000
+[020] Binary=0001 Gray=0001
+[030] Binary=0010 Gray=0011
+[040] Binary=0011 Gray=0010
+[050] Binary=0100 Gray=0110
+[060] Binary=0101 Gray=0111
+[070] Binary=0110 Gray=0101
+[080] Binary=0111 Gray=0100
+[090] Binary=1000 Gray=1100
+[100] Binary=1001 Gray=1101
+[110] Binary=1010 Gray=1111
+[120] Binary=1011 Gray=1110
+[130] Binary=1100 Gray=1010
+[140] Binary=1101 Gray=1011
+[150] Binary=1110 Gray=1001
+[160] Binary=1111 Gray=1000
+\end{mintedterminal}
+
+\newpage
+
 \section{Question 6}
 
 Model using HDL a design that can be used to implement an arithmetic right shift. Your design has to be parametric and have N-bit input, where $N \geq 4$. It should also allow to shift up to 3 positions. Do \textbf{not} use the \texttt{<<<}, \texttt{>>>} operators.
