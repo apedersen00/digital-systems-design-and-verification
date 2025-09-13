@@ -4,7 +4,7 @@ Solutions for all question in Homework 1.
 
 HDL is written to comply with the [lowRISC SystemVerilog style guidelines](https://github.com/lowRISC/style-guides).
 
-Testbench output and schematics are seen in the report.
+Testbench output and schematics are seen in the report found [here](https://github.com/kth-ees/homework-1-apedersen00/releases/download/v1.0/andreasp_hw1.pdf).
 
 ## Verilator
 
