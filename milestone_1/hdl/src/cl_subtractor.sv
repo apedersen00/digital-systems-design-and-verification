@@ -47,11 +47,11 @@ module cl_subtractor #(
         .b_i      (b_i[i] ^ sub_i),
         .c_i      (w_C[i]),
         .sum_o    (w_S[i]),
-        .c_o  ()
+        .c_o      ()
       );
 
-      assign w_G[i] = a_i[i] & b_i[i];
-      assign w_P[i] = a_i[i] | b_i[i];
+      assign w_G[i] = a_i[i] & (b_i[i] ^ sub_i);
+      assign w_P[i] = a_i[i] | (b_i[i] ^ sub_i);
 
       // CLA terms: Ci+1 = Gi + Pi*Ci
       if (i < Width) begin : gen_cla_terms
