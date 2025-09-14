@@ -1,0 +1,27 @@
+\input{config/preamble_assignment.tex}
+
+%%% Begin Document
+
+\begin{document}
+
+%%% Frontpage
+
+\subfile{sections/00_frontpage}
+
+%%% ToC and pre-introduction content
+
+\pagenumbering{Roman}
+\pagestyle{empty}
+\subfile{sections/01_contents}
+\newpage
+
+%%% Content
+
+\pagestyle{fancy}
+\pagenumbering{arabic}
+\subfile{sections/02_chapter}
+\newpage
+
+% \subfile{sections/references}
+
+\end{document}
