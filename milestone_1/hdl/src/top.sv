@@ -20,7 +20,9 @@ module top
   );
 
     // DUT instance
-    alu alu_0 (
+    alu #(
+      .BW(8)
+    ) alu_0 (
       .in_a(a),
       .in_b(b),
       .opcode(opcode),

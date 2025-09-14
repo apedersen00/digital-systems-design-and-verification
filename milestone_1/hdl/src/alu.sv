@@ -10,7 +10,9 @@
 //
 //-------------------------------------------------------------------------------------------------
 
-//  alu alu_0 (
+//  alu alu_0 #(
+//    .BW(8)
+//  ) (
 //    .in_a(),
 //    .in_b(),
 //    .opcode(),
@@ -28,11 +30,9 @@ module alu #(
     output  logic signed  [2:0]     flags   // Flags of the result
   );
 
-  // logic flag_overflow;
-  // logic flag_negative;
-  // logic flag_zero;
-
-  assign flags = 3'b0;
+  logic flag_overflow;
+  logic flag_negative;
+  logic flag_zero;
 
   // instantiate signals for all possible outputs
   logic [BW-1:0] out_add;
@@ -99,5 +99,19 @@ module alu #(
 
   // op: passthrough of b
   assign out_movb = in_b;
+
+  // flag generation
+  always_comb begin : check_overflow
+    if (opcode == 3'b000 || opcode == 3'b001) begin
+      assign flag_overflow  = (in_a[BW-1] == in_b[BW-1]) && (in_a[BW-1] !=  out_add[BW-1]);
+    end else begin
+      assign flag_overflow  = 1'b0;
+    end
+  end
+
+  assign flag_negative  = 1'b0;
+  assign flag_zero      = 1'b0;
+
+  assign flags = {flag_overflow, flag_negative, flag_zero};
 
 endmodule

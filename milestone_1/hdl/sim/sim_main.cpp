@@ -40,6 +40,8 @@ int main(int argc, char** argv) {
     top->b      = 0;
     top->opcode = 0;
 
+    const int FLAG_OVERFLOW = 4;
+
     const int IN_WIDTH  = 8;
     int8_t true_res     = 0;
     int8_t a            = 0;
@@ -85,7 +87,15 @@ int main(int argc, char** argv) {
                     break;
                 }
 
-                if (top->out != true_res) {
+                if (top->flags == FLAG_OVERFLOW) {
+                    VL_PRINTF("\n*** OVERFLOW! ***\n");
+                    VL_PRINTF("    a: %d, b: %d, op: %d, expected: %d\n", a, b, op, true_res);
+                    VL_PRINTF("    GOT: %d\n", top->out);
+                    VL_PRINTF("    at time %" PRId64 "\n\n", contextp->time());
+                    break;
+                }
+
+                if ((int8_t)top->out != true_res) {
                     VL_PRINTF("\n*** Error! ***\n");
                     VL_PRINTF("    a: %d, b: %d, op: %d, expected: %d\n", a, b, op, true_res);
                     VL_PRINTF("    GOT: %d\n", top->out);
