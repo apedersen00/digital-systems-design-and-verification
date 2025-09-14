@@ -102,10 +102,11 @@ module alu #(
 
   // flag generation
   always_comb begin : check_overflow
-    if (opcode == 3'b000 || opcode == 3'b001) begin
-      assign flag_overflow  = (in_a[BW-1] == in_b[BW-1]) && (in_a[BW-1] !=  out_add[BW-1]);
-    end else begin
-      assign flag_overflow  = 1'b0;
+    flag_overflow = 1'b0;
+    if (opcode == 3'b000) begin
+      flag_overflow  = (in_a[BW-1] == in_b[BW-1]) && (in_a[BW-1] != out_add[BW-1]);
+    end else if (opcode == 3'b001) begin
+      flag_overflow  = (in_a[BW-1] != in_b[BW-1]) && (in_a[BW-1] != out_sub[BW-1]);
     end
   end
 
