@@ -17,8 +17,6 @@
 #include <verilated.h>
 #include "Vtop.h"
 
-#define DEBUG 0
-
 template <size_t N>
 std::string to_binary(unsigned int value) {
     return std::bitset<N>(value).to_string();
@@ -38,51 +36,72 @@ int main(int argc, char** argv) {
     const std::unique_ptr<Vtop> top{new Vtop{contextp.get(), "TOP"}};
 
     // initialize
-    top->a = 0;
-    top->b = 0;
+    top->a      = 0;
+    top->b      = 0;
+    top->opcode = 0;
 
-    const int IN_WIDTH  = 16;
-    const int NUM_TESTS = 1000000;
+    const int IN_WIDTH  = 8;
+    int8_t true_res     = 0;
+    int8_t a            = 0;
+    int8_t b            = 0;
     bool error_found    = false;
-    static int true_prod;
 
-    // init random number generator
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_int_distribution<> distrib(0, (1 << IN_WIDTH) - 1);
+    for (int op = 0; op < pow(2, 3); op++) {
+        for (int a = -128; a < 128; a++) {
+            for (int b = -128; b < 128; b++) {
+                contextp->timeInc(10);
+                top->opcode = op;
+                top->a = a;
+                top->b = b;
+                top->eval();
 
-    for (int i = 0; i < NUM_TESTS; i++) {
-        int a = distrib(gen);
-        int b = distrib(gen);
+                switch (op)
+                {
+                case 0:
+                    true_res = a + b;
+                    break;
+                case 1:
+                    true_res = a - b;
+                    break;
+                case 2:
+                    true_res = a & b;
+                    break;
+                case 3:
+                    true_res = a | b;
+                    break;
+                case 4:
+                    true_res = a ^ b;
+                    break;
+                case 5:
+                    true_res = a + 1;
+                    break;
+                case 6:
+                    true_res = a;
+                    break;
+                case 7:
+                    true_res = b;
+                    break;                
+                default:
+                    break;
+                }
 
-        contextp->timeInc(10);
-        top->a = a;
-        top->b = b;
-        top->eval();
-
-        true_prod = a * b;
-
-        if (top->prod != true_prod) {
-            VL_PRINTF("\n*** Error! ***\n");
-            VL_PRINTF("    EXPECTED: %d * %d = %d\n", a, b, true_prod);
-            VL_PRINTF("    GOT: %d\n", top->prod);
-            VL_PRINTF("    at time %" PRId64 "\n\n", contextp->time());
-
-            error_found = true;
+                if (top->out != true_res) {
+                    VL_PRINTF("\n*** Error! ***\n");
+                    VL_PRINTF("    a: %d, b: %d, op: %d, expected: %d\n", a, b, op, true_res);
+                    VL_PRINTF("    GOT: %d\n", top->out);
+                    VL_PRINTF("    at time %" PRId64 "\n\n", contextp->time());
+                    error_found = true;
+                    break;
+                }
+            }
+            if (error_found) {
+                break;
+            }
+        }
+        if (error_found) {
             break;
         }
-
-#if DEBUG == 1
-        VL_PRINTF("[%03" PRId64 "] a=%d b=%d prod=%d\n",
-            contextp->time(),
-            top->a,
-            top->b,
-            top->prod
-        );
-#endif
-
     }
-
     top->final();
     contextp->statsPrintSummary();
     Verilated::threadContextp()->coveragep()->write("logs/coverage.dat");

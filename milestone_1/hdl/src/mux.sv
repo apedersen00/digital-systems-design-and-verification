@@ -29,6 +29,6 @@ module mux #(
     output logic [BitWidth-1:0] d_o
   );
 
-  assign d_o = d_i[sel];
+  assign d_o = d_i[sel_i];
 
 endmodule

@@ -12,16 +12,20 @@
 
 module top
   (
-    input   logic [15:0]   a,
-    input   logic [15:0]   b,
-    output  logic [31:0]  prod
+    input   logic [7:0] a,
+    input   logic [7:0] b,
+    input   logic [2:0] opcode,
+    output  logic [7:0] out,
+    output  logic [2:0] flags
   );
 
     // DUT instance
-    mul_16 dut (
-      .a_i(a),
-      .b_i(b),
-      .prod_o(prod)
+    alu alu_0 (
+      .in_a(a),
+      .in_b(b),
+      .opcode(opcode),
+      .out(out),
+      .flags(flags)
     );
 
     // Stimulus
