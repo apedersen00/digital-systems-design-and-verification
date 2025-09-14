@@ -97,8 +97,8 @@ module alu #(
     end
   end
 
-  assign flag_negative  = 1'b0;
-  assign flag_zero      = 1'b0;
+  assign flag_negative  = out[BW-1];
+  assign flag_zero      = (out == '0);
 
   assign flags = {flag_overflow, flag_negative, flag_zero};
 
