@@ -49,7 +49,7 @@ module alu #(
     .BitWidth(BW),
     .N(8)
   ) output_mux (
-    .d_i({out_add, out_sub, out_and, out_or, out_xor, out_inc, out_mova, out_movb}),
+    .d_i({out_movb, out_mova, out_inc, out_xor, out_or, out_and, out_sub, out_add}),
     .sel_i(opcode),
     .d_o(out)
   );
