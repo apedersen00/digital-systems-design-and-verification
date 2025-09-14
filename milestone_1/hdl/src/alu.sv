@@ -35,8 +35,7 @@ module alu #(
   logic flag_zero;
 
   // instantiate signals for all possible outputs
-  logic [BW-1:0] out_add;
-  logic [BW-1:0] out_sub;
+  logic [BW-1:0] out_add_sub;
   logic [BW-1:0] out_and;
   logic [BW-1:0] out_or;
   logic [BW-1:0] out_xor;
@@ -49,29 +48,19 @@ module alu #(
     .BitWidth(BW),
     .N(8)
   ) output_mux (
-    .d_i({out_movb, out_mova, out_inc, out_xor, out_or, out_and, out_sub, out_add}),
+    .d_i({out_movb, out_mova, out_inc, out_xor, out_or, out_and, out_add_sub, out_add_sub}),
     .sel_i(opcode),
     .d_o(out)
   );
 
-  // op: additon
-  cl_adder #(
-    .Width(BW)
-  ) cl_adder_0 (
-    .a_i(in_a),
-    .b_i(in_b),
-    .sum_o(out_add),
-    .c_o()
-  );
-
-  // op: subtraction
+  // op: addition and subtraction
   cl_subtractor #(
     .Width(BW)
   ) cl_subtractor_0 (
     .a_i(in_a),
     .b_i(in_b),
-    .sub_i(1'b1),
-    .sum_o(out_sub),
+    .sub_i(opcode[0]),
+    .sum_o(out_add_sub),
     .c_o()
   );
 
@@ -104,9 +93,9 @@ module alu #(
   always_comb begin : check_overflow
     flag_overflow = 1'b0;
     if (opcode == 3'b000) begin
-      flag_overflow  = (in_a[BW-1] == in_b[BW-1]) && (in_a[BW-1] != out_add[BW-1]);
+      flag_overflow  = (in_a[BW-1] == in_b[BW-1]) && (in_a[BW-1] != out_add_sub[BW-1]);
     end else if (opcode == 3'b001) begin
-      flag_overflow  = (in_a[BW-1] != in_b[BW-1]) && (in_a[BW-1] != out_sub[BW-1]);
+      flag_overflow  = (in_a[BW-1] != in_b[BW-1]) && (in_a[BW-1] != out_add_sub[BW-1]);
     end
   end
 
