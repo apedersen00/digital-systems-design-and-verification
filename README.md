@@ -4,4 +4,8 @@ HDL is written to comply with the [lowRISC/style-guides](https://github.com/lowR
 
 ## Homework 1
 
-Found [here](https://github.com/kth-ees/homework-1-apedersen00/tree/main/homework_1).
+Found [here](homework_1).
+
+## Milestone 1
+
+Found [here](milestone_1/).
