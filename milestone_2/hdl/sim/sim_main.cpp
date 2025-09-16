@@ -36,108 +36,79 @@ int main(int argc, char** argv) {
     const std::unique_ptr<Vtop> top{new Vtop{contextp.get(), "TOP"}};
 
     // initialize
-    top->a      = 0;
-    top->b      = 0;
-    top->opcode = 0;
+    top->clk            = 0;
+    top->rst_n          = 0;
+    top->data_in        = 0;
+    top->read_addr_1    = 0;
+    top->read_addr_2    = 0;
+    top->write_addr     = 0;
+    top->write_en_n     = 1;
+    top->chip_en        = 0;
+    top->data_out_1     = 0;
+    top->data_out_2     = 0;
+    top->eval();
 
-    const int IN_WIDTH  = 8;
-    int8_t true_res     = 0;
-    int8_t a            = 0;
-    int8_t b            = 0;
-    bool error_found    = false;
+    const int DEPTH = 256;
+    const int WIDTH = 8;
 
-    // bit values for flag vector
-    const int FLAG_OVERFLOW = 4;
-    const int FLAG_NEGATIVE = 2;
-    const int FLAG_ZERO     = 1;
+    // init random number generator
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<> distrib(0, (1 << WIDTH) - 1);
 
-    // counters
-    int flag_overflow_cnt   = 0;
-    int flag_negative_cnt   = 0;
-    int flag_zero_cnt       = 0;
-    int iter_cnt            = 0;
+    contextp->timeInc(10);
+    top->rst_n = 1;
+    top->chip_en = 1;
+    top->eval();
 
-    for (int op = 0; op < pow(2, 3); op++) {
-        for (int a = -128; a < 128; a++) {
-            for (int b = -128; b < 128; b++) {
-                iter_cnt += 1;
-                contextp->timeInc(10);
-                top->opcode = op;
-                top->a = a;
-                top->b = b;
-                top->eval();
+    uint8_t test_vals[DEPTH];
 
-                switch (op)
-                {
-                case 0:
-                    true_res = a + b;
-                    break;
-                case 1:
-                    true_res = a - b;
-                    break;
-                case 2:
-                    true_res = a & b;
-                    break;
-                case 3:
-                    true_res = a | b;
-                    break;
-                case 4:
-                    true_res = a ^ b;
-                    break;
-                case 5:
-                    true_res = a + 1;
-                    break;
-                case 6:
-                    true_res = a;
-                    break;
-                case 7:
-                    true_res = b;
-                    break;                
-                default:
-                    break;
-                }
+    for (int i = 0; i < DEPTH; i++) {
+        contextp->timeInc(10);
+        top->clk = 0;
 
-                if (top->flags & FLAG_OVERFLOW) {
-                    flag_overflow_cnt++;
-                }
-                if (top->flags & FLAG_NEGATIVE) {
-                    flag_negative_cnt++;
-                }
-                if (top->flags & FLAG_ZERO) {
-                    flag_zero_cnt++;
-                }
+        top->write_en_n = 0;
+        top->write_addr = i;
+        uint8_t val = distrib(gen);
+        test_vals[i] = val;
+        top->data_in = val;
+        top->eval();
 
-                if (top->flags == FLAG_OVERFLOW) {
-                    // VL_PRINTF("\n*** OVERFLOW! ***\n");
-                    // VL_PRINTF("    a: %d, b: %d, op: %d, expected: %d\n", a, b, op, true_res);
-                    // VL_PRINTF("    GOT: %d\n", top->out);
-                    // VL_PRINTF("    at time %" PRId64 "\n\n", contextp->time());
-                    break;
-                }
-
-                if ((int8_t)top->out != true_res) {
-                    VL_PRINTF("\n*** Error! ***\n");
-                    VL_PRINTF("    a: %d, b: %d, op: %d, expected: %d\n", a, b, op, true_res);
-                    VL_PRINTF("    GOT: %d\n", top->out);
-                    VL_PRINTF("    at time %" PRId64 "\n\n", contextp->time());
-                    error_found = true;
-                    break;
-                }
-            }
-            if (error_found) {
-                break;
-            }
-        }
-        if (error_found) {
-            break;
-        }
-        VL_PRINTF("Verification passed for op: %d\n", op);
+        contextp->timeInc(10);
+        top->clk = 1;
+        top->eval();
     }
 
-    VL_PRINTF("\nTotal iterations: %d\n", iter_cnt);
-    VL_PRINTF("Flag overflow count: %d\n", flag_overflow_cnt);
-    VL_PRINTF("Flag negative count: %d\n", flag_negative_cnt);
-    VL_PRINTF("Flag zero count: %d\n", flag_zero_cnt);
+    for (int i = 0; i < DEPTH; i++) {
+        contextp->timeInc(10);
+        top->clk = 0;
+
+        top->write_en_n = 1;
+
+        uint8_t addr = distrib(gen);
+        addr = i;
+        top->read_addr_1 = addr;
+        top->eval();
+
+        if (addr == 127) {
+            contextp->timeInc(5);
+            top->rst_n = 0;
+            top->eval();
+            contextp->timeInc(5);
+            top->rst_n = 1;
+            top->clk = 1;
+            top->eval();
+        } else {
+            top->rst_n = 1;
+            contextp->timeInc(10);
+            top->clk = 1;
+            top->eval();
+        }
+
+        uint8_t val = top->data_out_1;
+        VL_PRINTF(" addr: %d, val: %d, expected: %d\n", addr, val, test_vals[addr]);
+    }
+
 
     top->final();
     contextp->statsPrintSummary();
