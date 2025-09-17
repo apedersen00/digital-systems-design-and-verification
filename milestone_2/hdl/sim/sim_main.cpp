@@ -17,13 +17,23 @@
 #include <verilated.h>
 #include "Vtop.h"
 
-template <size_t N>
-std::string to_binary(unsigned int value) {
-    return std::bitset<N>(value).to_string();
+void tick(const std::unique_ptr<VerilatedContext>& contextp, const std::unique_ptr<Vtop>& top) {
+    contextp->timeInc(5);
+    top->clk = 0;
+    top->eval();
+
+    contextp->timeInc(5);
+    top->clk = 1;
+    top->eval();
 }
 
-// Legacy function required only so linking works on Cygwin and MSVC++
-double sc_time_stamp() { return 0; }
+void reset(const std::unique_ptr<VerilatedContext>& contextp, const std::unique_ptr<Vtop>& top) {
+    top->rst_n = 0;
+    tick(contextp, top);
+    tick(contextp, top);
+    top->rst_n = 1;
+    VL_PRINTF("System reset.\n");
+}
 
 int main(int argc, char** argv) {
     Verilated::mkdir("logs");
@@ -32,21 +42,7 @@ int main(int argc, char** argv) {
     contextp->randReset(2);
     contextp->traceEverOn(true);
     contextp->commandArgs(argc, argv);
-
     const std::unique_ptr<Vtop> top{new Vtop{contextp.get(), "TOP"}};
-
-    // initialize
-    top->clk            = 0;
-    top->rst_n          = 0;
-    top->data_in        = 0;
-    top->read_addr_1    = 0;
-    top->read_addr_2    = 0;
-    top->write_addr     = 0;
-    top->write_en_n     = 1;
-    top->chip_en        = 0;
-    top->data_out_1     = 0;
-    top->data_out_2     = 0;
-    top->eval();
 
     const int DEPTH = 256;
     const int WIDTH = 8;
@@ -56,59 +52,79 @@ int main(int argc, char** argv) {
     std::mt19937 gen(rd());
     std::uniform_int_distribution<> distrib(0, (1 << WIDTH) - 1);
 
-    contextp->timeInc(10);
-    top->rst_n = 1;
-    top->chip_en = 1;
+    // array for keeping expected values
+    uint8_t ref_vals[DEPTH] = {0};
+
+    // initialize
+    top->clk            = 0;
+    top->rst_n          = 0;
+    top->data_in        = 0;
+    top->read_addr_1    = 0;
+    top->read_addr_2    = 0;
+    top->write_addr     = 0;
+    top->write_en_n     = 0;
+    top->chip_en        = 0;
+    top->data_out_1     = 0;
+    top->data_out_2     = 0;
     top->eval();
 
-    uint8_t test_vals[DEPTH];
+    reset(contextp, top);
+    top->chip_en = 1;
 
+    VL_PRINTF("Writing to all registers...\n");
     for (int i = 0; i < DEPTH; i++) {
-        contextp->timeInc(10);
-        top->clk = 0;
+        uint8_t rand_val = distrib(gen);
+        ref_vals[i] = rand_val;
 
-        top->write_en_n = 0;
         top->write_addr = i;
-        uint8_t val = distrib(gen);
-        test_vals[i] = val;
-        top->data_in = val;
-        top->eval();
+        top->data_in = rand_val;
+        top->write_en_n = 0;
 
-        contextp->timeInc(10);
-        top->clk = 1;
-        top->eval();
-    }
-
-    for (int i = 0; i < DEPTH; i++) {
-        contextp->timeInc(10);
-        top->clk = 0;
+        tick(contextp, top);
 
         top->write_en_n = 1;
-
-        uint8_t addr = distrib(gen);
-        addr = i;
-        top->read_addr_1 = addr;
-        top->eval();
-
-        if (addr == 127) {
-            contextp->timeInc(5);
-            top->rst_n = 0;
-            top->eval();
-            contextp->timeInc(5);
-            top->rst_n = 1;
-            top->clk = 1;
-            top->eval();
-        } else {
-            top->rst_n = 1;
-            contextp->timeInc(10);
-            top->clk = 1;
-            top->eval();
-        }
-
-        uint8_t val = top->data_out_1;
-        VL_PRINTF(" addr: %d, val: %d, expected: %d\n", addr, val, test_vals[addr]);
     }
+    VL_PRINTF("Completed...\n\n");
 
+    VL_PRINTF("Reading an verifying all registers (port 1)...\n");
+    int error_count = 0;
+    for (int i = 0; i < DEPTH; i++) {
+        top->read_addr_1 = i;
+        tick(contextp, top);
+
+        uint8_t read_val = top->data_out_1;
+        if (read_val != ref_vals[i]) {
+            VL_PRINTF("ERROR: Addr %d: RF returned %d, expected %d\n", i, read_val, ref_vals[i]);
+            error_count++;
+        }
+    }
+    VL_PRINTF("Completed with %d errors...\n\n", error_count);
+
+    VL_PRINTF("Reading an verifying all registers (port 2)...\n");
+    error_count = 0;
+    for (int i = 0; i < DEPTH; i++) {
+        top->read_addr_2 = i;
+        tick(contextp, top);
+
+        uint8_t read_val = top->data_out_2;
+        if (read_val != ref_vals[i]) {
+            VL_PRINTF("ERROR: Addr %d: RF returned %d, expected %d\n", i, read_val, ref_vals[i]);
+            error_count++;
+        }
+    }
+    VL_PRINTF("Completed with %d errors...\n\n", error_count);
+
+    VL_PRINTF("Verifying reset...\n");
+    error_count = 0;
+    reset(contextp, top);
+
+    top->read_addr_1 = 127;
+    tick(contextp, top);
+    uint8_t val_after_reset = top->data_out_1;
+    if (val_after_reset != 0) {
+        VL_PRINTF("ERROR: Addr %d: RF returned %d, expected 0\n", 127, val_after_reset);
+    }
+    VL_PRINTF("Completed with %d errors...\n\n", error_count);
 
     top->final();
     contextp->statsPrintSummary();
