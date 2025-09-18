@@ -19,27 +19,27 @@ module top
     output  logic [2:0] flags
   );
 
-    // DUT instance
-    alu #(
-      .BW(8)
-    ) alu_0 (
-      .in_a(a),
-      .in_b(b),
-      .opcode(opcode),
-      .out(out),
-      .flags(flags)
-    );
+  // DUT instance
+  alu #(
+    .BW(8)
+  ) alu_0 (
+    .in_a(a),
+    .in_b(b),
+    .opcode(opcode),
+    .out(out),
+    .flags(flags)
+  );
 
-    // Stimulus
-    initial begin
+  // Stimulus
+  initial begin
 
-      if ($test$plusargs("trace") != 0) begin
-        $dumpfile("logs/vlt_dump.vcd");
-        $dumpvars();
-      end
-
-      $display("[%0t] Starting simulation...", $time);
+    if ($test$plusargs("trace") != 0) begin
+      $dumpfile("logs/vlt_dump.vcd");
+      $dumpvars();
     end
+
+    $display("[%0t] Starting simulation...", $time);
+  end
 
 endmodule
 
@@ -56,98 +56,98 @@ module top
     output  logic [3:0]   D1_AN
   );
 
-    logic [7:0] a;
-    logic [7:0] b;
-    logic [2:0] op;
-    logic [7:0] out;
-    logic [2:0] flags;
-    logic [7:0] bcd_out;
-    logic       reset;
-    
-    assign op       = SW[11:9];
-    assign LED[2:0] = flags;
-    assign LED[8]   = 1'b1;
-    assign LED[12]  = 1'b1;
-    assign reset    = !BTN[1];
+  logic [7:0] a;
+  logic [7:0] b;
+  logic [2:0] op;
+  logic [7:0] out;
+  logic [2:0] flags;
+  logic [7:0] bcd_out;
+  logic       reset;
+  
+  assign op       = SW[11:9];
+  assign LED[2:0] = flags;
+  assign LED[8]   = 1'b1;
+  assign LED[12]  = 1'b1;
+  assign reset    = !BTN[1];
 
-    always_ff @( posedge CLK_100MHZ ) begin : latch_input
-      if (BTN[0] == 1'b1) begin
-        if (SW[8] == 1'b0) begin
-          a <= SW[7:0];
-        end else begin
-          b <= SW[7:0];
-        end
+  always_ff @( posedge CLK_100MHZ ) begin : latch_input
+    if (BTN[0] == 1'b1) begin
+      if (SW[8] == 1'b0) begin
+        a <= SW[7:0];
+      end else begin
+        b <= SW[7:0];
       end
     end
+  end
 
-    // ALU instance
-    alu #(
-      .BW(8)
-    ) alu_0 (
-      .in_a(a),
-      .in_b(b),
-      .opcode(op),
-      .out(out),
-      .flags(flags)
-    );
+  // ALU instance
+  alu #(
+    .BW(8)
+  ) alu_0 (
+    .in_a(a),
+    .in_b(b),
+    .opcode(op),
+    .out(out),
+    .flags(flags)
+  );
 
-    logic clk_1000hz;
-    logic [7:0] duty;
-    clock_divider #(
-      .DIVISOR(100000000 / 1000)
-    ) clock_divider_0 (
-      .rst_n  (1'b1),
-      .clk_i  (CLK_100MHZ),
-      .clk_o  (clk_1000hz)
-    );
+  logic clk_1000hz;
+  logic [7:0] duty;
+  clock_divider #(
+    .DIVISOR(100000000 / 1000)
+  ) clock_divider_0 (
+    .rst_n  (1'b1),
+    .clk_i  (CLK_100MHZ),
+    .clk_o  (clk_1000hz)
+  );
 
-    logic dir;
-    always_ff @( posedge clk_1000hz ) begin : pwm_counter
-      if (!reset) begin
-        duty  <= 8'd0;
-        dir   <= 1'b0;
-      end
-      else begin
-        // count up
-        if (dir == 1'b0) begin
-          if (duty == 8'd255) begin
-            dir <= 1'b1;
-            duty <= duty - 1;
-          end
-          else begin
-            duty <= duty + 1'b1;
-          end
+  logic dir;
+  always_ff @( posedge clk_1000hz ) begin : pwm_counter
+    if (!reset) begin
+      duty  <= 8'd0;
+      dir   <= 1'b0;
+    end
+    else begin
+      // count up
+      if (dir == 1'b0) begin
+        if (duty == 8'd255) begin
+          dir <= 1'b1;
+          duty <= duty - 1;
         end
-        // count down
         else begin
-          if (duty == 8'd0) begin
-            dir   <= 1'b0;
-            duty  <= duty + 1'b1;
-          end
-          else begin
-            duty <= duty - 1'b1;
-          end 
+          duty <= duty + 1'b1;
         end
       end
+      // count down
+      else begin
+        if (duty == 8'd0) begin
+          dir   <= 1'b0;
+          duty  <= duty + 1'b1;
+        end
+        else begin
+          duty <= duty - 1'b1;
+        end 
+      end
     end
+  end
 
-    kw4281_driver_8 driver_left (
-      .clk_i(CLK_100MHZ),
-      .rst_i(1'b1),
-      .bin_i(out),
-      .duty_i( SW[12] ? 8'd255 : duty ),
-      .an_o(D0_AN),
-      .seg_o(D0_SEG[6:0])
-    );
+  kw4281_driver_8 driver_left (
+    .clk_i(CLK_100MHZ),
+    .rst_i(1'b1),
+    .bin_i(out),
+    .duty_i( SW[12] ? 8'd255 : duty ),
+    .an_o(D0_AN),
+    .seg_o(D0_SEG[6:0])
+  );
 
-    kw4281_driver_8 driver_right (
-      .clk_i(CLK_100MHZ),
-      .rst_i(1'b1),
-      .bin_i( SW[8] ? b : a ),
-      .duty_i( SW[12] ? 8'd255 : duty ),
-      .an_o(D1_AN),
-      .seg_o(D1_SEG[6:0])
-    );
+  kw4281_driver_8 driver_right (
+    .clk_i(CLK_100MHZ),
+    .rst_i(1'b1),
+    .bin_i( SW[8] ? b : a ),
+    .duty_i( SW[12] ? 8'd255 : duty ),
+    .an_o(D1_AN),
+    .seg_o(D1_SEG[6:0])
+  );
 
 endmodule
 */
