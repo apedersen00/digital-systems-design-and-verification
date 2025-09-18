@@ -10,7 +10,7 @@
 //
 //-------------------------------------------------------------------------------------------------
 
-//  clock_divider clk_div_0 #(
+//  clk_div clk_div_0 #(
 //    .DIVISOR()
 //  ) (
 //    .rst_n(),
@@ -18,7 +18,7 @@
 //    .clk_o()
 //  );
 
-module clock_divider #(
+module clk_div #(
     parameter DIVISOR = 2
   ) (
     input  logic rst_n,
