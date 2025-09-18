@@ -79,7 +79,7 @@ module top
 
     // ALU instance
     alu #(
-      .BW(6)
+      .BW(8)
     ) alu_0 (
       .in_a(a),
       .in_b(b),
