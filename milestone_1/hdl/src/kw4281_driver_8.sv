@@ -28,6 +28,7 @@
 //    .clk_i(),
 //    .rst_n_i(),
 //    .bin_i(),
+//    .duty_i()
 //    .an(),
 //    .seg()
 //  );
@@ -38,6 +39,7 @@ module kw4281_driver_8 #(
     input   logic               clk_i,
     input   logic               rst_i,
     input   logic signed [7:0]  bin_i,
+    input   logic [7:0]         duty_i, // duty cycle for 7-segment display
     output  logic [3:0]         an_o,
     output  logic [6:0]         seg_o
   );
@@ -103,7 +105,7 @@ module kw4281_driver_8 #(
   ) pwm_0 (
     .rst_n(1'b1),
     .clk_i(clk_i),
-    .duty_i({8'd127, 5'd0}),
+    .duty_i({duty_i, 5'd0}),
     .pwm_o(pwm)
   );
 
