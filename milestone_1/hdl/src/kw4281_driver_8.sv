@@ -98,9 +98,9 @@ module kw4281_driver_8 #(
   end
 
   logic pwm;
-  pwm pwm_0 #(
+  pwm #(
     .WIDTH(13)
-  ) (
+  ) pwm_0 (
     .rst_n(1'b1),
     .clk_i(clk_i),
     .duty_i({8'd127, 5'd0}),
@@ -110,11 +110,11 @@ module kw4281_driver_8 #(
   // generate AN one-hot signal (active low)
   always_comb begin
     case (counter)
-      2'b00:   an_o = 4'b0111 & {4{pwm}};
-      2'b01:   an_o = 4'b1011 & {4{pwm}};
-      2'b10:   an_o = 4'b1101 & {4{pwm}};
-      2'b11:   an_o = 4'b1110 & {4{pwm}};
-      default: an_o = 4'b1111 & {4{pwm}};
+      2'b00:   an_o = 4'b0111 | {4{~pwm}};
+      2'b01:   an_o = 4'b1011 | {4{~pwm}};
+      2'b10:   an_o = 4'b1101 | {4{~pwm}};
+      2'b11:   an_o = 4'b1110 | {4{~pwm}};
+      default: an_o = 4'b1111;
     endcase
   end
 

@@ -39,9 +39,9 @@
 //
 //-------------------------------------------------------------------------------------------------
 
-//  pwm pwm_0 #(
+//  pwm #(
 //    .WIDTH()
-//  ) (
+//  ) pwm_0 (
 //    .rst_n(),
 //    .clk_i(),
 //    .duty_i(),
@@ -73,7 +73,7 @@ module pwm #(
 
   end
 
-  always_ff @(posedge clk_div or negedge rst_n) begin
+  always_ff @(posedge clk_i or negedge rst_n) begin
     if (!rst_n) begin
       counter <= 0;
       pwm_o   <= 0;
