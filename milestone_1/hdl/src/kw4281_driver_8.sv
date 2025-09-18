@@ -91,21 +91,30 @@ module kw4281_driver_8 #(
   always_ff @(posedge clk_1000hz or negedge rst_i) begin
     if (!rst_i) begin
       counter <= 0;
-    end else if (counter == 3) begin
-      counter <= 0;
-    end else begin
+    end
+    else begin
       counter <= counter + 1;
     end
   end
 
+  logic pwm;
+  pwm pwm_0 #(
+    .WIDTH(13)
+  ) (
+    .rst_n(1'b1),
+    .clk_i(clk_i),
+    .duty_i({8'd127, 5'd0}),
+    .pwm_o(pwm)
+  );
+
   // generate AN one-hot signal (active low)
   always_comb begin
     case (counter)
-      2'b00:   an_o = 4'b0111;
-      2'b01:   an_o = 4'b1011;
-      2'b10:   an_o = 4'b1101;
-      2'b11:   an_o = 4'b1110;
-      default: an_o = 4'b1111;
+      2'b00:   an_o = 4'b0111 & {4{pwm}};
+      2'b01:   an_o = 4'b1011 & {4{pwm}};
+      2'b10:   an_o = 4'b1101 & {4{pwm}};
+      2'b11:   an_o = 4'b1110 & {4{pwm}};
+      default: an_o = 4'b1111 & {4{pwm}};
     endcase
   end
 
