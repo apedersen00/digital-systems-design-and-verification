@@ -51,7 +51,7 @@ VERILATOR_FLAGS += --coverage
 #VERILATOR_FLAGS += --gdbbt
 
 # Input files for Verilator
-VERILATOR_INPUT = src/top.sv src/demux.sv sim/sim_main.cpp
+VERILATOR_INPUT = src/top.sv src/shift_reg.sv sim/sim_main.cpp
 
 ######################################################################
 default: run

@@ -10,18 +10,28 @@
 
 module top
   (
-    input   logic         in,
-    input   logic [3:0]   sel,
-    output  logic [15:0]  out
+    input   logic         clk,
+    input   logic         rstn,
+    input   logic         serial_parallel,
+    input   logic         load_enable,
+    input   logic         serial_in,
+    input   logic [7:0]   parallel_in,
+    output  logic [7:0]   parallel_out,
+    output  logic         serial_out
   );
 
     // DUT instance
-    demux #(
-      .OutputWidth(16)
+    shift_reg #(
+      .N(8)
       ) dut (
-      .d_i(in),
-      .sel_i(sel),
-      .d_o(out)
+      .clk_i(clk),
+      .rstn_i(rstn),
+      .serial_parallel_i(serial_parallel),
+      .load_enable_i(load_enable),
+      .serial_i(serial_in),
+      .parallel_i(parallel_in),
+      .parallel_o(parallel_out),
+      .serial_o(serial_out)
     );
 
     // Stimulus
