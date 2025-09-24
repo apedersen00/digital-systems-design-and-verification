@@ -1,5 +1,5 @@
 # Top-level Makefile for building all questions
-QUESTIONS = q1 q2 q3 q4 q5 q6 q7 q8 q9
+QUESTIONS = q1 q2 q3 q4 q5
 
 .PHONY: all clean $(QUESTIONS)
 
@@ -25,7 +25,7 @@ help:
 	@echo "Available targets:"
 	@echo "  all      - Build all questions (default)"
 	@echo "  clean    - Clean all questions"
-	@echo "  q1..q9   - Build specific question"
+	@echo "  q1..q5   - Build specific question"
 	@echo "  help     - Show this help message"
 	@echo
 	@echo "Examples:"
