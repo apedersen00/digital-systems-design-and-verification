@@ -10,24 +10,16 @@
 
 module top
   (
-    input   logic         clk,
-    input   logic         rstn,
-    input   logic         up_down,
-    input   logic         load_en,
-    input   logic [15:0]  load,
-    output  logic [15:0]  count,
-    output  logic         carry
+    input   logic   clk,
+    input   logic   rstn,
+    output  logic   div
   );
 
     // DUT instance
-    counter_16 counter_16_0 (
+    freq_div freq_div_0 (
       .clk_i(clk),
       .rstn_i(rstn),
-      .up_down_i(up_down),
-      .load_en_i(load_en),
-      .load_i(load),
-      .count_o(count),
-      .carry_o(carry)
+      .div_o(div)
     );
 
     // Stimulus

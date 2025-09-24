@@ -11,7 +11,6 @@
 //  counter_16 counter_16_0 (
 //    .clk_i(),
 //    .rstn_i(),
-//    .up_down_i(),
 //    .load_en_i(),
 //    .load_i(),
 //    .count_o(),
@@ -21,7 +20,6 @@
 module counter_16 (
     input   logic         clk_i,
     input   logic         rstn_i,
-    input   logic         up_down_i,
     input   logic         load_en_i,
     input   logic [15:0]  load_i,
     output  logic [15:0]  count_o,
@@ -38,7 +36,7 @@ module counter_16 (
       counter_4 counter_i (
         .clk_i      ( clk_i                     ),
         .rstn_i     ( rstn_i                    ),
-        .up_down_i  ( up_down_i                 ),
+        .up_down_i  ( 1'b1                      ),
         .en_i       ( i == 0 ? 1'b1 : &en[i:1]  ),
         .load_en_i  ( load_en_i                 ),
         .load_i     ( load_i[(i+1)*4-1:i*4]     ),
