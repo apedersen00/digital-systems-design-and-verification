@@ -14,15 +14,13 @@ module top
     input   logic         rstn,
     input   logic         up_down,
     input   logic         load_en,
-    input   logic [3:0]   load,
-    output  logic [3:0]   count,
+    input   logic [15:0]  load,
+    output  logic [15:0]  count,
     output  logic         carry
   );
 
     // DUT instance
-    counter #(
-      .N(4)
-    ) counter_0 (
+    counter_16 counter_16_0 (
       .clk_i(clk),
       .rstn_i(rstn),
       .up_down_i(up_down),

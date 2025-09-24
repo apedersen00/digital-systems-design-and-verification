@@ -44,7 +44,7 @@ int main(int argc, char** argv) {
 
     // Initialize signals
     top->clk            = 0;
-    top->rstn           = 0;
+    top->rstn           = 1;
     top->up_down        = 0;
     top->load_en        = 0;
     top->load           = 0;
@@ -52,32 +52,38 @@ int main(int argc, char** argv) {
     
     VL_PRINTF("\n--- Testing: Reset ---\n");
     clock_cycle();
+    top->rstn = 0;
+    clock_cycle();
     VL_PRINTF("After reset: count=%s carry=%d (expected: 0000, 0)\n",
-              to_binary<4>(top->count).c_str(), top->carry);
+              to_binary<16>(top->count).c_str(), top->carry);
 
-    VL_PRINTF("\n--- Testing: Load value 0b1010 ---\n");
+    VL_PRINTF("\n--- Testing: Load value 0xAAAA ---\n");
     top->rstn    = 1;
-    top->load    = 0xA;
+    top->load    = 0xAAAA;
     top->load_en = 1;
+    VL_PRINTF("Loading: %s\n", to_binary<16>(top->load).c_str());
     clock_cycle();
     top->load_en = 0;
     VL_PRINTF("After load: count=%s carry=%d (expected: 1010, 0)\n",
-              to_binary<4>(top->count).c_str(), top->carry);
+              to_binary<16>(top->count).c_str(), top->carry);
+
+    VL_PRINTF("\n--- Testing: Reset ---\n");
+    clock_cycle();
+    top->rstn = 0;
+    clock_cycle();
+    VL_PRINTF("After reset: count=%s carry=%d (expected: 0000, 0)\n",
+              to_binary<16>(top->count).c_str(), top->carry);
 
     VL_PRINTF("\n--- Testing: Count Up ---\n");
+    top->rstn    = 1;
     top->up_down = 1;
-    for (int i = 0; i < 6; i++) {
+    for (int i = 0; i < pow(2, 16); i++) {
         clock_cycle();
-        VL_PRINTF("Cycle %d: count=%s carry=%d\n",
-                  i+1, to_binary<4>(top->count).c_str(), top->carry);
-    }
-
-    VL_PRINTF("\n--- Testing: Count Down ---\n");
-    top->up_down = 0;
-    for (int i = 0; i < 6; i++) {
-        clock_cycle();
-        VL_PRINTF("Cycle %d: count=%s carry=%d\n",
-                  i+1, to_binary<4>(top->count).c_str(), top->carry);
+        if (top->count != uint16_t(i + 1)) {
+            VL_PRINTF("ERROR! Got: %s, Expected: %s\n",
+                      to_binary<16>(top->count).c_str(), to_binary<16>(i+1).c_str());
+            break;
+        }
     }
 
     top->final();
