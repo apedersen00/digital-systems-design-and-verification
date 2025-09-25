@@ -26,7 +26,7 @@ module lfsr (
 
   logic [5:0] shift_reg;
 
-  always_ff @( posedge clk_i or negedge rstn_i ) begin : blockName
+  always_ff @( posedge clk_i or negedge rstn_i ) begin : lfsr_update
     if (!rstn_i) begin
       shift_reg <= '0;
     end

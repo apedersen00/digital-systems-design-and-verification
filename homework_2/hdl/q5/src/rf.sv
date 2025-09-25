@@ -1,7 +1,7 @@
 //-------------------------------------------------------------------------------------------------
 //
 //  File: rf.sv
-//  Description: regsister file module
+//  Description: Register file module
 //
 //  Author:
 //      - A. Pedersen

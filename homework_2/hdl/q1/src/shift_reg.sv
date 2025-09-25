@@ -8,12 +8,17 @@
 //
 //-------------------------------------------------------------------------------------------------
 
-//  demux #(
-//    .OutputWidth(16)
+//  shift_reg #(
+//    .BitWidth(8)
 //    ) dut (
-//    .d_i(),
-//    .sel_i(),
-//    .d_o()
+//    .clk_i(),
+//    .rstn_i(),
+//    .serial_parallel_i(),
+//    .load_enable_i(),
+//    .serial_i(),
+//    .parallel_i(),
+//    .parallel_o(),
+//    .serial_o()
 //  );
 
 module shift_reg #(
@@ -31,7 +36,7 @@ module shift_reg #(
 
   logic [N-1:0] shift_reg;
 
-  always_ff @( posedge clk_i or negedge rstn_i ) begin : blockName
+  always_ff @( posedge clk_i or negedge rstn_i ) begin : shift_register
     if (!rstn_i) begin
       shift_reg <= '0;
     end

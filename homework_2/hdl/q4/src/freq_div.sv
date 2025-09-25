@@ -15,8 +15,8 @@
 //  );
 
 module freq_div #(
-    parameter ratio_0 = 18,
-    parameter ratio_1 = 866
+    parameter Ratio0 = 18,
+    parameter Ratio1 = 866
   ) (
     input   logic clk_i,
     input   logic rstn_i,
@@ -43,9 +43,9 @@ module freq_div #(
 
   always_comb begin
     if (state == 1'b0) begin
-      target_count = ratio_0;
+      target_count = Ratio0;
     end else begin
-      target_count = ratio_1;
+      target_count = Ratio1;
     end
   end
 
