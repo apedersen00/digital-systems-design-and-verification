@@ -2,6 +2,8 @@
 
 Solutions for all questions in Homework 2.
 
+Schematics are shown below.
+
 ## Verilator Simulation
 
 Simulation/verification is done using [Verilator](https://github.com/verilator/verilator). Verilator is a _super fast_ open-source Verilog/SystemVerilog simulator. Verilator compiles Verilog code to C++, therefore the testbenches can also be written in C++.
@@ -113,3 +115,9 @@ hdl/q2> make
 ## Viewing Waveforms
 
 After running a simulation, the waveform file can be found in `logs/vlt_dump.vcd` and can be viewed using [VaporView](https://github.com/Lramseyer/vaporview).
+
+## Schematics
+
+### Question 3
+
+![Q3](report/assets/hw2_q3.png)
