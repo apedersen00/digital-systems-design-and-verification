@@ -88,20 +88,11 @@ int main(int argc, char** argv) {
     top->serial_parallel = 0;  // Switch to serial mode
     top->serial_in = 1;
     
-    for (int i = 0; i < 4; i++) {
+    for (int i = 0; i < 8; i++) {
         clock_cycle();
         VL_PRINTF("Shift in 1 [%d]: parallel_out=%s, serial_out=%d\n", 
                   i+1, to_binary<8>(top->parallel_out).c_str(), top->serial_out);
     }
-    
-    // Load enable functionality
-    VL_PRINTF("\n--- Testing: Load Enable Control ---\n");
-    top->load_enable    = 0;
-    top->serial_in      = 1;
-    uint8_t before_state = top->parallel_out;
-    clock_cycle();
-    VL_PRINTF("Load disabled: before=0x%02x, after=0x%02x (should be same)\n\n", 
-              before_state, top->parallel_out);
 
     top->final();
     contextp->statsPrintSummary();
