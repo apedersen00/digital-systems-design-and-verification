@@ -93,7 +93,7 @@ module top
 
   logic clk_1000hz;
   logic [7:0] duty;
-  clock_divider #(
+  clk_div #(
     .DIVISOR(100000000 / 1000)
   ) clock_divider_0 (
     .rst_n  (1'b1),
