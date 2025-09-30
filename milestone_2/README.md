@@ -2,6 +2,8 @@
 
 Implementation of a register file (RF) module.
 
+Milestone 1 has also been updated with bonus tasks.
+
 HDL is written to comply with the [lowRISC SystemVerilog style guidelines](https://github.com/lowRISC/style-guides).
 
 ## Prerequisites
