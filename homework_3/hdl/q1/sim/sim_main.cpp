@@ -32,7 +32,6 @@ int main(int argc, char** argv) {
 
     const std::unique_ptr<Vtop> top{new Vtop{contextp.get(), "TOP"}};
 
-    // Helper function for clock cycle
     auto clock_cycle = [&]() {
         top->clk = 0;
         top->eval();
@@ -44,54 +43,22 @@ int main(int argc, char** argv) {
 
     // Initialize signals
     top->clk                = 0;
-    top->rstn               = 0;
-    top->serial_parallel    = 0;
-    top->load_enable        = 0;
-    top->serial_in          = 0;
-    top->parallel_in        = 0;
+    top->rstn               = 1;
+    top->seq                = 0;
     top->eval();
-    
-    // Reset
-    VL_PRINTF("\n--- Testing: Reset ---\n");
+
+    VL_PRINTF("\n--- Reset ---");
     top->rstn = 0;
     clock_cycle();
-    VL_PRINTF("After reset: parallel_out=0x%02x (expected: 0x00)\n", top->parallel_out);
-    
-    // Parallel load
-    VL_PRINTF("\n--- Testing: Parallel Load (10100101)---\n");
-    top->rstn               = 1;
-    top->load_enable        = 1;
-    top->serial_parallel    = 1;
-    top->parallel_in        = 0xA5;   // 10100101
+    top->rstn = 1;
     clock_cycle();
-    VL_PRINTF("Parallel load 0x10100101: parallel_out=%s, serial_out=%d\n", 
-              to_binary<8>(top->parallel_out).c_str(), top->serial_out);
+    VL_PRINTF("det = %d\n", top->det);
     
-    // Serial shifting with 0s
-    VL_PRINTF("\n--- Testing: Serial Shifting with 0s ---\n");
-    top->serial_parallel    = 0;  // Select serial mode
-    top->serial_in          = 0;        // Shift in 0s
-    
-    for (int i = 0; i < 8; i++) {
+    VL_PRINTF("\n--- Sequence ---\n");
+    top->seq = 1;
+    for (int i = 0; i < 10; i++) {
+        VL_PRINTF("Cycle %d: det: %d\n", i, top->det);
         clock_cycle();
-        VL_PRINTF("Shift %d: parallel_out=%s, serial_out=%d\n", 
-                i+1, to_binary<8>(top->parallel_out).c_str(), top->serial_out);
-    }
-    
-    // Serial shifting with 1s
-    VL_PRINTF("\n--- Testing: Serial Shift with 1s ---\n");
-    top->parallel_in        = 0x00;     // load all zeros
-    top->serial_parallel    = 1;
-    clock_cycle();
-    VL_PRINTF("Loaded 0x00: parallel_out=%s\n", to_binary<8>(top->parallel_out).c_str());
-    
-    top->serial_parallel = 0;  // Switch to serial mode
-    top->serial_in = 1;
-    
-    for (int i = 0; i < 8; i++) {
-        clock_cycle();
-        VL_PRINTF("Shift in 1 [%d]: parallel_out=%s, serial_out=%d\n", 
-                  i+1, to_binary<8>(top->parallel_out).c_str(), top->serial_out);
     }
 
     top->final();

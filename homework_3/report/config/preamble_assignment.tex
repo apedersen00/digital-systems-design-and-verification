@@ -1,0 +1,266 @@
+\documentclass[oneside,11pt,a4paper]{article}
+
+%----------------------------------------------------------------------------------------
+%   USER INFORMATION
+%----------------------------------------------------------------------------------------
+\newcommand{\assignmentTitle}{Homework 3}
+\newcommand{\assignmentSubtitle}{Fall 2025}
+\newcommand{\studentName}{Andreas S. Pedersen}
+\newcommand{\studyID}{aspasp@kth.se}
+\newcommand{\courseName}{IL2234: Digital Systems Design and Verification Using HDL}
+\newcommand{\submissionDate}{\today}
+
+%----------------------------------------------------------------------------------------
+%   PAGE LAYOUT & GEOMETRY
+%----------------------------------------------------------------------------------------
+\usepackage{geometry}
+\geometry{
+    a4paper,
+    left=2.5cm,
+    right=2.5cm,
+    top=2.5cm,
+    bottom=3cm
+}
+
+%----------------------------------------------------------------------------------------
+%   HEADERS AND FOOTERS
+%----------------------------------------------------------------------------------------
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+
+% Define the header/footer style
+\fancypagestyle{fancy}{
+    \fancyhf{}
+    \fancyhead[L]{\courseName}
+    \fancyhead[R]{\assignmentTitle}
+    \fancyfoot[R]{Page \thepage\ of \pageref{LastPage}}
+    \fancyfoot[L]{\studentName}
+    \renewcommand{\headrulewidth}{0.4pt}
+    \renewcommand{\footrulewidth}{0pt}
+}
+
+% Apply to all pages
+\pagestyle{fancy}
+
+%----------------------------------------------------------------------------------------
+%   TYPOGRAPHY & ENCODING
+%----------------------------------------------------------------------------------------
+\usepackage{listings}
+\lstset{basicstyle=\ttfamily}
+\usepackage{minted}
+\usepackage[skins,minted]{tcolorbox}
+
+\usepackage{fontspec}
+\setmonofont{JetBrains Mono}
+
+\usepackage[english]{babel}
+\usepackage{csquotes}
+\usepackage[normalem]{ulem}
+\usepackage{lipsum}
+\setlength\parindent{0pt} % No paragraph indents
+\setlength\parskip{6pt}   % Space between paragraphs
+
+\usepackage{microtype}
+\DisableLigatures[<,>]{encoding=T1,family=tt*}
+
+%----------------------------------------------------------------------------------------
+%   BIBLIOGRAPHY
+%----------------------------------------------------------------------------------------
+\usepackage[style=ieee, backend=biber]{biblatex}
+\addbibresource{config/references.bib}
+
+%----------------------------------------------------------------------------------------
+%   PACKAGES FOR FIGURES, TABLES, AND MATH
+%----------------------------------------------------------------------------------------
+\usepackage{graphicx}
+\graphicspath{{imgs/}}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{siunitx}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{multirow}
+\usepackage{makecell}
+\usepackage{threeparttable}
+\usepackage{wrapfig}
+\usepackage{float}
+\usepackage{rotating}
+\usepackage{tikz}
+\usepackage[label=corner]{karnaugh-map}
+
+%----------------------------------------------------------------------------------------
+%   DOCUMENT STRUCTURE & FORMATTING
+%----------------------------------------------------------------------------------------
+\usepackage{titlesec}
+\usepackage{appendix}
+\usepackage{verbatim}
+\usepackage{enumitem}
+\usepackage[bottom]{footmisc}
+\usepackage{pdfpages}
+\usepackage{changepage}
+\usepackage{subfiles}
+
+\usepackage[hidelinks, colorlinks=true, linkcolor=black, citecolor=black, urlcolor=blue]{hyperref}
+\usepackage[nameinlink]{cleveref}
+
+\titleformat{\section}
+  {\normalfont\Large\bfseries}
+  {}
+  {0em}
+  {}
+
+\titleformat{\subsection}
+  {\normalfont\large\bfseries}
+  {}
+  {0em}
+  {}
+
+\titleformat{\subsubsection}
+  {\normalfont\normalsize\itshape}
+  {}
+  {0em}
+  {}
+
+\titlespacing*{\section}{0pt}{1.5\baselineskip}{1\baselineskip}
+\titlespacing*{\subsection}{0pt}{1\baselineskip}{0.5\baselineskip}
+
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{3}
+
+% ------- MINTED
+
+\definecolor{mintedbackground}{rgb}{0.95,0.95,0.95}
+\definecolor{mintedframe}{rgb}{0.3,0.55,0.55}
+
+\setminted[cpp]{
+    bgcolor=mintedbackground,
+    fontfamily=tt,
+    linenos=true,
+    numberblanklines=true,
+    numbersep=12pt,
+    numbersep=5pt,
+    gobble=0,
+    frame=leftline,
+    framesep=2mm,
+    funcnamehighlighting=true,
+    tabsize=4,
+    obeytabs=false,
+    mathescape=false,
+    samepage=false,
+    showspaces=false,
+    texcl=false,
+    baselinestretch=1.2,
+    fontsize=\footnotesize,
+    breaklines=true,
+}
+
+\setminted[text]{
+    bgcolor=mintedbackground,
+    fontfamily=tt,
+    linenos=true,
+    numberblanklines=true,
+    numbersep=12pt,
+    numbersep=5pt,
+    gobble=0,
+    frame=leftline,
+    framesep=2mm,
+    funcnamehighlighting=true,
+    tabsize=4,
+    obeytabs=false,
+    mathescape=false,
+    samepage=false,
+    showspaces=false,
+    showtabs =false,
+    texcl=false,
+    baselinestretch=1.2,
+    fontsize=\footnotesize,
+    breaklines=true,
+}
+
+\newtcblisting{cppminted}[2][]{listing engine=minted, listing only,#1, title=#2, minted language=cpp, colback=mintedbackground}
+
+\newtcblisting{svminted}[2][]{listing engine=minted, listing only,#1, title=#2, minted language=systemverilog, colback=mintedbackground}
+
+\newtcblisting{mintedterminal}[2][]{enhanced, listing engine=minted, 
+listing only,#1, title=#2, minted language=text, 
+coltitle=mintedbackground!30!black, 
+fonttitle=\ttfamily\footnotesize,
+sharp corners, top=0mm, bottom=0mm,
+title code={\path[draw=mintedframe,dashed, fill=mintedbackground](title.south west)--(title.south east);},
+frame code={\path[draw=mintedframe, fill=mintedbackground](frame.south west) rectangle (frame.north east);}
+}
+
+% SystemVerilog configuration
+\setminted[systemverilog]{
+    bgcolor=mintedbackground,
+    fontfamily=tt,
+    linenos=true,
+    numberblanklines=true,
+    numbersep=12pt,
+    numbersep=5pt,
+    gobble=0,
+    frame=leftline,
+    framesep=2mm,
+    funcnamehighlighting=true,
+    tabsize=4,
+    obeytabs=false,
+    mathescape=false,
+    samepage=false,
+    showspaces=false,
+    texcl=false,
+    baselinestretch=1.2,
+    fontsize=\footnotesize,
+    breaklines=true,
+}
+
+% Bash command configuration for single commands with comments
+\setminted[bash]{
+    bgcolor=mintedbackground,
+    fontfamily=tt,
+    linenos=false,
+    gobble=0,
+    frame=leftline,
+    framesep=2mm,
+    tabsize=4,
+    obeytabs=false,
+    mathescape=false,
+    samepage=true,
+    showspaces=false,
+    texcl=false,
+    baselinestretch=1.1,
+    fontsize=\small,
+    breaklines=true,
+}
+
+% Custom environment for single bash commands with comments
+\newtcblisting{bashcmd}[1][]{
+    enhanced,
+    listing engine=minted,
+    listing only,
+    minted language=bash,
+    colback=mintedbackground,
+    colframe=mintedframe,
+    fonttitle=\ttfamily\small\bfseries,
+    coltitle=white,
+    colbacktitle=mintedframe,
+    sharp corners,
+    boxrule=0.5pt,
+    top=3pt,
+    bottom=3pt,
+    left=8pt,
+    right=8pt,
+    toptitle=2pt,
+    bottomtitle=2pt,
+    lefttitle=8pt,
+    righttitle=8pt,
+    before skip=10pt,
+    after skip=10pt,
+    #1
+}
+
+% Inline bash command for short commands
+\newmintinline[bashcmdline]{bash}{bgcolor=mintedbackground!50, fontsize=\small}

@@ -1,0 +1,139 @@
+\documentclass[../main.tex]{subfiles}
+
+\begin{document}
+
+\section{Question 1}
+
+Design an FSM that can detect an \lstinline{input_sequence} of 5 consecutive ones. Assume that a new input comes at every clock cycle. The output \lstinline{detected} should be asserted at the same cycle when the 5th '1' is given to the input. It should remain asserted as long as the input remains '1'.
+
+\begin{enumerate}
+    \item What should be the type of FSM machine?
+    \item Draw the state diagram for the FSM machine.
+    \item Derive the next state logic using D flops.
+    \item Model the logic that you derived in the previous part in SystemVerilog strucutally.
+    \item Model the FSM in a behavioral manner with SystemVerilog.
+    \item Verify both structural and behavioral models and compare their results and waveforms together in your report.
+\end{enumerate}
+
+\subsection*{Solution}
+
+To implement the FSM we choose a Moore Machine. The output only depends on \textit{if we have seen at least five consecutive 1's}. With a Moore Machine we can simply define five states and assert the output as 1 in the last and sixth state. There is no reason to make the output depend directly on the input, and the Moore Machine gives a glitch-free, synchronized output in comparison to a Mealy Machine. The FSM is defined with states $S_0 \ldots S_5$ and shown in the diagram in \ref{fig:q1}.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\linewidth]{assets/q1_fsm.png}
+    \caption{State transition diagram for sequence detector in Question 1.}
+    \label{fig:q1}
+\end{figure}
+
+\begin{table}[h]
+    \centering
+    \begin{minipage}{0.48\textwidth}
+        \centering
+        \begin{tabular}{|c|c c|c|}
+            \hline
+            \textbf{State} & 0 & 1 & $w$ \\
+            \hline
+            $S_0$ & $S_0$ & $S_1$ & 0 \\
+            $S_1$ & $S_0$ & $S_2$ & 0 \\
+            $S_2$ & $S_0$ & $S_3$ & 0 \\
+            $S_3$ & $S_0$ & $S_4$ & 0 \\
+            $S_4$ & $S_0$ & $S_5$ & 0 \\
+            $S_5$ & $S_0$ & $S_5$ & 1 \\
+            \hline
+            & \multicolumn{2}{|c|}{Next State} & \\
+            \hline
+        \end{tabular}
+    \end{minipage}%
+    \hspace{0.01\textwidth}
+    \begin{minipage}{0.48\textwidth}
+        \centering
+        \begin{tabular}{|c|c c|c|}
+            \hline
+            $Q_2 Q_1 Q_0$ & 0 & 1 & $w$ \\
+            \hline
+            000 & 000 & 001 & 0 \\
+            001 & 000 & 010 & 0 \\
+            010 & 000 & 011 & 0 \\
+            011 & 000 & 100 & 0 \\
+            100 & 000 & 101 & 0 \\
+            101 & 000 & 101 & 1 \\
+            \hline
+            & \multicolumn{2}{|c|}{$D_2 D_1 D_0$} & \\
+            \hline
+        \end{tabular}
+    \end{minipage}
+    \caption{State table (left) and transition table (right) for the sequence detector.}
+    \label{tab:q1}
+\end{table}
+
+\newpage
+
+Denoting each states bits $Q_0, Q_1, Q_2$, and their next state bits for $D_0, D_1, D_2$, the transition table is shown in \ref{tab:q1}. Denoting the input, $j$, Karnaugh maps for deducing logic expressions are shown below.
+
+\begin{center}
+    \begin{minipage}{0.45\textwidth}
+        \centering
+        \begin{karnaugh-map}[4][4][1][$j$][$Q_0$][$Q_1$][$Q_2$]
+            \maxterms{0, 1, 2, 3, 4, 5, 6, 8, 10}
+            \minterms{7, 9, 11}
+            \indeterminants{12, 13, 14, 15}
+            \implicant{13}{11}
+            \implicant{7}{15}
+        \end{karnaugh-map}
+
+        \vspace{-40pt}
+        \[
+        D_2 = Q_1 Q_0 j + Q_2 j
+        \]
+    \end{minipage}%
+    \begin{minipage}{0.45\textwidth}
+        \centering
+        \begin{karnaugh-map}[4][4][1][$j$][$Q_0$][$Q_1$][$Q_2$]
+            \maxterms{0, 1, 2, 4, 6, 7, 8, 9, 10, 11}
+            \minterms{3, 5}
+            \indeterminants{12, 13, 14, 15}
+            \implicant{5}{13}
+            \implicant{3}{3}
+        \end{karnaugh-map}
+
+        \vspace{-40pt}
+        \[
+        D_1 = Q_1 \overline{Q_0} j + \overline{Q_2} \, \overline{Q_1} Q_0 j
+        \]
+    \end{minipage}
+\end{center}
+
+\begin{center}
+    \begin{minipage}{0.45\textwidth}
+        \centering
+        \begin{karnaugh-map}[4][4][1][$j$][$Q_0$][$Q_1$][$Q_2$]
+            \maxterms{0, 2, 3, 4, 6, 7, 8, 10}
+            \minterms{1, 5, 9, 11}
+            \indeterminants{12, 13, 14, 15}
+            \implicant{1}{9}
+            \implicant{13}{11}
+        \end{karnaugh-map}
+
+        \vspace{-40pt}
+        \[
+        D_0 = \overline{Q_0} j + Q_2 j
+        \]
+    \end{minipage}%
+    \begin{minipage}{0.45\textwidth}
+        \centering
+        \begin{karnaugh-map}[4][2][1][$Q_0$][$Q_1$][$Q_2$]
+            \maxterms{0, 1, 2, 3, 4}
+            \minterms{5}
+            \indeterminants{6, 7}
+            \implicant{5}{7}
+        \end{karnaugh-map}
+
+        \vspace{-40pt}
+        \[
+        w = Q_2 Q_0
+        \]
+    \end{minipage}
+\end{center}
+
+\end{document}
