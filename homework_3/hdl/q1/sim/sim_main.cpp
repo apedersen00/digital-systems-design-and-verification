@@ -52,12 +52,12 @@ int main(int argc, char** argv) {
     clock_cycle();
     top->rstn = 1;
     clock_cycle();
-    VL_PRINTF("det = %d\n", top->det);
+    VL_PRINTF("det_struct = %d\ndet_behav = %d\n", top->det_struct, top->det_behav);
     
     VL_PRINTF("\n--- Sequence ---\n");
     top->seq = 1;
     for (int i = 0; i < 10; i++) {
-        VL_PRINTF("Cycle %d: det: %d\n", i, top->det);
+    VL_PRINTF("Cycle: %d, det_struct = %d det_behav = %d\n", i, top->det_struct, top->det_behav);
         clock_cycle();
     }
 

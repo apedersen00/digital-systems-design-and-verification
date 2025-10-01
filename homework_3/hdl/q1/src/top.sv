@@ -13,7 +13,8 @@ module top
     input   logic clk,
     input   logic rstn,
     input   logic seq,
-    output  logic det
+    output  logic det_struct,
+    output  logic det_behav
   );
 
     // DUT instance
@@ -21,7 +22,14 @@ module top
       .clk_i(clk),
       .rstn_i(rstn),
       .seq_i(seq),
-      .det_o(det)
+      .det_o(det_struct)
+    );
+
+    seq_detector_behav seq_detector_behav_0 (
+      .clk_i(clk),
+      .rstn_i(rstn),
+      .seq_i(seq),
+      .det_o(det_behav)
     );
 
     // Stimulus

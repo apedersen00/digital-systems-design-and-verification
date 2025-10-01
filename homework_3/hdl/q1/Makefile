@@ -51,7 +51,7 @@ VERILATOR_FLAGS += --coverage
 #VERILATOR_FLAGS += --gdbbt
 
 # Input files for Verilator
-VERILATOR_INPUT = src/top.sv src/seq_detector_struct.sv sim/sim_main.cpp
+VERILATOR_INPUT = src/top.sv src/seq_detector_struct.sv src/seq_detector_behav.sv sim/sim_main.cpp
 
 ######################################################################
 default: run
