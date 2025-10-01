@@ -17,7 +17,7 @@ Design an FSM that can detect an \lstinline{input_sequence} of 5 consecutive one
 
 \subsection*{Solution}
 
-To implement the FSM we choose a Moore Machine. The output only depends on \textit{if we have seen at least five consecutive 1's}. With a Moore Machine we can simply define five states and assert the output as 1 in the last and sixth state. There is no reason to make the output depend directly on the input, and the Moore Machine gives a glitch-free, synchronized output in comparison to a Mealy Machine. The FSM is defined with states $S_0 \ldots S_5$ and shown in the diagram in \ref{fig:q1}.
+To implement the FSM we choose a Moore Machine. The output only depends on \textit{if we have seen at least five consecutive 1's}. With a Moore Machine we can simply define five states and assert the output as 1 in the last and sixth state. There is no reason to make the output depend directly on the input, and the Moore Machine gives a glitch-free, synchronized output in comparison to a Mealy Machine. The FSM is defined with states $S_0 \ldots S_5$ and shown in the diagram in \cref{fig:q1}.
 
 \begin{figure}[h]
     \centering
@@ -69,7 +69,7 @@ To implement the FSM we choose a Moore Machine. The output only depends on \text
 
 \newpage
 
-Denoting each states bits $Q_0, Q_1, Q_2$, and their next state bits for $D_0, D_1, D_2$, the transition table is shown in \ref{tab:q1}. Denoting the input, $j$, Karnaugh maps for deducing logic expressions are shown below.
+Denoting each states bits $Q_0, Q_1, Q_2$, and their next state bits for $D_0, D_1, D_2$, the transition table is shown in \cref{tab:q1}. Denoting the input, $j$, Karnaugh maps for deducing logic expressions are shown below.
 
 \begin{center}
     \begin{minipage}{0.45\textwidth}
@@ -145,7 +145,7 @@ Denoting each states bits $Q_0, Q_1, Q_2$, and their next state bits for $D_0, D
 
 \newpage
 
-Using the found expressions for the next flip flop states, $D_0 \ldots D_2$, we can implement them directory in SystemVerilog to get the expected functionality. On a higher abstraction level, a behavioral implementation can be made, splitting the logic into a sequential \lstinline{always} block and a combination \lstinline{always} block. Both modules were verified simultaneously with the results shown in \ref{fig:q1_wave}. Implementations of both are shown in the following pages but can otherwise be found in:
+Using the found expressions for the next flip flop states, $D_0 \ldots D_2$, we can implement them directory in SystemVerilog to get the expected functionality. On a higher abstraction level, a behavioral implementation can be made, splitting the logic into a sequential \lstinline{always} block and a combination \lstinline{always} block. Both modules were verified simultaneously with the results shown in \cref{fig:q1_wave}. Implementations of both are shown in the following pages but can otherwise be found in:
 
 \begin{itemize}
     \item \lstinline{hdl/q1/src/seq_detector_struct.sv}
@@ -229,5 +229,55 @@ module seq_detector_behav (
 
 endmodule
 \end{svminted}
+
+\newpage
+
+\section{Question 2}
+
+Design a message conversion system with the conversion rule below:
+
+For every cycle, if the input message bit is '0', toggle the current output bit; if the input message bit is '1', keep the output bit unchanged.
+
+For example, let the input message be $x$, and the output message be $z$. Assuming $z$ initially is '1'. Given the sequence of $x = 10001110011010$, the output sequence of $z$ should be: 10100001000110. See the figure below.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth]{assets/q2.png}
+\end{figure}
+
+\begin{enumerate}
+    \item Draw the state diagram of a \textbf{Mealy FSM} with the same behavior as described above.
+    \item Draw the state diagram of a \textbf{Moore FSM} with the same behavior as described above.
+    \item Model both FSMs in a behavioral manner using SystemVerilog.
+    \item Write a testbench for both FSMs and compare the timing, number of states, and the output waveforms of Mealy and Moore FSMs in your report.
+\end{enumerate}
+
+\subsection*{Solution}
+
+For a Moore Machine the output depends \textit{only} upon the current state. For a Mealy Machine the output depends on \textit{both} the current input and state. The state diagrams of the message conversion system implemented using both FSMs are shown in \cref{fig:q2_fsm}.
+
+\vspace{-10pt}
+\begin{figure}[h]
+    \centering
+    \begin{subfigure}{0.48\textwidth}
+        \centering
+        \includegraphics[width=0.8\textwidth]{assets/q2_mealy.png}
+        \caption{Mealy FSM state diagram}
+        \label{fig:q2_mealy}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}{0.48\textwidth}
+        \centering
+        \includegraphics[width=0.8\textwidth]{assets/q2_moore.png}
+        \caption{Moore FSM state diagram}
+        \label{fig:q2_moore}
+    \end{subfigure}
+    \caption{State diagrams for the message conversion system using Mealy and Moore FSMs.}
+    \label{fig:q2_fsm}
+\end{figure}
+
+\newpage
+
+
 
 \end{document}
