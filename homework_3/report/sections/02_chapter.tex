@@ -136,7 +136,98 @@ Denoting each states bits $Q_0, Q_1, Q_2$, and their next state bits for $D_0, D
     \end{minipage}
 \end{center}
 
-Using the found expressions for the next flip flop states, $D_0 \ldots D_2$, we can implement them directory in SystemVerilog to get the expected functionality. The resulting module is shown in \lstinline{hdl/q1/src/seq_detector_struct.sv}.
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.9\textwidth]{assets/q1_wave.pdf}
+    \caption{Waveforms for the structural and behavioral implementation.}
+    \label{fig:q1_wave}
+\end{figure}
 
+\newpage
+
+Using the found expressions for the next flip flop states, $D_0 \ldots D_2$, we can implement them directory in SystemVerilog to get the expected functionality. On a higher abstraction level, a behavioral implementation can be made, splitting the logic into a sequential \lstinline{always} block and a combination \lstinline{always} block. Both modules were verified simultaneously with the results shown in \ref{fig:q1_wave}. Implementations of both are shown in the following pages but can otherwise be found in:
+
+\begin{itemize}
+    \item \lstinline{hdl/q1/src/seq_detector_struct.sv}
+    \item \lstinline{hdl/q1/src/seq_detector_behav.sv}
+\end{itemize}
+
+\begin{svminted}{Sequence Detector - Structural Implementation}
+module seq_detector_struct (
+    input   logic clk_i,
+    input   logic rstn_i,
+    input   logic seq_i,
+    output  logic det_o
+  );
+
+  logic [2:0] Q;
+  logic [2:0] D;
+
+  assign D[2] = (Q[1] & Q[0] & seq_i) | (Q[2] & seq_i);
+  assign D[1] = (Q[1] & ~Q[0] & seq_i) | (~Q[2] & ~Q[1] & Q[0] & seq_i);
+  assign D[0] = (~Q[0] & seq_i) | Q[2] & seq_i;
+
+  assign det_o = Q[2] & Q[0];
+
+  always_ff @(posedge clk_i or negedge rstn_i) begin
+    if (!rstn_i) begin
+      Q <= 3'b000;
+    end
+    else begin
+      Q <= D;
+    end
+  end
+
+endmodule
+\end{svminted}
+
+\newpage
+
+\begin{svminted}{Sequence Detector - Behavioral Implementation}
+module seq_detector_behav (
+    input   logic clk_i,
+    input   logic rstn_i,
+    input   logic seq_i,
+    output  logic det_o
+  );
+
+  typedef enum logic [2:0] {
+    S0,
+    S1,
+    S2,
+    S3,
+    S4,
+    S5
+  } state_t;
+
+  state_t cur_state, nxt_state;
+
+  always_ff @(posedge clk_i or negedge rstn_i) begin
+    if (!rstn_i) begin
+      cur_state <= S0;
+    end
+    else begin
+      cur_state <= nxt_state;
+    end
+  end
+
+  always_comb begin
+    nxt_state = S0;
+
+    case (cur_state)
+      S0: nxt_state = seq_i ? S1 : S0;
+      S1: nxt_state = seq_i ? S2 : S0;
+      S2: nxt_state = seq_i ? S3 : S0;
+      S3: nxt_state = seq_i ? S4 : S0;
+      S4: nxt_state = seq_i ? S5 : S0;
+      S5: nxt_state = seq_i ? S5 : S0;
+      default: nxt_state = S0;
+    endcase
+  end
+
+  assign det_o = (cur_state == S5) ? 1'b1 : 1'b0;
+
+endmodule
+\end{svminted}
 
 \end{document}
