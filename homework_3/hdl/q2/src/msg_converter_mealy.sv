@@ -40,7 +40,6 @@ module msg_converter_mealy (
 
   always_comb begin
     nxt_state = S0;
-
     case (cur_state)
       S0: nxt_state = x_i ? S0 : S1;
       S1: nxt_state = x_i ? S1 : S0;
@@ -49,7 +48,6 @@ module msg_converter_mealy (
 
   always_comb begin
     z_o = 1'b0;
-
     case (cur_state)
       S0: z_o = x_i ? 1'b1 : 1'b0;
       S1: z_o = x_i ? 1'b0 : 1'b1;

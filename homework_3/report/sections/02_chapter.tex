@@ -278,6 +278,131 @@ For a Moore Machine the output depends \textit{only} upon the current state. For
 
 \newpage
 
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=\textwidth]{assets/q2_wave.pdf}
+    \caption{Waveforms for the Moore and Mealy FSM implementations.}
+    \label{fig:q2_wave}
+\end{figure}
+
+To compare the two FSMs, a testbench was written that writes the following test sequences, $x$, that has the expected outputs, $z$:
+
+\begin{alignat*}{2}
+    x &= \{ 1, 0, 0, 0, 1, 1, 1, 0, 0, 1, 1, 0, 1, 0 \}, 
+    &\quad z &= \{ 1, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0 \} \\[6pt]
+    x &= \{ 0, 0, 0, 1, 1, 1, 0, 0, 1, 1, 0, 1, 0 \}, 
+    &\quad z &= \{ 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0 \}
+\end{alignat*}
+
+The resulting waveforms are shown in \cref{fig:q2_wave}. Timing wise there is a significant difference between the two implementations as to when the output is valid. This is due to the Mealy Machine's combinational dependendency on the input, $x$. The waveforms for each FSM has been colored to illustrate when their outputs are valid. It is seen that both FSMs output the same sequences. The Moore Machine's output is always synchronized with the clock and is available for a full cycle. On the other hand, the Mealy Machine's output changes one half-cycle earlier and is only valid for half a cycle (on the rising edge).
+
+In conclusion, both FSMs can be implemented using the same number of states, i.e. same number of memory elements. The Mealy Machine requries additional combinational logic but also makes it output available without any cycle delay. Behavioral implementations of both FSMs are shown in the following pages but can otherwise be found in:
+
+\begin{itemize}
+    \item \lstinline{hdl/q2/src/msg_converter_moore.sv}
+    \item \lstinline{hdl/q2/src/msg_converter_mealy.sv}
+\end{itemize}
+
+\newpage
+
+\begin{svminted}{Message Converter - Moore Implementation}
+module msg_converter_moore (
+    input   logic clk_i,
+    input   logic rstn_i,
+    input   logic x_i,
+    output  logic z_o
+  );
+
+  typedef enum logic {
+    S0,
+    S1
+  } state_t;
+
+  state_t cur_state, nxt_state;
+
+  always_ff @(posedge clk_i or negedge rstn_i) begin
+    if (!rstn_i) begin
+      cur_state <= S0;
+    end
+    else begin
+      cur_state <= nxt_state;
+    end
+  end
+
+  always_comb begin
+    nxt_state = S0;
+
+    case (cur_state)
+      S0: nxt_state = x_i ? S0 : S1;
+      S1: nxt_state = x_i ? S1 : S0;
+      default: nxt_state = S0;
+    endcase
+  end
+
+  assign z_o = (cur_state == S0) ? 1'b1 : 1'b0;
+
+endmodule
+\end{svminted}
+
+\newpage
+
+\begin{svminted}{Message Converter - Mealy Implementation}
+module msg_converter_mealy (
+    input   logic clk_i,
+    input   logic rstn_i,
+    input   logic x_i,
+    output  logic z_o
+  );
+
+  typedef enum logic {
+    S0,
+    S1
+  } state_t;
+
+  state_t cur_state, nxt_state;
+
+  always_ff @(posedge clk_i or negedge rstn_i) begin
+    if (!rstn_i) begin
+      cur_state <= S0;
+    end
+    else begin
+      cur_state <= nxt_state;
+    end
+  end
+
+  always_comb begin
+    nxt_state = S0;
+    case (cur_state)
+      S0: nxt_state = x_i ? S0 : S1;
+      S1: nxt_state = x_i ? S1 : S0;
+    endcase
+  end
+
+  always_comb begin
+    z_o = 1'b0;
+    case (cur_state)
+      S0: z_o = x_i ? 1'b1 : 1'b0;
+      S1: z_o = x_i ? 1'b0 : 1'b1;
+    endcase
+  end
+
+endmodule
+\end{svminted}
+
+\newpage
+
+\section{Question 3}
+
+A serial communication device has a begin-sequence (011010) that leads to the transmission of 32 bits on its \lstinline{serData} input. After receiving the begin-sequence, the \lstinline{outValid} output becomes 1, and the next 32 bits on \lstinline{serData} are regarded as valid serial data of the communication device. After 32 clock cycles, \lstinline{outValid} becomes 0 and the device returns to the first state, where it searches for the begin-sequence again.
+
+\begin{enumerate}
+    \item Create a state diagram to represent the Moore FSM for this system, clearly showing all states, transitions, and places where the output is issued. Draw the FSM in your report.
+    \item Write a SystemVerilog description of this communication device, including the FSM and the counter.
+    \item Write a testbench and verify the functionality of your design.
+\end{enumerate}
+
+\subsection*{Solution}
+
 
 
 \end{document}

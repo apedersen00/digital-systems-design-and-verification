@@ -46,6 +46,7 @@ int main(int argc, char** argv) {
     top->rstn               = 1;
     top->x                  = 1;
     top->eval();
+    contextp->timeInc(5);
 
     VL_PRINTF("\n--- Reset ---\n");
     top->rstn = 0;
@@ -58,16 +59,26 @@ int main(int argc, char** argv) {
     
     VL_PRINTF("\n--- Test Sequence ---\n");
     for (int i = 0; i < seq_1_length; i++) {
-        top->x = seq_1[i];
+        top->clk    = 0;
+        top->x      = seq_1[i];
+        top->eval();
+
+        contextp->timeInc(5);
+        top->clk    = 1;
+        top->eval();
+
+        contextp->timeInc(5);
         VL_PRINTF("Cycle: %2d, x = %d, moore = %d, mealy = %d\n", 
                   i, top->x, top->z_moore, top->z_mealy);
+    }
+
+    for (int i = 0; i < 1; i++) {
         clock_cycle();
     }
-    VL_PRINTF("Cycle: %2d, x = %d, moore = %d, mealy = %d\n", 
-                seq_1_length, top->x, top->z_moore, top->z_mealy);
 
     VL_PRINTF("\n--- Reset ---\n");
     top->rstn = 0;
+    top->x    = 1;
     clock_cycle();
     top->rstn = 1;
     VL_PRINTF("moore = %d\nmealy = %d\n", top->z_moore, top->z_mealy);
@@ -77,13 +88,22 @@ int main(int argc, char** argv) {
     
     VL_PRINTF("\n--- Test Sequence ---\n");
     for (int i = 0; i < seq_2_length; i++) {
-        top->x = seq_2[i];
+        top->clk    = 0;
+        top->x      = seq_2[i];
+        top->eval();
+
+        contextp->timeInc(5);
+        top->clk    = 1;
+        top->eval();
+
+        contextp->timeInc(5);
         VL_PRINTF("Cycle: %2d, x = %d, moore = %d, mealy = %d\n", 
                   i, top->x, top->z_moore, top->z_mealy);
+    }
+
+    for (int i = 0; i < 3; i++) {
         clock_cycle();
     }
-    VL_PRINTF("Cycle: %2d, x = %d, moore = %d, mealy = %d\n", 
-                seq_2_length, top->x, top->z_moore, top->z_mealy);
 
     top->final();
     contextp->statsPrintSummary();
