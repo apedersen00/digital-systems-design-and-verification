@@ -2,7 +2,7 @@
 
 \begin{document}
 
-\section{Question 1}
+\section{Question 1} \label{sec:q1}
 
 Design an FSM that can detect an \lstinline{input_sequence} of 5 consecutive ones. Assume that a new input comes at every clock cycle. The output \lstinline{detected} should be asserted at the same cycle when the 5th '1' is given to the input. It should remain asserted as long as the input remains '1'.
 
@@ -403,6 +403,80 @@ A serial communication device has a begin-sequence (011010) that leads to the tr
 
 \subsection*{Solution}
 
+Much like in \cref{sec:q1} we design a sequence detector Moore FSM with seven states $S_0 \ldots S_6$. In the seventh state, $S_6$, a counter is enabled that counts 32 clock cycles and thereafter returns the FSM to $S_0$. By creating a 5-bit counter we can simply rely on overflow to reset the counter. The counter logic is implemented as an \lstinline{always_ff} block.
+
+A testbench was written that inputs the sequence two times in a row to ensure the valid signal is triggered and held high for the specified 32 cycles, as well as ensuring that the counter reset logic works as expected. The waveforms are shown in \cref{fig:q3_wave}.
+
+The implementation in SystemVerilog is shown in the following pages, but is otherwise found in:
+
+\begin{itemize}
+    \item \lstinline{hdl/q3/src/ser_comm.sv}
+\end{itemize}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth]{assets/q3_fsm.png}
+    \caption{Moore FSM implementation of the serial communication device. State $S_6$ represents a counter active state that is left after 32 clock cycles.}
+    \label{fig:q3_fsm}
+\end{figure}
+
+\newpage
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth]{assets/q3_wave.pdf}
+    \vspace{-10pt}
+    \caption{Waveforms for the Moore FSM implementation of the serial communication sequence detector. After the specified begin-sequence has been detected, the valid signal is high for exactly 32 cycles (x-axis ticks are spaced by 8 cycles).}
+    \label{fig:q3_wave}
+\end{figure}
+
+\begin{svminted}{Serial Communication Sequence Detector - Moore FSM}
+module ser_comm (
+    input   logic clk_i,
+    input   logic rstn_i,
+    input   logic serdata_i,
+    output  logic valid_o
+  );
+
+  typedef enum logic [2:0] {S0, S1, S2, S3, S4, S5, S6} state_t;
+
+  state_t cur_state, nxt_state;
+
+  always_ff @(posedge clk_i or negedge rstn_i) begin
+    if (!rstn_i) begin
+      cur_state <= S0;
+    end else begin
+      cur_state <= nxt_state;
+    end
+  end
+
+  always_comb begin
+    nxt_state = S0;
+    case (cur_state)
+      S0: nxt_state = !serdata_i ? S1 : S0;
+      S1: nxt_state =  serdata_i ? S2 : S0;
+      S2: nxt_state =  serdata_i ? S3 : S0;
+      S3: nxt_state = !serdata_i ? S4 : S0;
+      S4: nxt_state =  serdata_i ? S5 : S0;
+      S5: nxt_state = !serdata_i ? S6 : S0;
+      S6: nxt_state = (counter == 5'b00000) ? S0 : S6;
+      default: nxt_state = S0;
+    endcase
+  end
+
+  logic [4:0] counter;
+  always_ff @(posedge clk_i or negedge rstn_i) begin
+    if (!rstn_i) begin
+      counter <= 5'b11111;
+    end else if (cur_state == S6) begin
+      counter <= counter - 1;
+    end
+  end
+
+  assign valid_o = (cur_state == S6) ? 1'b1 : 1'b0;
+
+endmodule
+\end{svminted}
 
 
 \end{document}
