@@ -54,8 +54,8 @@ int main(int argc, char** argv) {
     clock_cycle();
     top->rstn = 1;
 
+    VL_PRINTF("\n--- Sequence 1 ---\n");
     int seq_1[] = {4, 8, 8, 4};
-
     for (int i = 0; i < 4; i++) {
         if (i == 0) {
             top->start = 1;
@@ -64,16 +64,17 @@ int main(int argc, char** argv) {
             top->start = 0;
         }
         top->data = seq_1[i];
-        VL_PRINTF("Num: %d, Data: %d, Res: %d, Done: %d\n", i, top->data, top->result, top->done);
+        VL_PRINTF("Num: %d, Start: %d, Data: %d, Res: %d, Done: %d\n", i, top->start, top->data, top->result, top->done);
         clock_cycle();
     }
 
-    for (int i = 0; i < 2; i++) {
-        VL_PRINTF("Num: %d, Data: %d, Res: %d, Done: %d\n", i, top->data, top->result, top->done);
+    for (int i = 0; i < 3; i++) {
+        VL_PRINTF("Num: %d, Start: %d, Data: %d, Res: %d, Done: %d\n", i, top->start, top->data, top->result, top->done);
         clock_cycle();
     }
 
-    int seq_2[] = {32};
+    VL_PRINTF("\n--- Sequence 2 ---\n");
+    int seq_2[] = {255, 255, 255, 255};
     for (int i = 0; i < 4; i++) {
         if (i == 0) {
             top->start = 1;
@@ -82,7 +83,12 @@ int main(int argc, char** argv) {
             top->start = 0;
         }
         top->data = seq_2[i];
-        VL_PRINTF("Num: %d, Data: %d, Res: %d, Done: %d\n", i, top->data, top->result, top->done);
+        VL_PRINTF("Num: %d, Start: %d, Data: %d, Res: %d, Done: %d\n", i, top->start, top->data, top->result, top->done);
+        clock_cycle();
+    }
+
+    for (int i = 0; i < 2; i++) {
+        VL_PRINTF("Num: %d, Start: %d, Data: %d, Res: %d, Done: %d\n", i, top->start, top->data, top->result, top->done);
         clock_cycle();
     }
 

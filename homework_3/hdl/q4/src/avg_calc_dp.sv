@@ -30,7 +30,11 @@ module avg_calc_dp #(
     output  logic [m-1:0] result_o
   );
 
-  logic [m-1:0] acc;
+  logic [m+$clog2(n)-1:0]   result;
+  logic [m+$clog2(n)-1:0]   acc;
+  logic [m+$clog2(n)-1:-0]  data_ext;
+
+  assign data_ext = {{ $clog2(n){1'b0} }, data_i};
 
   // accumulate inputs
   always_ff @(posedge clk_i) begin
@@ -39,14 +43,15 @@ module avg_calc_dp #(
     end
     else begin
       if (zero_i) begin
-        acc <= '0 + data_i;
+        acc <= data_ext;
       end
       else begin
-        acc <= acc + data_i;
+        acc <= acc + data_ext;
       end
     end
   end
 
-  assign result_o = acc >> $clog2(n);
+  assign result   = acc >> $clog2(n);
+  assign result_o = result[m-1:0];
 
 endmodule

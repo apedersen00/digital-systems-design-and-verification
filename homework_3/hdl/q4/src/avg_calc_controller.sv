@@ -85,9 +85,9 @@ module avg_calc_controller #(
         done_o    = (counter == '0) ? 1'b1 : 1'b0;
       end
       STATE_DONE  : begin
-        en_dp_o   = 0'b0;
-        zero_dp_o = 0'b0;
-        done_o    = 1'b1;
+        en_dp_o   = start_i ? 1'b1 : 1'b0;
+        zero_dp_o = start_i ? 1'b1 : 1'b0;
+        done_o    = start_i ? 1'b0 : 1'b1;
       end
       default     : begin
         en_dp_o   = 0'b0;
