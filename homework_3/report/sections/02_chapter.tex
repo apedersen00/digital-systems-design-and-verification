@@ -497,14 +497,20 @@ Design and implement an \textit{average calculator} that computes the average of
 
 To calculate the average of $n$ $m$-bit inputs, we need to "accumulate" a sum, adding each value with the previous as they are clocked in. The final result can be computed combinatorially by dividing the sum by $n$. Since $n = 2^k, k > 1$ the division can be done by a right-shift operation, severely decreasing the hardware requirements.
 
-The schematic is shown in \cref{fig:q4}. The datapath consists of an adder, $m$-bit register, and a divider module (right shifter). The datapath has two control signals it requires from the controller:
+The schematic is shown in \cref{fig:q4}. The datapath consists of an adder, register, and a divider module (right shifter). The datapath has two control signals it requires from the controller:
 
 \begin{itemize}
     \item \textbf{en}: Enables new data to be clocked into the $m$-bit register/accumulator.
     \item \textbf{zero}: Zeroes the output of the $m$-bit register/accumulator to the adder. This way a cycle delay is avoided. 
 \end{itemize}
 
-The controller is designed as a Mealy Machine. This increases complexity compared to a Moore Machine but removes the intrinsic cycle delay and allows us to clock in the first input in the same cycle as \lstinline{start} is asserted. The transition diagram of the controller FSM is shown in \cref{fig:q4_controller}.
+The controller is designed as a Mealy Machine. This increases complexity compared to a Moore Machine but removes the intrinsic cycle delay and allows us to clock in the first input on the same cycle as \lstinline{start} is asserted. The transition diagram of the controller FSM is shown in \cref{fig:q4_controller}. To handle the full $m$-bit range of the input numbers we perform zero extension before adding them, and trim off the excess bits after division to have a $m$-bit output. A simple testbench was created that inputs two 4-bit sequences. The last sequence tests the input value boundary condition, ensuring that our bit-extension works. The resulting waveform is shown in \cref{fig:q4_wave}. The implementations in SystemVerilog can be found in:
+
+\begin{itemize}
+    \item \lstinline{hdl/q4/src/avg_calc.sv}
+    \item \lstinline{hdl/q4/src/avg_calc_dp.sv}
+    \item \lstinline{hdl/q4/src/avg_calc_controller.sv}
+\end{itemize}
 
 \newpage
 
@@ -524,5 +530,37 @@ The controller is designed as a Mealy Machine. This increases complexity compare
 \end{figure}
 
 \newpage
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth]{assets/q4_wave.pdf}
+    \caption{Waveforms for the average calculator. Inputs are clocked in on the same cycle as \lstinline{start} is asserted.}
+    \label{fig:q4_wave}
+\end{figure}
+
+\newpage
+
+\section{Question 5}
+
+The Taylor series expansion of $\sin x$ is shown below.
+
+$$
+    \sin(x) = \sum_{n = 0}^\infty \frac{(-1)^n}{(2n+1)!} x^{2n + 1} = x - \frac{x^3}{3!} + \frac{x^5}{5!} - \frac{x^7}{7!} + \frac{x^9}{9!} - \ldots
+$$
+
+Design an accelerator that calculates the sin of x based on the Taylor series expansion of sinx. The $x$ signal is a 15-bit fraction and 1-bit integer, $x \in [0, \pi/2]$. The accelerator starts the sin of x when it receives a positive pulse on the \lstinline{start} signal. Accelerator should issue 1 on the \lstinline{done} signal when the result is calculated after eight iterations. The accelerator has a 16-bit fractional output signal called \lstinline{result}, $\text{result} \in [0, 1]$.
+
+\begin{enumerate}
+    \item Draw a schematic of your datapath in your report, including the components, interfaces, and necessary control signal. (Use the sin_coeff_lut module that is given for the coefficients).
+    \item Draw a state diagram that shows the behavior of your controller in your report. In each state, show the control signals that are issued.
+    \item Show the wiring between the datapath and controller within the top-level module in your report.
+    \item Model the datapath and controller in SystemVerilog.
+    \item Model the sinx accelerator by connecting the datapath and controller in SystemVerilog.
+    \item Verify the functionality of your accelerator with a testbench.
+\end{enumerate}
+
+\subsection*{Solution}
+
+
 
 \end{document}
