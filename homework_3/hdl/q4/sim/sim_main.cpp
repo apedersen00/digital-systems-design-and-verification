@@ -54,19 +54,34 @@ int main(int argc, char** argv) {
     clock_cycle();
     top->rstn = 1;
 
-    int seq[] = {4, 8, 8, 4};
-
-    top->start = 1;
-    clock_cycle();
+    int seq_1[] = {4, 8, 8, 4};
 
     for (int i = 0; i < 4; i++) {
-        top->start = 0;
-        top->data = seq[i];
+        if (i == 0) {
+            top->start = 1;
+        }
+        else {
+            top->start = 0;
+        }
+        top->data = seq_1[i];
         VL_PRINTF("Num: %d, Data: %d, Res: %d, Done: %d\n", i, top->data, top->result, top->done);
         clock_cycle();
     }
 
+    for (int i = 0; i < 2; i++) {
+        VL_PRINTF("Num: %d, Data: %d, Res: %d, Done: %d\n", i, top->data, top->result, top->done);
+        clock_cycle();
+    }
+
+    int seq_2[] = {32};
     for (int i = 0; i < 4; i++) {
+        if (i == 0) {
+            top->start = 1;
+        }
+        else {
+            top->start = 0;
+        }
+        top->data = seq_2[i];
         VL_PRINTF("Num: %d, Data: %d, Res: %d, Done: %d\n", i, top->data, top->result, top->done);
         clock_cycle();
     }

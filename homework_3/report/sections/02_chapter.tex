@@ -478,5 +478,51 @@ module ser_comm (
 endmodule
 \end{svminted}
 
+\newpage
+
+\section{Question 4}
+
+Design and implement an \textit{average calculator} that computes the average of $n$ $m$-bit input numbers, where $n = 2^k$ with $k > 1$, and $m > 1$. The module should begin computation when it received a positive pulse on the start signal and assert the done signal once the average is ready.
+
+\begin{enumerate}
+    \item Draw a schematic of your datapath in your report, including the components, their interfaces, and necessary control signals.
+    \item Draw a state diagram showing your controller's behavior in your report. In each state, show the control signals that are issued.
+    \item Show the wiring between the datapath and controller within the top-level module in your report.
+    \item Model the datapath and controller in SystemVerilog.
+    \item Model the average calculator (top-level) by connecting the datapath and controller in SystemVerilog.
+    \item Verify the fucntionality of your module with a testbench.
+\end{enumerate}
+
+\subsection*{Solution}
+
+To calculate the average of $n$ $m$-bit inputs, we need to "accumulate" a sum, adding each value with the previous as they are clocked in. The final result can be computed combinatorially by dividing the sum by $n$. Since $n = 2^k, k > 1$ the division can be done by a right-shift operation, severely decreasing the hardware requirements.
+
+The schematic is shown in \cref{fig:q4}. The datapath consists of an adder, $m$-bit register, and a divider module (right shifter). The datapath has two control signals it requires from the controller:
+
+\begin{itemize}
+    \item \textbf{en}: Enables new data to be clocked into the $m$-bit register/accumulator.
+    \item \textbf{zero}: Zeroes the output of the $m$-bit register/accumulator to the adder. This way a cycle delay is avoided. 
+\end{itemize}
+
+The controller is designed as a Mealy Machine. This increases complexity compared to a Moore Machine but removes the intrinsic cycle delay and allows us to clock in the first input in the same cycle as \lstinline{start} is asserted. The transition diagram of the controller FSM is shown in \cref{fig:q4_controller}.
+
+\newpage
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{assets/q4.png}
+    \caption{Schematic of the \textit{average calculator} module.}
+    \label{fig:q4}
+\end{figure}
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{assets/q4_controller.png}
+    \caption{State transitions of the Mealy FSM controller.}
+    \label{fig:q4_controller}
+\end{figure}
+
+\newpage
 
 \end{document}

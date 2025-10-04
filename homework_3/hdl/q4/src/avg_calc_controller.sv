@@ -34,7 +34,6 @@ module avg_calc_controller #(
 
   typedef enum logic [1:0] {
     STATE_RESET,
-    STATE_ZERO,
     STATE_RUN,
     STATE_DONE
   } state_t;
@@ -53,8 +52,7 @@ module avg_calc_controller #(
   always_comb begin
     nxt_state = STATE_RESET;
     case (cur_state)
-      STATE_RESET : nxt_state = start_i ? STATE_ZERO : STATE_RESET;
-      STATE_ZERO  : nxt_state = STATE_RUN;
+      STATE_RESET : nxt_state = start_i ? STATE_RUN : STATE_RESET;
       STATE_RUN   : nxt_state = (counter == '0) ? STATE_DONE : STATE_RUN;
       STATE_DONE  : nxt_state = start_i ? STATE_RUN : STATE_DONE;
       default: nxt_state = STATE_RESET;
@@ -66,13 +64,37 @@ module avg_calc_controller #(
     if (!rstn_i) begin
       counter <= '1;
     end
-    else if (cur_state == STATE_RUN | cur_state == STATE_ZERO) begin
+    else if (cur_state == STATE_RUN) begin
       counter <= counter - 1;
     end
   end
 
-  assign en_dp_o    = (cur_state == STATE_RUN | cur_state == STATE_ZERO) ? 1'b1 : 1'b0;
-  assign zero_dp_o  = (cur_state == STATE_ZERO) ? 1'b1 : 1'b0;
-  assign done_o     = (cur_state == STATE_DONE) ? 1'b1 : 1'b0;
+  always_comb begin
+    en_dp_o   = 1'b0;
+    zero_dp_o = 1'b0;
+    done_o    = 1'b0;
+    case (cur_state)
+      STATE_RESET : begin
+        en_dp_o   = start_i ? 1'b1 : 1'b0;
+        zero_dp_o = start_i ? 1'b1 : 1'b0;
+        done_o    = 1'b0;
+      end
+      STATE_RUN   : begin
+        en_dp_o   = (counter == '0) ? 1'b0 : 1'b1;
+        zero_dp_o = 1'b0;
+        done_o    = (counter == '0) ? 1'b1 : 1'b0;
+      end
+      STATE_DONE  : begin
+        en_dp_o   = 0'b0;
+        zero_dp_o = 0'b0;
+        done_o    = 1'b1;
+      end
+      default     : begin
+        en_dp_o   = 0'b0;
+        zero_dp_o = 0'b0;
+        done_o    = 1'b0;
+      end
+    endcase
+  end
 
 endmodule
