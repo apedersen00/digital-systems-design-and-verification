@@ -264,3 +264,45 @@ frame code={\path[draw=mintedframe, fill=mintedbackground](frame.south west) rec
 
 % Inline bash command for short commands
 \newmintinline[bashcmdline]{bash}{bgcolor=mintedbackground!50, fontsize=\small}
+
+\definecolor{pyframe}{rgb}{0.65,0.89,0.63}
+
+\setminted[python]{
+    bgcolor=mintedbackground,
+    fontfamily=tt,
+    linenos=true,
+    numberblanklines=true,
+    numbersep=12pt,
+    gobble=0,
+    frame=none, % let the tcolorbox draw the frame
+    framesep=2mm,
+    tabsize=4,
+    obeytabs=false,
+    mathescape=false,
+    samepage=false,
+    showspaces=false,
+    texcl=false,
+    baselinestretch=1.2,
+    fontsize=\footnotesize,
+    breaklines=true,
+}
+
+% A tcolorbox listing that uses minted's python lexer and draws a green frame
+\newtcblisting{svpython}[2][]{
+    listing engine=minted,
+    listing only,#1,
+    title=#2,
+    minted language=python,
+    colback=mintedbackground,
+    colframe=pyframe,
+    boxrule=0.8pt,
+    arc=2pt,
+    sharp corners,
+    left=6pt,
+    right=6pt,
+    top=4pt,
+    bottom=4pt,
+    fonttitle=\ttfamily\footnotesize,
+    coltitle=white,
+    colbacktitle=pyframe,
+}
