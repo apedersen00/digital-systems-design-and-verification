@@ -19,7 +19,8 @@
     left=2.5cm,
     right=2.5cm,
     top=2.5cm,
-    bottom=3cm
+    bottom=3cm,
+    headheight=14pt
 }
 
 %----------------------------------------------------------------------------------------
@@ -133,18 +134,26 @@
 
 % ------- MINTED
 
+% Base colors
 \definecolor{mintedbackground}{rgb}{0.95,0.95,0.95}
 \definecolor{mintedframe}{rgb}{0.3,0.55,0.55}
 
-\setminted[cpp]{
+% Language-specific title bar colors
+\definecolor{svcolor}{rgb}{0.2,0.4,0.6}        % Blue for SystemVerilog
+\definecolor{pycolor}{rgb}{0.65,0.89,0.63}     % Green for Python
+\definecolor{cppcolor}{rgb}{0.8,0.4,0.2}       % Orange for C++
+\definecolor{bashcolor}{rgb}{0.3,0.3,0.3}      % Dark gray for Bash/Terminal
+\definecolor{textcolor}{rgb}{0.5,0.5,0.5}      % Gray for text/generic
+
+% Base minted configuration for all languages
+\setminted{
     bgcolor=mintedbackground,
     fontfamily=tt,
     linenos=true,
     numberblanklines=true,
-    numbersep=12pt,
     numbersep=5pt,
     gobble=0,
-    frame=leftline,
+    frame=none,
     framesep=2mm,
     funcnamehighlighting=true,
     tabsize=4,
@@ -158,151 +167,296 @@
     breaklines=true,
 }
 
-\setminted[text]{
-    bgcolor=mintedbackground,
-    fontfamily=tt,
-    linenos=true,
-    numberblanklines=true,
-    numbersep=12pt,
-    numbersep=5pt,
-    gobble=0,
-    frame=leftline,
-    framesep=2mm,
-    funcnamehighlighting=true,
-    tabsize=4,
-    obeytabs=false,
-    mathescape=false,
-    samepage=false,
-    showspaces=false,
-    showtabs =false,
-    texcl=false,
-    baselinestretch=1.2,
-    fontsize=\footnotesize,
-    breaklines=true,
-}
-
-\newtcblisting{cppminted}[2][]{listing engine=minted, listing only,#1, title=#2, minted language=cpp, colback=mintedbackground}
-
-\newtcblisting{svminted}[2][]{listing engine=minted, listing only,#1, title=#2, minted language=systemverilog, colback=mintedbackground}
-
-\newtcblisting{mintedterminal}[2][]{enhanced, listing engine=minted, 
-listing only,#1, title=#2, minted language=text, 
-coltitle=mintedbackground!30!black, 
-fonttitle=\ttfamily\footnotesize,
-sharp corners, top=0mm, bottom=0mm,
-title code={\path[draw=mintedframe,dashed, fill=mintedbackground](title.south west)--(title.south east);},
-frame code={\path[draw=mintedframe, fill=mintedbackground](frame.south west) rectangle (frame.north east);}
-}
-
-% SystemVerilog configuration
-\setminted[systemverilog]{
-    bgcolor=mintedbackground,
-    fontfamily=tt,
-    linenos=true,
-    numberblanklines=true,
-    numbersep=12pt,
-    numbersep=5pt,
-    gobble=0,
-    frame=leftline,
-    framesep=2mm,
-    funcnamehighlighting=true,
-    tabsize=4,
-    obeytabs=false,
-    mathescape=false,
-    samepage=false,
-    showspaces=false,
-    texcl=false,
-    baselinestretch=1.2,
-    fontsize=\footnotesize,
-    breaklines=true,
-}
-
-% Bash command configuration for single commands with comments
+% Override specific settings for bash (no line numbers for commands)
 \setminted[bash]{
-    bgcolor=mintedbackground,
-    fontfamily=tt,
     linenos=false,
-    gobble=0,
-    frame=leftline,
-    framesep=2mm,
-    tabsize=4,
-    obeytabs=false,
-    mathescape=false,
-    samepage=true,
-    showspaces=false,
-    texcl=false,
-    baselinestretch=1.1,
     fontsize=\small,
-    breaklines=true,
+    baselinestretch=1.1,
+    samepage=true,
 }
 
-% Custom environment for single bash commands with comments
-\newtcblisting{bashcmd}[1][]{
+% SystemVerilog environment
+\newtcblisting{svcode}[2][]{
     enhanced,
     listing engine=minted,
     listing only,
-    minted language=bash,
+    minted language=systemverilog,
     colback=mintedbackground,
-    colframe=mintedframe,
-    fonttitle=\ttfamily\small\bfseries,
+    colframe=svcolor,
+    fonttitle=\ttfamily\footnotesize\bfseries,
     coltitle=white,
-    colbacktitle=mintedframe,
+    colbacktitle=svcolor,
     sharp corners,
-    boxrule=0.5pt,
-    top=3pt,
-    bottom=3pt,
-    left=8pt,
-    right=8pt,
+    boxrule=0.8pt,
+    arc=2pt,
+    left=12pt,
+    right=6pt,
+    top=4pt,
+    bottom=4pt,
     toptitle=2pt,
     bottomtitle=2pt,
     lefttitle=8pt,
     righttitle=8pt,
     before skip=10pt,
     after skip=10pt,
+    title=#2,
     #1
 }
 
-% Inline bash command for short commands
-\newmintinline[bashcmdline]{bash}{bgcolor=mintedbackground!50, fontsize=\small}
-
-\definecolor{pyframe}{rgb}{0.65,0.89,0.63}
-
-\setminted[python]{
-    bgcolor=mintedbackground,
-    fontfamily=tt,
-    linenos=true,
-    numberblanklines=true,
-    numbersep=12pt,
-    gobble=0,
-    frame=none, % let the tcolorbox draw the frame
-    framesep=2mm,
-    tabsize=4,
-    obeytabs=false,
-    mathescape=false,
-    samepage=false,
-    showspaces=false,
-    texcl=false,
-    baselinestretch=1.2,
-    fontsize=\footnotesize,
-    breaklines=true,
-}
-
-% A tcolorbox listing that uses minted's python lexer and draws a green frame
-\newtcblisting{svpython}[2][]{
+% Python environment  
+\newtcblisting{pycode}[2][]{
+    enhanced,
     listing engine=minted,
-    listing only,#1,
-    title=#2,
+    listing only,
     minted language=python,
     colback=mintedbackground,
-    colframe=pyframe,
+    colframe=pycolor,
+    fonttitle=\ttfamily\footnotesize\bfseries,
+    coltitle=white,
+    colbacktitle=pycolor,
+    sharp corners,
     boxrule=0.8pt,
     arc=2pt,
-    sharp corners,
-    left=6pt,
+    left=12pt,
     right=6pt,
     top=4pt,
     bottom=4pt,
-    fonttitle=\ttfamily\footnotesize,
-    coltitle=white,
-    colbacktitle=pyframe,
+    toptitle=2pt,
+    bottomtitle=2pt,
+    lefttitle=8pt,
+    righttitle=8pt,
+    before skip=10pt,
+    after skip=10pt,
+    title=#2,
+    #1
 }
+
+% C++ environment
+\newtcblisting{cppcode}[2][]{
+    enhanced,
+    listing engine=minted,
+    listing only,
+    minted language=cpp,
+    colback=mintedbackground,
+    colframe=cppcolor,
+    fonttitle=\ttfamily\footnotesize\bfseries,
+    coltitle=white,
+    colbacktitle=cppcolor,
+    sharp corners,
+    boxrule=0.8pt,
+    arc=2pt,
+    left=12pt,
+    right=6pt,
+    top=4pt,
+    bottom=4pt,
+    toptitle=2pt,
+    bottomtitle=2pt,
+    lefttitle=8pt,
+    righttitle=8pt,
+    before skip=10pt,
+    after skip=10pt,
+    title=#2,
+    #1
+}
+
+% Bash environment
+\newtcblisting{bashcode}[2][]{
+    enhanced,
+    listing engine=minted,
+    listing only,
+    minted language=bash,
+    colback=mintedbackground,
+    colframe=bashcolor,
+    fonttitle=\ttfamily\footnotesize\bfseries,
+    coltitle=white,
+    colbacktitle=bashcolor,
+    sharp corners,
+    boxrule=0.8pt,
+    arc=2pt,
+    left=8pt,
+    right=6pt,
+    top=4pt,
+    bottom=4pt,
+    toptitle=2pt,
+    bottomtitle=2pt,
+    lefttitle=8pt,
+    righttitle=8pt,
+    before skip=10pt,
+    after skip=10pt,
+    title=#2,
+    #1
+}
+
+% Text/terminal environment
+\newtcblisting{textcode}[2][]{
+    enhanced,
+    listing engine=minted,
+    listing only,
+    minted language=text,
+    colback=mintedbackground,
+    colframe=textcolor,
+    fonttitle=\ttfamily\footnotesize\bfseries,
+    coltitle=white,
+    colbacktitle=textcolor,
+    sharp corners,
+    boxrule=0.8pt,
+    arc=2pt,
+    left=12pt,
+    right=6pt,
+    top=4pt,
+    bottom=4pt,
+    toptitle=2pt,
+    bottomtitle=2pt,
+    lefttitle=8pt,
+    righttitle=8pt,
+    before skip=10pt,
+    after skip=10pt,
+    title=#2,
+    #1
+}
+
+% Inline code commands for different languages
+\newmintinline[svinline]{systemverilog}{bgcolor=mintedbackground!50, fontsize=\small}
+\newmintinline[pyinline]{python}{bgcolor=mintedbackground!50, fontsize=\small}
+\newmintinline[cppinline]{cpp}{bgcolor=mintedbackground!50, fontsize=\small}
+\newmintinline[bashinline]{bash}{bgcolor=mintedbackground!50, fontsize=\small}
+\newmintinline[textinline]{text}{bgcolor=mintedbackground!50, fontsize=\small}
+
+% Backward compatibility aliases (deprecated - use new environments above)
+\newtcblisting{cppminted}[2][]{
+    enhanced,
+    listing engine=minted,
+    listing only,
+    minted language=cpp,
+    colback=mintedbackground,
+    colframe=cppcolor,
+    fonttitle=\ttfamily\footnotesize\bfseries,
+    coltitle=white,
+    colbacktitle=cppcolor,
+    sharp corners,
+    boxrule=0.8pt,
+    arc=2pt,
+    left=12pt,
+    right=6pt,
+    top=4pt,
+    bottom=4pt,
+    toptitle=2pt,
+    bottomtitle=2pt,
+    lefttitle=8pt,
+    righttitle=8pt,
+    before skip=10pt,
+    after skip=10pt,
+    title=#2,
+    #1
+}
+
+\newtcblisting{svminted}[2][]{
+    enhanced,
+    listing engine=minted,
+    listing only,
+    minted language=systemverilog,
+    colback=mintedbackground,
+    colframe=svcolor,
+    fonttitle=\ttfamily\footnotesize\bfseries,
+    coltitle=white,
+    colbacktitle=svcolor,
+    sharp corners,
+    boxrule=0.8pt,
+    arc=2pt,
+    left=12pt,
+    right=6pt,
+    top=4pt,
+    bottom=4pt,
+    toptitle=2pt,
+    bottomtitle=2pt,
+    lefttitle=8pt,
+    righttitle=8pt,
+    before skip=10pt,
+    after skip=10pt,
+    title=#2,
+    #1
+}
+
+\newtcblisting{mintedterminal}[2][]{
+    enhanced,
+    listing engine=minted,
+    listing only,
+    minted language=text,
+    colback=mintedbackground,
+    colframe=textcolor,
+    fonttitle=\ttfamily\footnotesize\bfseries,
+    coltitle=white,
+    colbacktitle=textcolor,
+    sharp corners,
+    boxrule=0.8pt,
+    arc=2pt,
+    left=12pt,
+    right=6pt,
+    top=4pt,
+    bottom=4pt,
+    toptitle=2pt,
+    bottomtitle=2pt,
+    lefttitle=8pt,
+    righttitle=8pt,
+    before skip=10pt,
+    after skip=10pt,
+    title=#2,
+    #1
+}
+
+\newtcblisting{bashcmd}[2][]{
+    enhanced,
+    listing engine=minted,
+    listing only,
+    minted language=bash,
+    colback=mintedbackground,
+    colframe=bashcolor,
+    fonttitle=\ttfamily\footnotesize\bfseries,
+    coltitle=white,
+    colbacktitle=bashcolor,
+    sharp corners,
+    boxrule=0.8pt,
+    arc=2pt,
+    left=8pt,
+    right=6pt,
+    top=4pt,
+    bottom=4pt,
+    toptitle=2pt,
+    bottomtitle=2pt,
+    lefttitle=8pt,
+    righttitle=8pt,
+    before skip=10pt,
+    after skip=10pt,
+    title=#2,
+    #1
+}
+
+\newtcblisting{svpython}[2][]{
+    enhanced,
+    listing engine=minted,
+    listing only,
+    minted language=python,
+    colback=mintedbackground,
+    colframe=pycolor,
+    fonttitle=\ttfamily\footnotesize\bfseries,
+    coltitle=white,
+    colbacktitle=pycolor,
+    sharp corners,
+    boxrule=0.8pt,
+    arc=2pt,
+    left=12pt,
+    right=6pt,
+    top=4pt,
+    bottom=4pt,
+    toptitle=2pt,
+    bottomtitle=2pt,
+    lefttitle=8pt,
+    righttitle=8pt,
+    before skip=10pt,
+    after skip=10pt,
+    title=#2,
+    #1
+}
+
+% Backward compatibility for inline commands
+\newmintinline[bashcmdline]{bash}{bgcolor=mintedbackground!50, fontsize=\small}
