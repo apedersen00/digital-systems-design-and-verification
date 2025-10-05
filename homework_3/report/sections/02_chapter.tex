@@ -551,7 +551,7 @@ $$
 Design an accelerator that calculates the sin of x based on the Taylor series expansion of sinx. The $x$ signal is a 15-bit fraction and 1-bit integer, $x \in [0, \pi/2]$. The accelerator starts the sin of x when it receives a positive pulse on the \lstinline{start} signal. Accelerator should issue 1 on the \lstinline{done} signal when the result is calculated after eight iterations. The accelerator has a 16-bit fractional output signal called \lstinline{result}, $\text{result} \in [0, 1]$.
 
 \begin{enumerate}
-    \item Draw a schematic of your datapath in your report, including the components, interfaces, and necessary control signal. (Use the sin_coeff_lut module that is given for the coefficients).
+    \item Draw a schematic of your datapath in your report, including the components, interfaces, and necessary control signal. (Use the sin\_coeff\_lut module that is given for the coefficients).
     \item Draw a state diagram that shows the behavior of your controller in your report. In each state, show the control signals that are issued.
     \item Show the wiring between the datapath and controller within the top-level module in your report.
     \item Model the datapath and controller in SystemVerilog.
@@ -561,6 +561,47 @@ Design an accelerator that calculates the sin of x based on the Taylor series ex
 
 \subsection*{Solution}
 
+Factorials and exponents are expensive hardware-wise. We start off by determining the recurrence relation of the Taylor series of $\sin x$ to \textit{hopefully} get something more useful for hardware. Each term, $T_n$, in a Taylor series is given by:
 
+$$
+T_n = \frac{(-1)^n}{(2n + 1)!} x^{2n + 1}
+$$
+
+We can express the next term as follows:
+
+$$
+T_{n+1} = \frac{(-1)^{n+1}}{(2n + 3)!} x^{2n + 3}
+$$
+
+We are interested in the \textit{relation} between the previous term and the next. We divide:
+
+$$
+\frac{T_{n+1}}{T_n} = \frac{(-1)^{n+1}}{(-1)^n} \frac{(2n +1)!}{(2n + 3)!} \frac{x^{2n + 3}}{x^{2n + 1}} = (-1) (x^2) \left( \frac{1}{(2n + 2)(2n + 3)} \right) = - \frac{x^2}{(2n + 2)(2n + 3)}
+$$
+
+The final recurrence relation is found by multiplying $T_n$:
+
+$$
+T_{n + 1} = - T_n \frac{x^2}{(2n + 2)(2n + 3)}
+$$
+
+We now have an expression that is significantly easier to implement in hardware. To further improve performance the fraction can be pre-calculated and stored in a Look-Up Table (LUT).
+
+\begin{svpython}{Calculation of LUT values}
+import math
+
+def quant_15(val):
+    return int(round(val * (1 << 15))) & 0xFFFF
+
+val = [1.0]
+for i in range(7):
+    denom = (2*(i) + 2) * (2*(i) + 3)
+    val.append(1 / denom)
+
+for v in val:
+    q15 = quant_15(v)
+    print(f"{v:.10f} -> 0x{q15:04X}")
+
+\end{svpython}
 
 \end{document}
