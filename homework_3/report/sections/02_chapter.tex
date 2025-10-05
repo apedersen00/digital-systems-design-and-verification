@@ -585,7 +585,7 @@ $$
 T_{n + 1} = - T_n \frac{x^2}{(2n + 2)(2n + 3)}
 $$
 
-We now have an expression that is significantly easier to implement in hardware. To further improve performance the fraction can be pre-calculated and stored in a Look-Up Table (LUT).
+We now have an expression that is significantly easier to implement in hardware. To further improve performance the fraction is pre-calculated and stored in a Look-Up Table (LUT). The calculations and necessary quantization is done with the following Python script:
 
 \begin{svpython}{Calculation of LUT values}
 import math
@@ -601,7 +601,19 @@ for i in range(7):
 for v in val:
     q15 = quant_15(v)
     print(f"{v:.10f} -> 0x{q15:04X}")
-
 \end{svpython}
+
+\begin{textcode}{> python q5\_lut.py}
+1.0000000000 -> 0x8000
+0.1666666667 -> 0x1555
+0.0500000000 -> 0x0666
+0.0238095238 -> 0x030C
+0.0138888889 -> 0x01C7
+0.0090909091 -> 0x012A
+0.0064102564 -> 0x00D2
+0.0047619048 -> 0x009C
+\end{textcode}
+
+
 
 \end{document}
