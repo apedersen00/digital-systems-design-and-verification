@@ -11,7 +11,39 @@
 //-------------------------------------------------------------------------------------------------
 
 //  core core_0 (
-//    .clk_i()
+//    .clk_i(),
+
+    // register file control
+//    .en_rf_i(),
+//    .we_rf_i(),
+//    .sel_rf_i(),
+
+    // program counter control
+//    .en_pc_i(),
+//    .rstn_pc_i(),
+//    .load_pc_i(),
+
+    // instruction register control
+//    .we_ir_i(),
+
+    // memory address register control
+//    .load_addr_reg_i(),
+
+    // ALU control
+//    .sel_alu_port_a_i(),
+//    .sel_alu_port_b_i(),
+//    .alu_op_i(),
+
+    // memory control
+//    .we_mem_i(),
+//    .re_mem_i(),
+
+    // data in
+//    .imm_i(),
+//    .mem_i(),
+//    .rf_data_i(),
+//    .rf_addr_a_i(),
+//    .rf_addr_b_i(),
 //  );
 
 module core_dp (
@@ -50,7 +82,8 @@ module core_dp (
     input   logic [4:0]   rf_addr_b_i,
 
     // data out
-    output  logic [2:0]   alu_flag_o
+    output  logic [2:0]   alu_flag_o,
+    output  logic [31:0]  mem_addr_o
   );
 
   logic [31:0] alu_port_a;
