@@ -31,7 +31,7 @@ module mem_controller (
   typedef enum logic [2:0] {
     STATE_IDLE,
     STATE_READ,
-    STATE_WRITE,
+    STATE_WRITE
   } state_t;
 
   state_t cur_state, nxt_state;
@@ -47,10 +47,10 @@ module mem_controller (
 
       STATE_IDLE  : begin
         if ( |write_en_i ) begin
-          nxt_state <= STATE_WRITE;
+          nxt_state = STATE_WRITE;
         end
         else if ( read_en_i ) begin
-          nxt_state <= STATE_READ;
+          nxt_state = STATE_READ;
         end
       end
 

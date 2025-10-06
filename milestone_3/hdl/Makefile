@@ -42,7 +42,7 @@ VERILATOR_FLAGS += -Wall
 # Make waveforms
 VERILATOR_FLAGS += --trace-vcd
 # Check SystemVerilog assertions
-VERILATOR_FLAGS += --assert -Wno-EOFNEWLINE
+VERILATOR_FLAGS += --assert -Wno-EOFNEWLINE -Wno-UNUSEDSIGNAL
 # Generate coverage analysis
 VERILATOR_FLAGS += --coverage
 # Set top module to 'top'

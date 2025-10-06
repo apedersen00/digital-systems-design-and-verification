@@ -11,7 +11,9 @@
 //
 //-------------------------------------------------------------------------------------------------
 
-//  bram_64kib bram_64kib_0 (
+//  bram_64kib #(
+//    .INIT_FILE()
+//  ) bram_64kib_0 (
 //    .clk_i(),
 //    .en_i(),
 //    .we_i(),
@@ -20,7 +22,9 @@
 //    .d_o()
 //  );
 
-module bram_64kib (
+module bram_64kib #(
+    parameter string INIT_FILE = "rams_init_file.data"  // initialization file
+) (
     input   logic         clk_i,
     input   logic         en_i,
     input   logic         we_i,
@@ -29,20 +33,21 @@ module bram_64kib (
     output  logic [31:0]  d_o
   );
 
-  logic [31:0] ram [0:63];
+  logic [31:0] ram [0:16383];
 
   initial begin
-    $readmemb("rams_init_file.data",ram);
+    if (INIT_FILE != "") begin
+      $readmemh(INIT_FILE, ram);
+    end
   end
 
-  always_ff @( posedge clk_i ) begin
-    if ( en_i ) begin
+  always_ff @(posedge clk_i) begin
+    if (en_i) begin
       d_o <= ram[addr_i];
-      if ( we_i ) begin
+      if (we_i) begin
         ram[addr_i] <= d_i;
       end
     end
   end
 
 endmodule
-

@@ -27,12 +27,10 @@ void tick(const std::unique_ptr<VerilatedContext>& contextp, const std::unique_p
     top->eval();
 }
 
-void reset(const std::unique_ptr<VerilatedContext>& contextp, const std::unique_ptr<Vtop>& top) {
-    top->rst_n = 0;
-    tick(contextp, top);
-    tick(contextp, top);
-    top->rst_n = 1;
-    VL_PRINTF("System reset.\n");
+void wait_for_ready(const std::unique_ptr<VerilatedContext>& contextp, const std::unique_ptr<Vtop>& top) {
+    while (!top->ready) {
+        tick(contextp, top);
+    }
 }
 
 int main(int argc, char** argv) {
@@ -44,90 +42,164 @@ int main(int argc, char** argv) {
     contextp->commandArgs(argc, argv);
     const std::unique_ptr<Vtop> top{new Vtop{contextp.get(), "TOP"}};
 
-    const int DEPTH = 256;
-    const int WIDTH = 8;
-
-    // init random number generator
+    // Memory parameters
+    const int NUM_WORDS = 16384;
+    const int WORD_SIZE = 32;
+    
+    // Initialize random number generator
     std::random_device rd;
     std::mt19937 gen(rd());
-    std::uniform_int_distribution<> distrib(0, (1 << WIDTH) - 1);
+    std::uniform_int_distribution<uint32_t> data_dist(0, UINT32_MAX);
+    std::uniform_int_distribution<uint32_t> addr_dist(0, (NUM_WORDS - 1) * 8); // Word-aligned addresses
 
-    // array for keeping expected values
-    uint8_t ref_vals[DEPTH] = {0};
+    // Array for keeping expected values
+    uint32_t ref_memory[NUM_WORDS] = {0};
 
-    // initialize
-    top->clk            = 0;
-    top->rst_n          = 0;
-    top->data_in        = 0;
-    top->read_addr_1    = 0;
-    top->read_addr_2    = 0;
-    top->write_addr     = 0;
-    top->write_en_n     = 0;
-    top->chip_en        = 0;
-    top->data_out_1     = 0;
-    top->data_out_2     = 0;
+    // Initialize signals
+    top->clk        = 0;
+    top->read_en    = 0;
+    top->addr       = 0;
+    top->d_i        = 0;
     top->eval();
 
-    reset(contextp, top);
-    top->chip_en = 1;
+    VL_PRINTF("\n--- 64KiB Memory System Test ---\n");
 
-    VL_PRINTF("Writing to all registers...\n");
-    for (int i = 0; i < DEPTH; i++) {
-        uint8_t rand_val = distrib(gen);
-        ref_vals[i] = rand_val;
-
-        top->write_addr = i;
-        top->data_in = rand_val;
-        top->write_en_n = 0;
-
-        tick(contextp, top);
-
-        top->write_en_n = 1;
-    }
-    VL_PRINTF("Completed...\n\n");
-
-    VL_PRINTF("Reading an verifying all registers (port 1)...\n");
-    int error_count = 0;
-    for (int i = 0; i < DEPTH; i++) {
-        top->read_addr_1 = i;
-        tick(contextp, top);
-
-        uint8_t read_val = top->data_out_1;
-        if (read_val != ref_vals[i]) {
-            VL_PRINTF("ERROR: Addr %d: RF returned %d, expected %d\n", i, read_val, ref_vals[i]);
-            error_count++;
-        }
-    }
-    VL_PRINTF("Completed with %d errors...\n\n", error_count);
-
-    VL_PRINTF("Reading an verifying all registers (port 2)...\n");
-    error_count = 0;
-    for (int i = 0; i < DEPTH; i++) {
-        top->read_addr_2 = i;
-        tick(contextp, top);
-
-        uint8_t read_val = top->data_out_2;
-        if (read_val != ref_vals[i]) {
-            VL_PRINTF("ERROR: Addr %d: RF returned %d, expected %d\n", i, read_val, ref_vals[i]);
-            error_count++;
-        }
-    }
-    VL_PRINTF("Completed with %d errors...\n\n", error_count);
-
-    VL_PRINTF("Verifying reset...\n");
-    error_count = 0;
-    reset(contextp, top);
-
-    top->read_addr_1 = 127;
     tick(contextp, top);
-    uint8_t val_after_reset = top->data_out_1;
-    if (val_after_reset != 0) {
-        VL_PRINTF("ERROR: Addr %d: RF returned %d, expected 0\n", 127, val_after_reset);
+    wait_for_ready(contextp, top);
+
+    // Read initialization data
+    for (int i = 0; i < 16; i++) {
+        uint32_t word_addr = i * 4;
+        top->addr = word_addr | 0x3;
+        top->read_en = 1;
+
+        tick(contextp, top);
+        wait_for_ready(contextp, top);
+
+        uint32_t read_data = top->d_o;
+        VL_PRINTF("  Read 0x%08X from address 0x%08X ✓\n", read_data, word_addr);
     }
-    VL_PRINTF("Completed with %d errors...\n\n", error_count);
+
+    // Write test data to memory
+    VL_PRINTF("\n--- Write Test ---\n");
+    
+    for (int i = 0; i < NUM_WORDS; i++) {
+        uint32_t test_data = data_dist(gen);
+        uint32_t word_addr = i * 4;
+        
+        ref_memory[i] = test_data;
+        
+        top->addr = word_addr | 0x3;
+        top->d_i = test_data;
+        top->read_en = 0;
+        
+        tick(contextp, top);
+        wait_for_ready(contextp, top);
+        
+        if (i < 5) {
+            VL_PRINTF("  Wrote 0x%08X to address 0x%08X\n", test_data, word_addr);
+        }
+    }
+    VL_PRINTF("Write test completed.\n\n");
+
+    // Test 2: Read back and verify data
+    VL_PRINTF("\n--- Read Test ---\n");
+    
+    int error_count = 0;
+    for (int i = 0; i < NUM_WORDS; i++) {
+        uint32_t word_addr = i * 4;
+        
+        top->addr = word_addr;
+        top->d_i = 0;
+        top->read_en = 1;
+        
+        tick(contextp, top);
+        wait_for_ready(contextp, top);
+        
+        uint32_t read_data = top->d_o;
+        uint32_t expected_data = ref_memory[i];
+        
+        if (read_data != expected_data) {
+            VL_PRINTF("ERROR: Addr 0x%08X: Read 0x%08X, expected 0x%08X\n", 
+                     word_addr, read_data, expected_data);
+            error_count++;
+        } else if (i < 5) { // Show first few successful reads
+            VL_PRINTF("  Read 0x%08X from address 0x%08X ✓\n", read_data, word_addr);
+        }
+        
+        top->read_en = 0;
+    }
+    
+    if (error_count == 0) {
+        VL_PRINTF("All %d read operations completed successfully! ✓\n\n", NUM_WORDS);
+    } else {
+        VL_PRINTF("Read test completed with %d errors.\n\n", error_count);
+    }
+
+    // Test 3: State machine timing test
+    VL_PRINTF("--- Timing Test ---\n");
+    VL_PRINTF("Testing read/write state machine timing...\n");
+    
+    // Test read timing
+    top->addr = 0x00;
+    top->read_en = 1;
+    int read_cycles = 0;
+    
+    tick(contextp, top);
+    while (!top->ready) {
+        tick(contextp, top);
+        read_cycles++;
+    }
+    VL_PRINTF("Read operation took %d cycles\n", read_cycles + 1);
+    
+    top->read_en = 0;
+    tick(contextp, top);
+    
+    // Test write timing  
+    top->addr = 0x03;  // Write enable
+    top->d_i = 0xDEADBEEF;
+    int write_cycles = 0;
+    
+    tick(contextp, top);
+    while (!top->ready) {
+        tick(contextp, top);
+        write_cycles++;
+    }
+    VL_PRINTF("Write operation took %d cycles\n", write_cycles + 1);
+
+    // Test 4: Address boundary test
+    VL_PRINTF("\n--- Address Boundary Test ---\n");
+    VL_PRINTF("Testing edge addresses...\n");
+    
+    // Test first address
+    top->addr = 0b00000000000001;
+    top->d_i = 0x12345678;
+    top->read_en = 0;
+    tick(contextp, top);
+    wait_for_ready(contextp, top);
+    
+    top->read_en = 1;
+    tick(contextp, top);
+    wait_for_ready(contextp, top);
+    
+    if (top->d_o == 0x12345678) {
+        VL_PRINTF("Address 0x00:\n");
+    } else {
+        VL_PRINTF("Address 0x00: ERROR - got 0x%08X\n", top->d_o);
+        error_count++;
+    }
+    
+    top->read_en = 0;
+
+    VL_PRINTF("\n=== Test Summary ===\n");
+    if (error_count == 0) {
+        VL_PRINTF("All tests PASSED!\n");
+    } else {
+        VL_PRINTF("Tests FAILED with %d errors.\n", error_count);
+    }
 
     top->final();
     contextp->statsPrintSummary();
     Verilated::threadContextp()->coveragep()->write("logs/coverage.dat");
-    return 0;
+    return error_count == 0 ? 0 : 1;
 }
