@@ -27,6 +27,7 @@ module sinx_dp (
     input   logic         en_temp_reg_i,
     input   logic         en_term_reg_i,
     input   logic         en_sum_reg_i,
+    input   logic         sum_zero_i,
     input   logic         sub_i,
     input   logic [1:0]   mux_a_i,
     input   logic [1:0]   mux_b_i,
@@ -40,6 +41,7 @@ module sinx_dp (
   logic [15:0] lut;
   logic [15:0] mul_a;
   logic [15:0] mul_b;
+  logic [31:0] prod_ext;
   logic [15:0] prod;
 
   sinx_lut sinx_lut_0 (
@@ -73,17 +75,21 @@ module sinx_dp (
     case (mux_a_i)
       2'b00: mul_a = x_i;
       2'b01: mul_a = temp_reg;
-      2'b10: mul_a = 16'd1;
+      2'b10: mul_a = 16'd32768; // 1 in Q1.15
       2'b11: mul_a = '0;
       default: mul_a = '0;
     endcase
 
-    prod = mul_b * mul_a;
+    prod_ext = mul_b * mul_a;
+    prod = prod_ext[30:15];
   end
 
   always_ff @( posedge clk_i ) begin : sum
     if (en_sum_reg_i) begin
-      if (sub_i) begin
+      if (sum_zero_i) begin
+        sum_reg <= prod;
+      end
+      else if (sub_i) begin
         sum_reg <= sum_reg - prod;
       end
       else begin
@@ -92,6 +98,6 @@ module sinx_dp (
     end
   end
 
-  assign result_o = sum_reg;
+  assign result_o = sum_reg << 1;
 
 endmodule

@@ -20,14 +20,19 @@
 // Legacy function required only so linking works on Cygwin and MSVC++
 double sc_time_stamp() { return 0; }
 
-// Convert fixed-point to double (Q15.16 format)
-double fixed_to_double(uint16_t fixed_val) {
-    return (double)fixed_val / 65536.0;
+// Convert fixed-point to double (Q1.15 format)
+double x_fixed_to_double(uint16_t fixed_val) {
+    return (double)fixed_val / 32768.0;
 }
 
-// Convert double to fixed-point (Q15.16 format) 
-uint16_t double_to_fixed(double val) {
-    return (uint16_t)(val * 65536.0);
+// Convert double to fixed-point (Q1.15 format)
+uint16_t double_to_x_fixed(double val) {
+    return (uint16_t)(val * 32768.0);
+}
+
+// Convert fixed-point result (Q0.16) to double
+double result_fixed_to_double(uint16_t fixed_val) {
+    return (double)fixed_val / 65536.0;
 }
 
 // Reference sin(x) calculation using Taylor series (8 terms)
@@ -125,7 +130,7 @@ int main(int argc, char** argv) {
         }
         
         // Convert to fixed-point
-        uint16_t x_fixed = double_to_fixed(angle);
+        uint16_t x_fixed = double_to_x_fixed(angle);
         
         // Start calculation
         top->x = x_fixed;
@@ -137,7 +142,7 @@ int main(int argc, char** argv) {
         wait_for_done();
         
         // Get results
-        double hw_result = fixed_to_double(top->result);
+        double hw_result = result_fixed_to_double(top->result);
         double sw_result = reference_sin(angle);
         double error = fabs(hw_result - sw_result);
         
@@ -161,7 +166,7 @@ int main(int argc, char** argv) {
     
     // Test multiple starts (should handle gracefully)
     VL_PRINTF("Testing multiple start pulses...\n");
-    top->x = double_to_fixed(0.5);
+    top->x = double_to_x_fixed(0.5);
     top->start = 1;
     clock_cycle();
     top->start = 1; // Second start pulse
@@ -177,7 +182,7 @@ int main(int argc, char** argv) {
     clock_cycle();
     top->start = 0;
     wait_for_done();
-    double zero_result = fixed_to_double(top->result);
+    double zero_result = x_fixed_to_double(top->result);
     VL_PRINTF("sin(0) = %.6f (expected ≈ 0.0)\n", zero_result);
     
     VL_PRINTF("\n=== TEST SUMMARY ===\n");
@@ -185,9 +190,9 @@ int main(int argc, char** argv) {
     VL_PRINTF("Success rate: %.1f%%\n", (double)passed/num_tests * 100.0);
     
     if (passed == num_tests) {
-        VL_PRINTF("🎉 ALL TESTS PASSED! 🎉\n");
+        VL_PRINTF("ALL TESTS PASSED!\n");
     } else {
-        VL_PRINTF("❌ Some tests failed. Check implementation.\n");
+        VL_PRINTF("Some tests failed. Check implementation.\n");
     }
 
     top->final();

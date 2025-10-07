@@ -1,0 +1,192 @@
+{
+  "extensionVersion": "1.4.1",
+  "fileName": "/home/andreasp/university/9-semester/digital-systems-design-and-verification/homework_3/hdl/q5/logs/vlt_dump.vcd",
+  "markerTime": null,
+  "altMarkerTime": null,
+  "selectedSignal": {
+    "name": "TOP.top.sinx_0.sinx_dp_0.sub_i",
+    "numberFormat": "hexadecimal",
+    "msb": -1,
+    "lsb": -1
+  },
+  "zoomRatio": 4.83112840466926,
+  "scrollLeft": 2467.845914396887,
+  "displayedSignals": [
+    {
+      "dataType": "netlist-variable",
+      "netlistId": 26,
+      "name": "TOP.top.sinx_0.sinx_controller_0.clk_i",
+      "numberFormat": "binary",
+      "colorIndex": 0,
+      "rowHeight": 1,
+      "verticalScale": 1,
+      "renderType": "binary",
+      "valueLinkCommand": ""
+    },
+    {
+      "dataType": "netlist-variable",
+      "netlistId": 27,
+      "name": "TOP.top.sinx_0.sinx_controller_0.rstn_i",
+      "numberFormat": "binary",
+      "colorIndex": 0,
+      "rowHeight": 1,
+      "verticalScale": 1,
+      "renderType": "binary",
+      "valueLinkCommand": ""
+    },
+    {
+      "dataType": "netlist-variable",
+      "netlistId": 28,
+      "name": "TOP.top.sinx_0.sinx_controller_0.start_i",
+      "numberFormat": "binary",
+      "colorIndex": 0,
+      "rowHeight": 1,
+      "verticalScale": 1,
+      "renderType": "binary",
+      "valueLinkCommand": ""
+    },
+    {
+      "dataType": "netlist-variable",
+      "netlistId": 38,
+      "name": "TOP.top.sinx_0.sinx_controller_0.cur_state",
+      "numberFormat": "hexadecimal",
+      "colorIndex": 0,
+      "rowHeight": 1,
+      "verticalScale": 1,
+      "renderType": "multiBit",
+      "valueLinkCommand": ""
+    },
+    {
+      "dataType": "netlist-variable",
+      "netlistId": 40,
+      "name": "TOP.top.sinx_0.sinx_controller_0.counter",
+      "numberFormat": "hexadecimal",
+      "colorIndex": 0,
+      "rowHeight": 1,
+      "verticalScale": 1,
+      "renderType": "multiBit",
+      "valueLinkCommand": ""
+    },
+    {
+      "dataType": "netlist-variable",
+      "netlistId": 42,
+      "name": "TOP.top.sinx_0.sinx_dp_0.x_i",
+      "numberFormat": "hexadecimal",
+      "colorIndex": 0,
+      "rowHeight": 1,
+      "verticalScale": 1,
+      "renderType": "multiBit",
+      "valueLinkCommand": ""
+    },
+    {
+      "dataType": "netlist-variable",
+      "netlistId": 43,
+      "name": "TOP.top.sinx_0.sinx_dp_0.en_temp_reg_i",
+      "numberFormat": "binary",
+      "colorIndex": 0,
+      "rowHeight": 1,
+      "verticalScale": 1,
+      "renderType": "binary",
+      "valueLinkCommand": ""
+    },
+    {
+      "dataType": "netlist-variable",
+      "netlistId": 52,
+      "name": "TOP.top.sinx_0.sinx_dp_0.temp_reg",
+      "numberFormat": "hexadecimal",
+      "colorIndex": 0,
+      "rowHeight": 1,
+      "verticalScale": 1,
+      "renderType": "multiBit",
+      "valueLinkCommand": ""
+    },
+    {
+      "dataType": "netlist-variable",
+      "netlistId": 44,
+      "name": "TOP.top.sinx_0.sinx_dp_0.en_term_reg_i",
+      "numberFormat": "binary",
+      "colorIndex": 0,
+      "rowHeight": 1,
+      "verticalScale": 1,
+      "renderType": "binary",
+      "valueLinkCommand": ""
+    },
+    {
+      "dataType": "netlist-variable",
+      "netlistId": 53,
+      "name": "TOP.top.sinx_0.sinx_dp_0.term_reg",
+      "numberFormat": "hexadecimal",
+      "colorIndex": 0,
+      "rowHeight": 1,
+      "verticalScale": 1,
+      "renderType": "multiBit",
+      "valueLinkCommand": ""
+    },
+    {
+      "dataType": "netlist-variable",
+      "netlistId": 56,
+      "name": "TOP.top.sinx_0.sinx_dp_0.mul_a",
+      "numberFormat": "hexadecimal",
+      "colorIndex": 0,
+      "rowHeight": 1,
+      "verticalScale": 1,
+      "renderType": "multiBit",
+      "valueLinkCommand": ""
+    },
+    {
+      "dataType": "netlist-variable",
+      "netlistId": 57,
+      "name": "TOP.top.sinx_0.sinx_dp_0.mul_b",
+      "numberFormat": "hexadecimal",
+      "colorIndex": 0,
+      "rowHeight": 1,
+      "verticalScale": 1,
+      "renderType": "multiBit",
+      "valueLinkCommand": ""
+    },
+    {
+      "dataType": "netlist-variable",
+      "netlistId": 59,
+      "name": "TOP.top.sinx_0.sinx_dp_0.prod",
+      "numberFormat": "hexadecimal",
+      "colorIndex": 0,
+      "rowHeight": 1,
+      "verticalScale": 1,
+      "renderType": "multiBit",
+      "valueLinkCommand": ""
+    },
+    {
+      "dataType": "netlist-variable",
+      "netlistId": 45,
+      "name": "TOP.top.sinx_0.sinx_dp_0.en_sum_reg_i",
+      "numberFormat": "binary",
+      "colorIndex": 0,
+      "rowHeight": 1,
+      "verticalScale": 1,
+      "renderType": "binary",
+      "valueLinkCommand": ""
+    },
+    {
+      "dataType": "netlist-variable",
+      "netlistId": 47,
+      "name": "TOP.top.sinx_0.sinx_dp_0.sub_i",
+      "numberFormat": "binary",
+      "colorIndex": 0,
+      "rowHeight": 1,
+      "verticalScale": 1,
+      "renderType": "binary",
+      "valueLinkCommand": ""
+    },
+    {
+      "dataType": "netlist-variable",
+      "netlistId": 54,
+      "name": "TOP.top.sinx_0.sinx_dp_0.sum_reg",
+      "numberFormat": "hexadecimal",
+      "colorIndex": 0,
+      "rowHeight": 1,
+      "verticalScale": 1,
+      "renderType": "multiBit",
+      "valueLinkCommand": ""
+    }
+  ]
+}

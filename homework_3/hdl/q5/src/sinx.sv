@@ -29,6 +29,7 @@ module sinx (
   logic en_temp_reg;
   logic en_term_reg;
   logic en_sum_reg;
+  logic zero_sum;
   logic sub;
   logic [1:0] mux_a;
   logic [1:0] mux_b;
@@ -40,6 +41,7 @@ module sinx (
     .en_temp_reg_i    ( en_temp_reg ),
     .en_term_reg_i    ( en_term_reg ),
     .en_sum_reg_i     ( en_sum_reg  ),
+    .sum_zero_i       ( zero_sum    ),
     .sub_i            ( sub         ),
     .mux_a_i          ( mux_a       ),
     .mux_b_i          ( mux_b       ),
@@ -54,6 +56,7 @@ module sinx (
     .dp_en_temp_reg_o ( en_temp_reg ),
     .dp_en_term_reg_o ( en_term_reg ),
     .dp_en_sum_reg_o  ( en_sum_reg  ),
+    .dp_zero_sum_o    ( zero_sum    ),
     .dp_sub_o         ( sub         ),
     .dp_mux_a_o       ( mux_a       ),
     .dp_mux_b_o       ( mux_b       ),
