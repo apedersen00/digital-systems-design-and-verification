@@ -10,6 +10,10 @@ Found [here](homework_1/).
 
 Found [here](homework_2/).
 
+## Homework 3
+
+Found [here](homework_3/).
+
 ## Milestone 1
 
 Found [here](milestone_1/).
