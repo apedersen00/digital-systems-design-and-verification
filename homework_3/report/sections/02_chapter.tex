@@ -296,7 +296,7 @@ To compare the two FSMs, a testbench was written that writes the following test 
 
 The resulting waveforms are shown in \cref{fig:q2_wave}. Timing wise there is a significant difference between the two implementations as to when the output is valid. This is due to the Mealy Machine's combinational dependendency on the input, $x$. The waveforms for each FSM has been colored to illustrate when their outputs are valid. It is seen that both FSMs output the same sequences. The Moore Machine's output is always synchronized with the clock and is available for a full cycle. On the other hand, the Mealy Machine's output changes one half-cycle earlier and is only valid for half a cycle (on the rising edge).
 
-In conclusion, both FSMs can be implemented using the same number of states, i.e. same number of memory elements. The Mealy Machine requries additional combinational logic but also makes it output available without any cycle delay. Behavioral implementations of both FSMs are shown in the following pages but can otherwise be found in:
+In conclusion, both FSMs can be implemented using the same number of states, i.e. same number of memory elements. The Mealy Machine requries additional combinational logic but also makes its output available without any cycle delay. Behavioral implementations of both FSMs are shown in the following pages but can otherwise be found in:
 
 \begin{itemize}
     \item \lstinline{hdl/q2/src/msg_converter_moore.sv}
@@ -699,5 +699,16 @@ Test     Angle (rad)  Input (hex)  HW Result    SW Result    Error
     \includegraphics[width=0.65\textwidth]{assets/q5_sin.pdf}
     \caption{Comparison of hardware results with software.}
 \end{figure}
+
+\newpage
+
+The full implementation of the $\sin x$ accelerator is too large to be shown in this report, but can be found in:
+
+\begin{itemize}
+    \item \lstinline{hdl/q5/src/sinx.sv}
+    \item \lstinline{hdl/q5/src/sinx_lut.sv}
+    \item \lstinline{hdl/q5/src/sinx_dp.sv}
+    \item \lstinline{hdl/q5/src/sinx_controller.sv}
+\end{itemize}
 
 \end{document}
