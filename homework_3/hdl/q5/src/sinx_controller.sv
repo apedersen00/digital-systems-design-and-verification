@@ -32,7 +32,7 @@ module sinx_controller (
     output  logic       dp_en_sum_reg_o,
     output  logic       dp_zero_sum_o,
     output  logic       dp_sub_o,
-    output  logic [1:0] dp_mux_a_o,
+    output  logic       dp_mux_a_o,
     output  logic [1:0] dp_mux_b_o,
     output  logic [2:0] dp_counter_o,
 
@@ -97,7 +97,7 @@ module sinx_controller (
         dp_en_term_reg_o  = 1'b0;
         dp_en_sum_reg_o   = 1'b0;
         dp_zero_sum_o     = 1'b0;
-        dp_mux_a_o        = 2'b00;
+        dp_mux_a_o        = 1'b0;
         dp_mux_b_o        = 2'b00;
       end
 
@@ -106,8 +106,8 @@ module sinx_controller (
         dp_en_term_reg_o  = 1'b1;
         dp_en_sum_reg_o   = 1'b1;
         dp_zero_sum_o     = 1'b1;
-        dp_mux_a_o        = 2'b10;  // 1
-        dp_mux_b_o        = 2'b00;  // x
+        dp_mux_a_o        = 1'b0;   // x
+        dp_mux_b_o        = 2'b01;  // LUT (1)
       end
 
       STATE_CALC_0 : begin
@@ -115,7 +115,7 @@ module sinx_controller (
         dp_en_term_reg_o  = 1'b0;
         dp_en_sum_reg_o   = 1'b0;
         dp_zero_sum_o     = 1'b0;
-        dp_mux_a_o        = 2'b00;  // x
+        dp_mux_a_o        = 1'b0;   // x
         dp_mux_b_o        = 2'b00;  // x
       end
 
@@ -124,7 +124,7 @@ module sinx_controller (
         dp_en_term_reg_o  = 1'b0;
         dp_en_sum_reg_o   = 1'b0;
         dp_zero_sum_o     = 1'b0;
-        dp_mux_a_o        = 2'b01;  // temp (x^2)
+        dp_mux_a_o        = 1'b1;   // temp (x^2)
         dp_mux_b_o        = 2'b10;  // T_n
       end
 
@@ -133,7 +133,7 @@ module sinx_controller (
         dp_en_term_reg_o  = 1'b1;
         dp_en_sum_reg_o   = 1'b1;
         dp_zero_sum_o     = 1'b0;
-        dp_mux_a_o        = 2'b01;  // temp (x^2 * T_n)
+        dp_mux_a_o        = 1'b1;   // temp (x^2 * T_n)
         dp_mux_b_o        = 2'b01;  // LUT
       end
 
@@ -142,7 +142,7 @@ module sinx_controller (
         dp_en_term_reg_o  = 1'b0;
         dp_en_sum_reg_o   = 1'b0;
         dp_zero_sum_o     = 1'b0;
-        dp_mux_a_o        = 2'b00;
+        dp_mux_a_o        = 1'b0;
         dp_mux_b_o        = 2'b00;
       end
 
@@ -151,7 +151,7 @@ module sinx_controller (
         dp_en_term_reg_o  = 1'b0;
         dp_en_sum_reg_o   = 1'b0;
         dp_zero_sum_o     = 1'b0;
-        dp_mux_a_o        = 2'b00;
+        dp_mux_a_o        = 1'b0;
         dp_mux_b_o        = 2'b00;
       end
 

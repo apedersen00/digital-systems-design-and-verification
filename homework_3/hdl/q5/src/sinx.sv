@@ -31,7 +31,7 @@ module sinx (
   logic en_sum_reg;
   logic zero_sum;
   logic sub;
-  logic [1:0] mux_a;
+  logic mux_a;
   logic [1:0] mux_b;
   logic [2:0] counter;
 
