@@ -9,8 +9,16 @@
 //-------------------------------------------------------------------------------------------------
 
 //  sinx_dp sinx_dp_0 (
-//    .addr_i(),
-//    .data_o()
+//    .clk_i()
+//    .x_i(),
+//    .en_temp_reg_i(),
+//    .en_term_reg_i(),
+//    .en_sum_reg_i(),
+//    .sub_i(),
+//    .mux_a_i(),
+//    .mux_b_i(),
+//    .counter_i(),
+//    .result_o()
 //  );
 
 module sinx_dp (
@@ -18,10 +26,11 @@ module sinx_dp (
     input   logic [15:0]  x_i,
     input   logic         en_temp_reg_i,
     input   logic         en_term_reg_i,
-    input   logic         rst_i,
-    input   logic         add_sub_i,
-    input   logic         mux_a_i,
+    input   logic         en_sum_reg_i,
+    input   logic         sub_i,
+    input   logic [1:0]   mux_a_i,
     input   logic [1:0]   mux_b_i,
+    input   logic [2:0]   counter_i,
     output  logic [15:0]  result_o
   );
 
@@ -32,19 +41,9 @@ module sinx_dp (
   logic [15:0] mul_a;
   logic [15:0] mul_b;
   logic [31:0] prod;
-  logic [2:0] counter;
-
-  always_ff @( posedge clk_i ) begin : counter_ff
-    if (rst) begin
-      counter <= 3'b111;
-    end
-    else begin
-      counter <= counter - 1;
-    end
-  end
 
   sinx_lut sinx_lut_0 (
-    .addr_i(counter),
+    .addr_i(counter_i),
     .data_o(lut)
   );
 
@@ -55,8 +54,8 @@ module sinx_dp (
   end
 
   always_ff @( posedge clk_i ) begin : write_term_reg
-    if (rst) begin
-      term_reg <= 16'd1;
+    if (start_i) begin
+      term_reg <= x_i;
     end
     else if (en_term_reg_i) begin
       term_reg <= prod;
@@ -65,6 +64,7 @@ module sinx_dp (
 
   always_comb begin : multiplier
     prod = '0;
+
     case (mux_b_i)
       2'b00: mul_b = x_i;
       2'b01: mul_b = lut;
@@ -73,17 +73,25 @@ module sinx_dp (
       default: mul_b = '0;
     endcase
 
-    mul_a = mux_a_i ? temp_reg : x_i;
+    case (mux_a_i)
+      2'b00: mul_a = x_i;
+      2'b01: mul_a = temp_reg;
+      2'b10: mul_a = 16'd1;
+      2'b11: mul_a = '0;
+      default: mul_a = '0;
+    endcase
 
     prod = mul_b * mul_a;
   end
 
   always_ff @( posedge clk_i ) begin : sum
-    if (rst) begin
-      sum_reg <= '0;
-    end
-    else begin
-      sum <= (counter % 2) ? (sum + prod) : (sum - prod);
+    if (en_sum_reg_i) begin
+      if (sub_i) begin
+        sum <= sum - prod;
+      end
+      else begin
+        sum <= sum + prod;
+      end
     end
   end
 

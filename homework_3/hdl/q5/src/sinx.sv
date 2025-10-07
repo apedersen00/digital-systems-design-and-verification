@@ -1,61 +1,64 @@
 //-------------------------------------------------------------------------------------------------
 //
-//  File: avg_calc.sv
-//  Description: Average calculator datapath.
-//               Parameter n MUST be a power of 2.
+//  File: sinx.sv
+//  Description: sin(x) accelerator.
 //
 //  Author:
 //      - A. Pedersen
 //
 //-------------------------------------------------------------------------------------------------
 
-//  avg_calc #(
-//    .m(),
-//    .n()
-//  ) avg_calc_0 (
+//  avg_calc avg_calc_0 (
 //    .clk_i(),
 //    .rstn_i(),
 //    .start_i(),
-//    .data_i(),
-//    .done_o(),
-//    .result_o()
+//    .x_i(),
+//    .result_o(),
+//    .done_o()
 //  );
 
-module avg_calc #(
-    parameter m = 8,  // input bit-width
-    parameter n = 4   // number of inputs
-  ) (
+module sinx (
     input   logic         clk_i,
     input   logic         rstn_i,
     input   logic         start_i,
-    input   logic [m-1:0] data_i,
-    output  logic         done_o,
-    output  logic [m-1:0] result_o
+    input   logic [15:0]  x_i,
+    output  logic [15:0]  result_o,
+    output  logic         done_o
   );
 
-  logic en_dp;
-  logic zero_dp;
+  logic en_temp_reg;
+  logic en_term_reg;
+  logic en_sum_reg;
+  logic sub;
+  logic [1:0] mux_a;
+  logic [1:0] mux_b;
+  logic [2:0] counter;
 
-  avg_calc_dp #(
-    .m(m),
-    .n(n)
-  ) avg_calc_dp_0 (
-    .clk_i(clk_i),
-    .en_i(en_dp),
-    .zero_i(zero_dp),
-    .data_i(data_i),
-    .result_o(result_o)
+  sinx_dp sinx_dp_0 (
+    .clk_i            ( clk_i       )
+    .x_i              ( x_i         ),
+    .en_temp_reg_i    ( en_temp_reg ),
+    .en_term_reg_i    ( en_term_reg ),
+    .en_sum_reg_i     ( en_sum_reg  ),
+    .sub_i            ( sub         ),
+    .mux_a_i          ( mux_a       ),
+    .mux_b_i          ( mux_b       ),
+    .counter_i        ( counter     ),
+    .result_o         ( result_o    )
   );
 
-  avg_calc_controller #(
-    .n(n)
-  ) avg_calc_controller_0 (
-    .clk_i(clk_i),
-    .start_i(start_i),
-    .rstn_i(rstn_i),
-    .en_dp_o(en_dp),
-    .zero_dp_o(zero_dp),
-    .done_o(done_o)
+  sinx_controller sinx_controller_0 (
+    .clk_i            ( clk_i       ),
+    .rstn_i           ( rstn_i      ),
+    .start_i          ( start_i     ),
+    .dp_en_temp_reg_o ( en_temp_reg ),
+    .dp_en_term_reg_o ( en_term_reg ),
+    .dp_en_sum_reg_o  ( en_sum_reg  ),
+    .dp_sub_o         ( sub         ),
+    .dp_mux_a_o       ( mux_a       ),
+    .dp_mux_b_o       ( mux_b       ),
+    .dp_counter_o     ( counter     ),
+    .done_o           ( done_o      )
   );
 
 endmodule
