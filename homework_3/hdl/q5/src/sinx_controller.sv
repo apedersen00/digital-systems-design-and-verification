@@ -81,14 +81,6 @@ module sinx_controller (
     endcase
   end
 
-  // 2'b00: mul_a = x_i;
-  // 2'b01: mul_a = temp_reg;
-  // 2'b10: mul_a = 16'd1;
-
-  // 2'b00: mul_b = x_i;
-  // 2'b01: mul_b = lut;
-  // 2'b10: mul_b = term_reg;
-
   always_comb begin
     case (cur_state)
 
