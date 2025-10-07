@@ -35,14 +35,26 @@ module sinx_dp (
     output  logic [15:0]  result_o
   );
 
-  logic [15:0] temp_reg;
-  logic [15:0] term_reg;
-  logic [15:0] sum_reg;
+  // signals in 17-bit Q2.15 format
+  logic [16:0] temp_reg;
+  logic [16:0] term_reg;
+  logic [16:0] sum_reg;
+  logic [16:0] mul_a;
+  logic [16:0] mul_b;
+  logic [16:0] prod;
+
+  // product in 34-bit Q4.30 format
+  logic [33:0] prod_ext;
+
+  // lut values in 16-bit Q1.15 format
   logic [15:0] lut;
-  logic [15:0] mul_a;
-  logic [15:0] mul_b;
-  logic [31:0] prod_ext;
-  logic [15:0] prod;
+
+  // sign extended input and lut
+  logic [16:0] x_ext;
+  logic [16:0] lut_ext;
+
+  assign x_ext    = {1'b0, x_i};  // Q1.15 -> Q2.15
+  assign lut_ext  = {1'b0, lut};  // Q1.15 -> Q2.15
 
   sinx_lut sinx_lut_0 (
     .addr_i(counter_i),
@@ -65,23 +77,23 @@ module sinx_dp (
     prod = '0;
 
     case (mux_b_i)
-      2'b00: mul_b = x_i;
-      2'b01: mul_b = lut;
+      2'b00: mul_b = x_ext;
+      2'b01: mul_b = lut_ext;
       2'b10: mul_b = term_reg;
       2'b11: mul_b = '0;
       default: mul_b = '0;
     endcase
 
     case (mux_a_i)
-      2'b00: mul_a = x_i;
+      2'b00: mul_a = x_ext;
       2'b01: mul_a = temp_reg;
-      2'b10: mul_a = 16'd32768; // 1 in Q1.15
+      2'b10: mul_a = 17'd32768; // 1 in Q2.15
       2'b11: mul_a = '0;
       default: mul_a = '0;
     endcase
 
     prod_ext = mul_b * mul_a;
-    prod = prod_ext[30:15];
+    prod = prod_ext[31:15]; // extract Q2.15
   end
 
   always_ff @( posedge clk_i ) begin : sum
@@ -98,6 +110,6 @@ module sinx_dp (
     end
   end
 
-  assign result_o = sum_reg << 1;
+  assign result_o = sum_reg[15] ? 16'hFFFF : sum_reg[15:0] << 1; // Q2.15 -> Q0.16
 
 endmodule
