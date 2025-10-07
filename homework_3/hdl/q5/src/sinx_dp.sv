@@ -29,7 +29,7 @@ module sinx_dp (
     input   logic         en_sum_reg_i,
     input   logic         sum_zero_i,
     input   logic         sub_i,
-    input   logic [1:0]   mux_a_i,
+    input   logic         mux_a_i,
     input   logic [1:0]   mux_b_i,
     input   logic [2:0]   counter_i,
     output  logic [15:0]  result_o
@@ -85,10 +85,8 @@ module sinx_dp (
     endcase
 
     case (mux_a_i)
-      2'b00: mul_a = x_ext;
-      2'b01: mul_a = temp_reg;
-      2'b10: mul_a = 17'd32768; // 1 in Q2.15
-      2'b11: mul_a = '0;
+      1'b0: mul_a = x_ext;
+      1'b1: mul_a = temp_reg;
       default: mul_a = '0;
     endcase
 
