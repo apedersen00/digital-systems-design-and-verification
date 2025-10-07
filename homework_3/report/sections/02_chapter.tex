@@ -581,9 +581,10 @@ $$
 
 The final recurrence relation is found by multiplying $T_n$:
 
-$$
-T_{n + 1} = - T_n \frac{x^2}{(2n + 2)(2n + 3)}
-$$
+\begin{equation}
+    T_{n + 1} = - T_n \frac{x^2}{(2n + 2)(2n + 3)}
+\end{equation} \label{eq:taylor}
+
 
 We now have an expression that is significantly easier to implement in hardware. To further improve performance the fraction is pre-calculated and stored in a Look-Up Table (LUT). The calculations and necessary quantization is done with the following Python script:
 
@@ -614,13 +615,89 @@ for v in val:
 0.0047619048 -> 0x009C
 \end{textcode}
 
-\newpage
+Calculating the Taylor series using Eq. \ref{eq:taylor} in hardware is still intensive due to the heavy amount of multiplication. To create an efficient implementation we will use only one multiplier and build the product over three clock cycles:
 
-\begin{figure}[h]
+\begin{table}[h]
+    \centering
+    \renewcommand{\arraystretch}{1.5}
+    \begin{tabular}{l l}
+        Cycle 0: & $(T_n)$ \\
+        Cycle 1: & $(T_n) (x^2)$ \\
+        Cycle 2: & $(T_n) (x^2) \left(\frac{1}{(2n + 2)(2n + 3)}\right)$
+    \end{tabular}
+\end{table}
+
+Each of the completed terms is then added to the previous and kept in a sum register. A counter in the controller keeps track of which term we are currently computing and switches the sign on every other term. The datapath of the accelerator is shown in \cref{fig:q5_dp}. The controller is implemented with 6 states. The transitions are shown in \cref{fig:q5_cont}. The states \lstinline{CALC_0}, \lstinline{CALC_1}, \lstinline{CALC_2} are responsible for calculating each term. In \lstinline{CALC_2} the internal 3-bit counter is incremented. When the counter has reached it's maximum value we have succesfully computed and summed the first 8 terms of the Taylor series. The control signals asserted in each state is shown in \cref{tab:fsm_control_signals}. The done signal is simply asserted in the \lstinline{DONE} state. The \lstinline{counter} signal is directy taken from the controller and the \lstinline{sub} signal is connected to \lstinline{counter[0]}, thereby switching after each term. An important thing to note about the design is that it is \textit{necessary} to bit-extend from the input format of Q1.15 to Q2.15 in the datapath. This is required since for high values of $x$ we can produce products above the maximum representable value of 2 in Q1.15 format.
+
+\begin{table}[h]
+    \centering
+    \caption{Control signals for each state of the FSM}
+    \vspace{-10pt}
+    \begin{tabularx}{\textwidth}{|l|X|X|X|}
+        \hline
+        \textbf{State} & \textbf{en\_temp\_reg} & \textbf{en\_term\_reg} & \textbf{en\_sum\_reg} \\
+        \hline
+        RESET   & 0 & 0 & 0 \\
+        INIT    & 0 & 1 & 1 \\
+        CALC\_0 & 1 & 0 & 0 \\
+        CALC\_1 & 1 & 0 & 0 \\
+        CALC\_2 & 0 & 1 & 1 \\
+        DONE    & 0 & 0 & 0 \\
+        \hline
+    \end{tabularx}
+
+    \vspace{1.0em}
+
+    \begin{tabularx}{\textwidth}{|l|X|X|X|}
+        \hline
+        \textbf{State} & \textbf{zero\_sym} & \textbf{mux\_a} & \textbf{mux\_b} \\
+        \hline
+        RESET   & 0 & 0 (x)         & 00 (x)            \\
+        INIT    & 1 & 0 (x)         & 01 (lut)          \\
+        CALC\_0 & 0 & 0 (x)         & 00 (x)            \\
+        CALC\_1 & 0 & 1 (temp\_reg) & 10 (term\_reg)    \\
+        CALC\_2 & 0 & 1 (temp\_reg) & 01 (lut)          \\
+        DONE    & 0 & 0 (x)         & 00 (x)            \\
+        \hline
+    \end{tabularx}
+    \label{tab:fsm_control_signals}
+\end{table}
+
+\begin{figure}[H]
     \centering
     \includegraphics[width=\linewidth]{assets/q5_dp.png}
     \caption{Datapath of $\sin x$ accelerator.}
     \label{fig:q5_dp}
+\end{figure}
+
+\newpage
+
+A testbench was created that first tests some specified angles and compares them with software results. After that it computed 100 evenly spaces values in the interval $[0, \pi/2]$, inputs them to the hardware, and stores the results in a csv file. The output from the testbench and a plot of the csv values compared with true software results are shown below.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\linewidth]{assets/q5_cont.png}
+    \caption{Controller state transitions of $\sin x$ accelerator.}
+    \label{fig:q5_cont}
+\end{figure}
+
+\begin{textcode}{sin x accelerator - testbench output}
+Test     Angle (rad)  Input (hex)  HW Result    SW Result    Error     
+------------------------------------------------------------------------
+1        0.000000     0x0          0.000000     0.000000     0.000000  
+2        0.100000     0xCCC        0.099823     0.099833     0.000010  
+3        0.500000     0x4000       0.479431     0.479426     0.000006  
+4        1.000000     0x8000       0.841461     0.841471     0.000010  
+5        1.570000     0xC8F5       0.999985     1.000000     0.000015  
+6        0.523599     0x4305       0.500000     0.500000     0.000000  
+7        0.785398     0x6487       0.707092     0.707107     0.000014  
+8        1.047198     0x860A       0.866058     0.866025     0.000033  
+\end{textcode}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.65\textwidth]{assets/q5_sin.pdf}
+    \caption{Comparison of hardware results with software.}
 \end{figure}
 
 \end{document}
