@@ -51,7 +51,7 @@ VERILATOR_FLAGS += --coverage
 #VERILATOR_FLAGS += --gdbbt
 
 # Input files for Verilator
-VERILATOR_INPUT = src/top.sv src/avg_calc_controller.sv src/avg_calc_dp.sv src/avg_calc.sv sim/sim_main.cpp
+VERILATOR_INPUT = src/top.sv src/sinx_controller.sv src/sinx_lut.sv src/sinx_dp.sv src/sinx.sv sim/sim_main.cpp
 
 ######################################################################
 default: run

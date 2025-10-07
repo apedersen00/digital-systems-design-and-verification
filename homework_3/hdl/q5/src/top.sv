@@ -8,29 +8,23 @@
 //
 //-------------------------------------------------------------------------------------------------
 
-module top #(
-    localparam m = 8,
-    localparam n = 4
-  ) (
+module top (
     input   logic         clk,
     input   logic         rstn,
     input   logic         start,
-    input   logic [m-1:0] data,
+    input   logic [15:0]  x,
     output  logic         done,
-    output  logic [m-1:0] result
+    output  logic [15:0]  result
   );
 
     // DUT instance
-    avg_calc #(
-      .m(m),
-      .n(n)
-    ) avg_calc_0 (
+    sinx sinx_0 (
       .clk_i(clk),
       .rstn_i(rstn),
       .start_i(start),
-      .data_i(data),
-      .done_o(done),
-      .result_o(result)
+      .x_i(x),
+      .result_o(result),
+      .done_o(done)
     );
 
     // Stimulus

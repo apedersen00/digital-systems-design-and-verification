@@ -35,7 +35,7 @@ module sinx (
   logic [2:0] counter;
 
   sinx_dp sinx_dp_0 (
-    .clk_i            ( clk_i       )
+    .clk_i            ( clk_i       ),
     .x_i              ( x_i         ),
     .en_temp_reg_i    ( en_temp_reg ),
     .en_term_reg_i    ( en_term_reg ),

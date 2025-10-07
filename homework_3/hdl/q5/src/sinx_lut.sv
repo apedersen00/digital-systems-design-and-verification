@@ -16,7 +16,7 @@
 
 module sinx_lut (
     input   logic [2:0]   addr_i,
-    output  logic [15:0]  data_o,
+    output  logic [15:0]  data_o
   );
 
   always_comb begin : sinx_lut

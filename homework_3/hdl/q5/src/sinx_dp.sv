@@ -22,7 +22,7 @@
 //  );
 
 module sinx_dp (
-    input   logic         clk_i
+    input   logic         clk_i,
     input   logic [15:0]  x_i,
     input   logic         en_temp_reg_i,
     input   logic         en_term_reg_i,
@@ -40,7 +40,7 @@ module sinx_dp (
   logic [15:0] lut;
   logic [15:0] mul_a;
   logic [15:0] mul_b;
-  logic [31:0] prod;
+  logic [15:0] prod;
 
   sinx_lut sinx_lut_0 (
     .addr_i(counter_i),
@@ -54,10 +54,7 @@ module sinx_dp (
   end
 
   always_ff @( posedge clk_i ) begin : write_term_reg
-    if (start_i) begin
-      term_reg <= x_i;
-    end
-    else if (en_term_reg_i) begin
+    if (en_term_reg_i) begin
       term_reg <= prod;
     end
   end
@@ -87,14 +84,14 @@ module sinx_dp (
   always_ff @( posedge clk_i ) begin : sum
     if (en_sum_reg_i) begin
       if (sub_i) begin
-        sum <= sum - prod;
+        sum_reg <= sum_reg - prod;
       end
       else begin
-        sum <= sum + prod;
+        sum_reg <= sum_reg + prod;
       end
     end
   end
 
-  assign result_o = sum;
+  assign result_o = sum_reg;
 
 endmodule

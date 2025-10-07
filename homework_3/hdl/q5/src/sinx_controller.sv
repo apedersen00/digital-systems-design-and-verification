@@ -60,7 +60,7 @@ module sinx_controller (
   logic [2:0] counter;
   always_ff @(posedge clk_i or negedge rstn_i) begin
     if (!rstn_i) begin
-      counter <= '0
+      counter <= '0;
     end
     else if (cur_state == STATE_CALC_2 | cur_state == STATE_INIT) begin
       counter <= counter + 1;
@@ -139,11 +139,19 @@ module sinx_controller (
         dp_mux_b_o        = 2'b00;
       end
 
+      default     : begin
+        dp_en_temp_reg_o  = 1'b0;
+        dp_en_term_reg_o  = 1'b0;
+        dp_en_sum_reg_o   = 1'b0;
+        dp_mux_a_o        = 2'b00;
+        dp_mux_b_o        = 2'b00;
+      end
+
     endcase
   end
 
   assign dp_counter_o = counter;
-  assign dp_sub_o     = (counter % 2) ? 1'b1 : 1'b0;
+  assign dp_sub_o     = (counter % 2 == '0) ? 1'b1 : 1'b0;
   assign done_o       = (cur_state == STATE_DONE) ? 1'b1 : 1'b0;
 
 endmodule
