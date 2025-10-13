@@ -129,21 +129,18 @@ module core (
     .rs2_o      ( rs2         )
   );
 
-  data_mem data_mem_0 (
-    .clk_i(clk_i),
-    .we_i (mem_write),
-    .addr_i( alu_result[$clog2(16384)-1:0] ),
-    .data_i( rs2 ),
-    .data_o(res_mux_d[1])
-  );
-
-  inst_mem #(
-    .DEPTH(1024),
+  dual_port_bram #(
+    .DEPTH(16384),
+    .WIDTH(32),
     .INIT_FILE("../programs/nostdlib/out/test_program.hex")
-  ) inst_mem_0 (
-    .clk_i      ( clk_i                     ),
-    .addr_i     ( pc[$clog2(1024)-1:0]      ),
-    .inst_o     ( inst_mem                  )
+  ) dual_port_bram_0 (
+    .clk_i(clk_i),
+    .we_a_i( mem_write ),
+    .addr_a_i( alu_result[$clog2(16384)-1:0] ),
+    .data_a_i( rs2 ),
+    .data_a_o( res_mux_d[1] ),
+    .addr_b_i( pc[$clog2(16384)-1:0]),
+    .data_b_o( inst_mem )
   );
 
   alu alu_0 (
