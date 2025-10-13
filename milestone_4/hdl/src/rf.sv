@@ -52,7 +52,7 @@ module rf #(
         regs[i] <= 0;
       end
     end else begin
-      if (!we_i && chip_en_i) begin
+      if (we_i && chip_en_i) begin
         if (rd_addr_i != '0) begin
           regs[rd_addr_i] <= data_i;
         end

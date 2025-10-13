@@ -53,7 +53,7 @@ VERILATOR_FLAGS += --top-module top
 #VERILATOR_FLAGS += --gdbbt
 
 # Input files for Verilator
-VERILATOR_INPUT = src/rv32i_pkg.sv src/alu.sv src/bram_64kb.sv src/branch_unit.sv src/controller.sv src/core.sv src/mem_64kb.sv src/mem_controller.sv src/rf.sv src/sign_ext_unit.sv src/top.sv src/mux.sv sim/sim_main.cpp
+VERILATOR_INPUT = src/rv32i_pkg.sv src/alu.sv src/bram_64kb.sv src/branch_unit.sv src/controller.sv src/core.sv src/mem_64kb.sv src/mem_controller.sv src/rf.sv src/sign_ext_unit.sv src/top.sv src/mux.sv src/data_mem.sv src/inst_mem.sv sim/sim_main.cpp
 
 ######################################################################
 default: run

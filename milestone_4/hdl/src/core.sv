@@ -48,7 +48,7 @@ module core (
   logic [31:0]  pc_update;
   logic [31:0]  pc_last;
   logic [31:0]  inst;
-  logic [31:0]  mem;
+  logic [31:0]  inst_mem;
   logic         pc_en;
 
   // I/O
@@ -67,7 +67,6 @@ module core (
   end
 
   assign res_mux_d[0] = pc;  // PC + 4 for return address
-  assign res_mux_d[1] = mem;
   assign res_mux_d[2] = alu_result;
 
   always_comb begin
@@ -99,7 +98,7 @@ module core (
   controller controller_0 (
     .clk_i        ( clk_i       ),
     .rstn_i       ( rstn_i      ),
-    .inst_i       ( mem         ),
+    .inst_i       ( inst_mem    ),
     .inst_o       ( inst        ),
     .read_inst    ( read_inst   ),
     .pc_en_o      ( pc_en       ),
@@ -130,15 +129,21 @@ module core (
     .rs2_o      ( rs2         )
   );
 
-  mem_64kb mem_64kb_0 (
-    .clk_i      ( clk_i                                           ),
-    .re_i       ( 1'b1                                            ),
-    .addr_i     ( read_inst ? pc : alu_result                     ),
-    .d_i        ( rs2                                             ),
-    .d_o        ( mem                                             ),
-    /* verilator lint_off PINCONNECTEMPTY */
-    .ready_o    (                                                 )
-    /* verilator lint_on PINCONNECTEMPTY */
+  data_mem data_mem_0 (
+    .clk_i(clk_i),
+    .we_i (mem_write),
+    .addr_i( alu_result[$clog2(16384)-1:0] ),
+    .data_i( rs2 ),
+    .data_o(res_mux_d[1])
+  );
+
+  inst_mem #(
+    .DEPTH(1024),
+    .INIT_FILE("../programs/nostdlib/out/test_program.hex")
+  ) inst_mem_0 (
+    .clk_i      ( clk_i                     ),
+    .addr_i     ( pc[$clog2(1024)-1:0]      ),
+    .inst_o     ( inst_mem                  )
   );
 
   alu alu_0 (

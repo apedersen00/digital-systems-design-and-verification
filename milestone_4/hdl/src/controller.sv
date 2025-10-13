@@ -106,13 +106,13 @@ module controller (
           pc_en_o = 1'b0;
         end
         else begin
-          pc_en_o = 1'b1;
+          pc_en_o   = 1'b1;
         end
       end
 
       STATE_EXE_2:
       begin
-        pc_en_o = 1'b1;
+        pc_en_o   = 1'b1;
       end
 
       default:
