@@ -8,9 +8,9 @@ ENTRY(_start)
 MEMORY
 {
     /* Instruction memory - matches your inst_mem module */
-    IMEM (rx)  : ORIGIN = 0x00000000, LENGTH = 1K
+    IMEM (rx)  : ORIGIN = 0x00000000, LENGTH = 8K
     /* Data memory (if you have one) */
-    DMEM (rw)  : ORIGIN = 0x00000400, LENGTH = 1K
+    DMEM (rw)  : ORIGIN = 0x00002000, LENGTH = 8K
 }
 
 SECTIONS
