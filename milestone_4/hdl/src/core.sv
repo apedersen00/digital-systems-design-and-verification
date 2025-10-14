@@ -21,7 +21,7 @@ module core (
   );
 
   // control signals
-  logic mem_write;
+  logic [3:0] mem_write;
   logic alu_src_a;
   logic alu_src_b;
   logic [5:0] alu_op;
@@ -61,7 +61,7 @@ module core (
     if (!rstn_i) begin
       out_reg <= 32'd0;
     end
-    else if (mem_write && mem_sel_io) begin
+    else if (|mem_write && mem_sel_io) begin
       out_reg <= rs2;
     end
   end
@@ -133,14 +133,16 @@ module core (
     .DEPTH      ( 16384                                       ),
     .WIDTH      ( 32                                          ),
     .INIT_FILE  ( "../programs/nostdlib/out/test_program.hex" )
-  ) dual_port_bram_0 (
-    .clk_i      ( clk_i                         ),
-    .we_a_i     ( mem_write                     ),
-    .addr_a_i   ( alu_result[$clog2(16384)-1:0] ),
-    .data_a_i   ( rs2                           ),
-    .data_a_o   ( res_mux_d[1]                  ),
-    .addr_b_i   ( pc[$clog2(16384)-1:0]         ),
-    .data_b_o   ( inst_mem                      )
+  ) data_mem_0 (
+    .clka       ( clk_i         ),
+    .wea        ( mem_write     ),
+    .addra      ( alu_result    ),
+    .dina       ( rs2           ),
+    .clkb       ( clk_i         ),
+    .enb        ( 1'b1          ),
+    .addrb      ( pc            ),
+    .doutb      ( inst_mem      ),
+    .douta      ( res_mux_d[1]  )
   );
 
   alu alu_0 (

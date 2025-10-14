@@ -21,7 +21,7 @@ module controller (
     output  logic                 branch_o,
     output  logic [1:0]           result_mux_o, // 2'b00: ALU, 2'b01: PC+4, 2'b10: DATA_MEM
     output  logic [2:0]           branch_op_o,
-    output  logic                 mem_write_o,
+    output  logic [3:0]           mem_write_o,
     output  logic                 alu_src_a_o,  // 1'b0: REG_A, 1'b1: PC
     output  logic                 alu_src_b_o,  // 1'b0: REG_B, 1'b1: IMM
     output  logic                 reg_write_o,
@@ -196,10 +196,16 @@ module controller (
         // S-Type
         OP_STORE:
         begin
-          mem_write_o = 1'b1;
           alu_src_a_o = 1'b0; // REG_A
           alu_src_b_o = 1'b1; // IMM
           alu_op_o    = OP_ALU_ADD;
+
+          case (funct3)
+            3'b000:   mem_write_o = 4'b0001;
+            3'b001:   mem_write_o = 4'b0011;
+            3'b010:   mem_write_o = 4'b1111;
+            default:  mem_write_o = 4'b0000;
+          endcase
         end
 
         // I-Type

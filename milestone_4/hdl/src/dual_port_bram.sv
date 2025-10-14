@@ -1,50 +1,72 @@
-//  data_mem #(
+//-------------------------------------------------------------------------------------------------
+//
+//  File: dual_port_bram.sv
+//  Description: Model of Vivado generated dual-port BRAM.
+//
+//  Author(s):
+//      - A. Pedersen
+//      - J. Sadiq
+//      - J. Yang
+//
+//-------------------------------------------------------------------------------------------------
+
+//  dual_port_bram #(
+//    .DATA_WIDTH(),
 //    .DEPTH(),
-//    .WIDTH(),
 //    .INIT_FILE()
 //   ) data_mem_0 (
-//    .clk_i(),
-//    .we_a_i(),
-//    .addr_a_i(),
-//    .data_a_i(),
-//    .data__ao(),
-//    .addr_b_i(),
-//    .data_b_o()
+//    .clka(),
+//    .wea(),
+//    .addra(),
+//    .dina(),
+//    .clkb(),
+//    .rstb(),
+//    .enb(),
+//    .addrb(),
+//    .doutb(),
+//    .douta()
 //  );
 
 module dual_port_bram #(
-    parameter  DEPTH      = 16384,
-    parameter WIDTH           = 32,
-    parameter INIT_FILE       = "../programs/nostdlib/out/test_program.hex"
-  ) (
-    // Port A: Read/Write
-    input  logic                      clk_i,
-    input  logic                      we_a_i,
-    input  logic [$clog2(DEPTH)-1:0]  addr_a_i,
-    input  logic [WIDTH-1:0]          data_a_i,
-    output logic [WIDTH-1:0]          data_a_o,
-
-    // Port B: Read-only
-    input  logic [$clog2(DEPTH)-1:0]  addr_b_i,
-    output logic [WIDTH-1:0]          data_b_o
+    parameter WIDTH     = 32,
+    parameter DEPTH     = 16384,
+    parameter INIT_FILE = ""
+)(
+    input  logic              clka,
+    input  logic [3:0]        wea,
+    input  logic [31:0]       addra,
+    input  logic [WIDTH-1:0]  dina,
+    input  logic              clkb,
+    input  logic              enb,
+    input  logic [31:0]       addrb,
+    output logic [WIDTH-1:0]  doutb,
+    output logic [WIDTH-1:0]  douta
 );
 
-    logic [WIDTH-1:0] ram [0:DEPTH-1];
+    logic [WIDTH-1:0] mem [0:DEPTH-1];
 
     initial begin
-        $readmemh(INIT_FILE, ram);
-    end
-
-    always_ff @(posedge clk_i) begin
-        if (we_a_i) begin
-            ram[addr_a_i >> 2] <= data_a_i;
+        if (INIT_FILE != "") begin
+            $display("Loading memory from %s", INIT_FILE);
+            $readmemh(INIT_FILE, mem);
         end
-        data_a_o <= ram[addr_a_i >> 2];
     end
 
-    // Port B (read-only)
-    always_ff @(posedge clk_i) begin
-        data_b_o <= ram[addr_b_i >> 2];
-    end
+  always_ff @(posedge clka) begin
+      if (|wea) begin
+          for (int i = 0; i < 4; i++) begin
+              if (wea[i]) begin
+                  mem[(addra >> 2) % DEPTH][i*8 +: 8] <= dina[i*8 +: 8];
+              end
+          end
+      end
+      douta <= mem[(addra >> 2) % DEPTH];
+  end
+
+  always_ff @(posedge clkb) begin
+      if (enb) begin
+          doutb <= mem[(addrb >> 2) % DEPTH];
+      end
+  end
 
 endmodule
