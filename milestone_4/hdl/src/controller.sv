@@ -244,12 +244,20 @@ module controller (
             alu_src_b_o   = 1'b1;  // IMM
 
             case (funct3)
-              3'b000:  alu_op_o = OP_ALU_ADD;
-              3'b010:  alu_op_o = OP_ALU_SLT;
-              3'b011:  alu_op_o = OP_ALU_SLTU;
-              3'b100:  alu_op_o = OP_ALU_XOR;
-              3'b110:  alu_op_o = OP_ALU_OR;
-              3'b111:  alu_op_o = OP_ALU_AND;
+              3'b000:   alu_op_o = OP_ALU_ADD;
+              3'b010:   alu_op_o = OP_ALU_SLT;
+              3'b011:   alu_op_o = OP_ALU_SLTU;
+              3'b100:   alu_op_o = OP_ALU_XOR;
+              3'b110:   alu_op_o = OP_ALU_OR;
+              3'b111:   alu_op_o = OP_ALU_AND;
+              3'b001:   alu_op_o = OP_ALU_SLL;
+              3'b101: begin
+                if (funct7[5] == 1'b0) begin
+                  alu_op_o = OP_ALU_SRL;
+                end else begin
+                  alu_op_o = OP_ALU_SRA;
+                end
+              end
               default:  alu_op_o = OP_ALU_NOP;
             endcase
         end
