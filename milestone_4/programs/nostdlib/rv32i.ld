@@ -1,8 +1,3 @@
-/*
- * Linker script for RV32I processor
- * Defines memory layout and section placement
- */
-
 ENTRY(_start)
 
 MEMORY
@@ -13,11 +8,11 @@ MEMORY
 
 SECTIONS
 {
-    /* Text section - program instructions */
+    /* Text section (instructions) */
     .text : ALIGN(4)
     {
-        *(.text._start)     /* Start function first */
-        *(.text)            /* All other text */
+        *(.text._start)
+        *(.text)
         *(.text.*)
     } > IMEM
 
@@ -28,17 +23,18 @@ SECTIONS
         *(.rodata.*)
     } > IMEM
 
-    /* Data section */
+    /* Data section (initialized globals) */
     .data : ALIGN(4)
     {
-        _data_start = .;
+        _data_load_start = LOADADDR(.data);  /* address in flash */
+        _data_start = .;                     /* address in RAM */
         *(.data)
         *(.data.*)
         *(.sdata*)
         _data_end = .;
-    } > DMEM
+    } > DMEM AT > IMEM
 
-    /* BSS section */
+    /* BSS section (zero-initialized globals) */
     .bss : ALIGN(4)
     {
         _bss_start = .;

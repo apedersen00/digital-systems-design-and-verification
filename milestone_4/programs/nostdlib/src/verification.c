@@ -1,6 +1,6 @@
 //-------------------------------------------------------------------------------------------------
 //
-//  File: test_program.c
+//  File: verification.c
 //  Description: Tests *most* RV32I instructions.
 //               - Integer register-immediate instructions
 //               - Integer register-register instructions  
