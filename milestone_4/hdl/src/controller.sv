@@ -14,6 +14,7 @@ module controller (
     input   logic                 clk_i,
     input   logic                 rstn_i,
     input   logic [REG_WIDTH-1:0] inst_i,
+    output  logic [2:0]           funct3_o,
     output  logic [REG_WIDTH-1:0] inst_o,
     output  logic                 read_inst,
     output  logic                 pc_en_o,
@@ -79,6 +80,7 @@ module controller (
   assign op_o       = op;
   assign rs2_addr_o = inst[24:20];
   assign rd_addr_o  = inst[11:7];
+  assign funct3_o   = funct3;
 
   always_ff @( posedge clk_i ) begin
     if (cur_state == STATE_FETCH) begin

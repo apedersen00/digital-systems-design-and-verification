@@ -32,6 +32,7 @@ module core (
   logic [1:0] result_mux;
   logic reg_write;
   logic read_inst;
+  logic [2:0] funct3;
 
   // data
   logic [31:0]  alu_result;
@@ -49,6 +50,8 @@ module core (
   logic [31:0]  pc_last;
   logic [31:0]  inst;
   logic [31:0]  inst_mem;
+  logic [31:0]  mem_raw;
+  logic [31:0]  mem_ext;
   logic         pc_en;
 
   // I/O
@@ -67,6 +70,7 @@ module core (
   end
 
   assign res_mux_d[0] = pc;  // PC + 4 for return address
+  assign res_mux_d[1] = mem_ext;
   assign res_mux_d[2] = alu_result;
 
   always_comb begin
@@ -99,6 +103,7 @@ module core (
     .clk_i        ( clk_i       ),
     .rstn_i       ( rstn_i      ),
     .inst_i       ( inst_mem    ),
+    .funct3_o     ( funct3      ),
     .inst_o       ( inst        ),
     .read_inst    ( read_inst   ),
     .pc_en_o      ( pc_en       ),
@@ -142,7 +147,14 @@ module core (
     .enb        ( 1'b1          ),
     .addrb      ( pc            ),
     .doutb      ( inst_mem      ),
-    .douta      ( res_mux_d[1]  )
+    .douta      ( mem_raw       )
+  );
+
+  mem_ext_unit mem_ext_unit_0 (
+    .op_i   ( funct3          ),
+    .d_i    ( mem_raw         ),
+    .addr_i ( alu_result[1:0] ),
+    .d_o    ( mem_ext         )
   );
 
   alu alu_0 (
