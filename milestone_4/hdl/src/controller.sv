@@ -69,6 +69,7 @@ module controller (
   logic [31:0] inst;
   logic [6:0] op;
   logic [2:0] funct3;
+  logic [2:0] funct3_reg;
   /* verilator lint_off UNUSEDSIGNAL */
   logic [6:0] funct7;
   /* verilator lint_on UNUSEDSIGNAL */
@@ -80,11 +81,12 @@ module controller (
   assign op_o       = op;
   assign rs2_addr_o = inst[24:20];
   assign rd_addr_o  = inst[11:7];
-  assign funct3_o   = funct3;
+  assign funct3_o   = funct3_reg;
 
   always_ff @( posedge clk_i ) begin
     if (cur_state == STATE_FETCH) begin
       inst <= inst_i;
+      funct3_reg <= inst_i[14:12];
     end
   end
 
