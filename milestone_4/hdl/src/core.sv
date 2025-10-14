@@ -60,7 +60,7 @@ module core (
   logic mem_sel_io;
   logic [31:0] out_reg;
   assign reg_o      = out_reg;
-  assign mem_sel_io = (alu_result == 32'd16384);
+  assign mem_sel_io = (alu_result == 32'h10000);
 
   always_ff @(posedge clk_i or negedge rstn_i) begin
     if (!rstn_i) begin

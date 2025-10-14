@@ -7,9 +7,7 @@ ENTRY(_start)
 
 MEMORY
 {
-    /* Instruction memory - matches your inst_mem module */
     IMEM (rx)  : ORIGIN = 0x00000000, LENGTH = 32K
-    /* Data memory (if you have one) */
     DMEM (rw)  : ORIGIN = 0x00008000, LENGTH = 32K
 }
 
@@ -36,6 +34,7 @@ SECTIONS
         _data_start = .;
         *(.data)
         *(.data.*)
+        *(.sdata*)
         _data_end = .;
     } > DMEM
 
@@ -45,6 +44,7 @@ SECTIONS
         _bss_start = .;
         *(.bss)
         *(.bss.*)
+        *(.sbss*)
         *(COMMON)
         _bss_end = .;
     } > DMEM

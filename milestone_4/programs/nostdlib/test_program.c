@@ -15,13 +15,12 @@
  */
 
 // Memory mapped output register for test results
-#define OUT_REG_ADDR     0x00004000
+#define OUT_REG_ADDR     0x00010000
 #define TEST_PASS        0xCAFEBABE
 #define TEST_FAIL        0xDEADBEEF
 
 // Test data area in memorycd .
 #define DATA_BASE_ADDR   0x00002000
-#define STACK_TEST_ADDR  0x00003000
 
 // Test counters
 static volatile unsigned int test_count = 0;
