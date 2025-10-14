@@ -1,25 +1,24 @@
-/*
- * Comprehensive RV32I Test Program
- * 
- * This program tests all major instruction categories of the RV32I base instruction set:
- * - Integer register-immediate instructions
- * - Integer register-register instructions  
- * - Control and status register instructions
- * - Load and store instructions
- * - Control transfer instructions (branches and jumps)
- * 
- * No stdlib functions are used, and no hardware multiplication/division is assumed.
- * Test results are output to a memory-mapped register for verification.
- * 
- * Author: A. Pedersen
- */
+//-------------------------------------------------------------------------------------------------
+//
+//  File: test_program.c
+//  Description: Tests *most* RV32I instructions.
+//               - Integer register-immediate instructions
+//               - Integer register-register instructions  
+//               - Control and status register instructions
+//               - Load and store instructions
+//               - Control transfer instructions (branches and jumps)
+//
+//  Author(s):
+//      - A. Pedersen
+//      - J. Sadiq
+//      - J. Yang
+//
+//-------------------------------------------------------------------------------------------------
 
-// Memory mapped output register for test results
 #define OUT_REG_ADDR     0x00010000
 #define TEST_PASS        0xCAFEBABE
 #define TEST_FAIL        0xDEADBEEF
 
-// Test data area in memorycd .
 #define DATA_BASE_ADDR   0x00002000
 
 // Test counters
@@ -476,29 +475,26 @@ void run_all_tests(void) {
     test_jump_operations();
     test_memory_patterns();
     test_software_implementations();
-    
-    // Output final results
+
     output_result(0x1000 | pass_count);  // Number of passed tests
     output_result(0x2000 | test_count);  // Total number of tests
-    
+
     if (pass_count == test_count) {
-        output_result(TEST_PASS);  // All tests passed
+        output_result(TEST_PASS);
     } else {
-        output_result(TEST_FAIL);  // Some tests failed
+        output_result(TEST_FAIL);
     }
 }
 
 int main(void) {
-    // Initialize output
-    output_result(0x12345678); // Startup marker
+    // Startup marker
+    output_result(0x12345678);
     
-    // Run comprehensive tests
     run_all_tests();
     
     // Final completion marker
     output_result(0x9999CCCC);
-    
-    // Infinite loop
+
     while (1) {
         asm volatile ("nop");
     }
