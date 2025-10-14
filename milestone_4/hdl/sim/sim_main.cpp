@@ -49,7 +49,7 @@ int main(int argc, char** argv) {
     uint32_t cycle = 0;
 
     VL_PRINTF("CYCLE: %d\tOUT_REG: (0x%08X)\t%d\n", cycle, out_reg, out_reg);
-    for (int i = 0; i< 10000; i++) {
+    for (int i = 0; i< 1000000; i++) {
         tick(contextp, top);
         if (out_reg != top->out_reg) {
             out_reg = top->out_reg;
