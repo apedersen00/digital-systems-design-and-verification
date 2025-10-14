@@ -21,7 +21,8 @@ module core (
   );
 
   // control signals
-  logic [3:0] mem_write;
+  logic       mem_write;
+  logic [3:0] mem_we;
   logic alu_src_a;
   logic alu_src_b;
   logic [5:0] alu_op;
@@ -53,6 +54,7 @@ module core (
   logic [31:0]  mem_raw;
   logic [31:0]  mem_ext;
   logic         pc_en;
+  logic [31:0]  rs2_store;
 
   // I/O
   logic mem_sel_io;
@@ -64,7 +66,7 @@ module core (
     if (!rstn_i) begin
       out_reg <= 32'd0;
     end
-    else if (|mem_write && mem_sel_io) begin
+    else if (mem_write && mem_sel_io) begin
       out_reg <= rs2;
     end
   end
@@ -140,14 +142,23 @@ module core (
     .INIT_FILE  ( "../programs/nostdlib/out/test_program.hex" )
   ) data_mem_0 (
     .clka       ( clk_i         ),
-    .wea        ( mem_write     ),
+    .wea        ( mem_we        ),
     .addra      ( alu_result    ),
-    .dina       ( rs2           ),
+    .dina       ( rs2_store     ),
     .clkb       ( clk_i         ),
     .enb        ( 1'b1          ),
     .addrb      ( pc            ),
     .doutb      ( inst_mem      ),
     .douta      ( mem_raw       )
+  );
+
+  mem_store_unit mem_store_unit_0 (
+    .op_i   ( funct3          ),   
+    .d_i    ( rs2             ),    
+    .addr_i ( alu_result[1:0] ),
+    .we_i   ( mem_write       ),
+    .we_o   ( mem_we          ),
+    .d_o    ( rs2_store       )     
   );
 
   mem_ext_unit mem_ext_unit_0 (
