@@ -19,9 +19,9 @@
 #define TEST_PASS        0xCAFEBABE
 #define TEST_FAIL        0xDEADBEEF
 
-// Test data area in memory
-#define DATA_BASE_ADDR   0x00000800
-#define STACK_TEST_ADDR  0x00000900
+// Test data area in memorycd .
+#define DATA_BASE_ADDR   0x00002000
+#define STACK_TEST_ADDR  0x00003000
 
 // Test counters
 static volatile unsigned int test_count = 0;
