@@ -130,17 +130,17 @@ module core (
   );
 
   dual_port_bram #(
-    .DEPTH(16384),
-    .WIDTH(32),
-    .INIT_FILE("../programs/nostdlib/out/test_program.hex")
+    .DEPTH      ( 16384                                       ),
+    .WIDTH      ( 32                                          ),
+    .INIT_FILE  ( "../programs/nostdlib/out/test_program.hex" )
   ) dual_port_bram_0 (
-    .clk_i(clk_i),
-    .we_a_i( mem_write ),
-    .addr_a_i( alu_result[$clog2(16384)-1:0] ),
-    .data_a_i( rs2 ),
-    .data_a_o( res_mux_d[1] ),
-    .addr_b_i( pc[$clog2(16384)-1:0]),
-    .data_b_o( inst_mem )
+    .clk_i      ( clk_i                         ),
+    .we_a_i     ( mem_write                     ),
+    .addr_a_i   ( alu_result[$clog2(16384)-1:0] ),
+    .data_a_i   ( rs2                           ),
+    .data_a_o   ( res_mux_d[1]                  ),
+    .addr_b_i   ( pc[$clog2(16384)-1:0]         ),
+    .data_b_o   ( inst_mem                      )
   );
 
   alu alu_0 (
