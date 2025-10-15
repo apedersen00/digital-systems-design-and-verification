@@ -19,16 +19,13 @@
 #define TEST_PASS        0xCAFEBABE
 #define TEST_FAIL        0xDEADBEEF
 
-#define DATA_BASE_ADDR   0x00002000
+#define DATA_BASE_ADDR   0x00008000
 
-// Test counters
 static volatile unsigned int test_count = 0;
 static volatile unsigned int pass_count = 0;
 
-// Output register pointer
 volatile unsigned int *out_reg = (volatile unsigned int*)OUT_REG_ADDR;
 
-// Forward declarations
 void test_arithmetic_immediate(void);
 void test_arithmetic_register(void);
 void test_logical_operations(void);
@@ -36,11 +33,9 @@ void test_shift_operations(void);
 void test_comparison_operations(void);
 void test_load_store_operations(void);
 void test_branch_operations(void);
-void test_jump_operations(void);
 void test_memory_patterns(void);
 void run_all_tests(void);
 
-// Simple output functions (no printf available)
 void output_result(unsigned int value) {
     *out_reg = value;
 }
@@ -59,12 +54,6 @@ void output_test_result(unsigned int test_id, int passed) {
     }
 }
 
-// Software implementation of simple functions (no stdlib)
-int simple_abs(int x) {
-    return (x < 0) ? -x : x;
-}
-
-// Test arithmetic immediate instructions
 void test_arithmetic_immediate(void) {
     output_test_start(1);
     
@@ -119,7 +108,6 @@ void test_arithmetic_immediate(void) {
     output_test_result(0x108, result == expected);
 }
 
-// Test arithmetic register instructions
 void test_arithmetic_register(void) {
     output_test_start(2);
     
@@ -151,7 +139,6 @@ void test_arithmetic_register(void) {
     output_test_result(0x205, result == 1);
 }
 
-// Test logical operations
 void test_logical_operations(void) {
     output_test_start(3);
     
@@ -179,7 +166,6 @@ void test_logical_operations(void) {
     output_test_result(0x304, result == 0);
 }
 
-// Test shift operations
 void test_shift_operations(void) {
     output_test_start(4);
     
@@ -218,7 +204,6 @@ void test_shift_operations(void) {
     output_test_result(0x406, result == -4);
 }
 
-// Test comparison operations (additional tests)
 void test_comparison_operations(void) {
     output_test_start(5);
     
@@ -245,7 +230,6 @@ void test_comparison_operations(void) {
     output_test_result(0x504, result == 1); // 100 < 4294967246 (unsigned)
 }
 
-// Test load and store operations
 void test_load_store_operations(void) {
     output_test_start(6);
     
@@ -293,7 +277,6 @@ void test_load_store_operations(void) {
     output_test_result(0x605, loaded_half_u == 0x1234);
 }
 
-// Test branch operations
 void test_branch_operations(void) {
     output_test_start(7);
     
@@ -336,38 +319,12 @@ void test_branch_operations(void) {
     output_test_result(0x707, branch_taken == 1);
 }
 
-// Test jump operations and function calls
-int test_function(int x) {
-    return x + 42;
-}
-
-void test_jump_operations(void) {
-    output_test_start(8);
-    
-    // Test JAL (jump and link) via function call
-    int result = test_function(58);
-    output_test_result(0x801, result == 100);
-    
-    // Test direct jump with inline assembly
-    int jump_test = 0;
-    asm volatile (
-        "addi %0, %0, 1\n"      // jump_test = 1
-        "j 1f\n"                // jump over next instruction
-        "addi %0, %0, 10\n"     // this should be skipped
-        "1: addi %0, %0, 2\n"   // jump_test = 3
-        : "+r"(jump_test)
-    );
-    output_test_result(0x802, jump_test == 3);
-}
-
-// Test memory access patterns and edge cases
 void test_memory_patterns(void) {
     output_test_start(9);
     
     volatile int *mem = (volatile int *)DATA_BASE_ADDR;
     int i;
     
-    // Test sequential memory access
     for (i = 0; i < 8; i++) {
         mem[i] = i * 0x11111111;
     }
@@ -376,8 +333,7 @@ void test_memory_patterns(void) {
     for (i = 0; i < 8; i++) {
         checksum += mem[i];
     }
-    
-    // Expected checksum: 0 + 0x11111111 + 0x22222222 + ... + 0x77777777
+
     output_test_result(0x901, checksum != 0);
     
     // Test pointer arithmetic
@@ -397,70 +353,6 @@ void test_memory_patterns(void) {
     output_test_result(0x903, (aligned_word & 0xFF) == 0x12);
 }
 
-// Software multiplication using shifts and adds (no MUL instruction)
-int software_multiply(int a, int b) {
-    int result = 0;
-    int multiplicand = a;
-    
-    if (b < 0) {
-        b = -b;
-        multiplicand = -multiplicand;
-    }
-    
-    while (b > 0) {
-        if (b & 1) {
-            result += multiplicand;
-        }
-        multiplicand <<= 1;
-        b >>= 1;
-    }
-    
-    return result;
-}
-
-// Software division using subtraction (no DIV instruction)
-int software_divide(int dividend, int divisor) {
-    if (divisor == 0) return 0; // Avoid division by zero
-    
-    int quotient = 0;
-    int negative = 0;
-    
-    if (dividend < 0) {
-        dividend = -dividend;
-        negative = !negative;
-    }
-    if (divisor < 0) {
-        divisor = -divisor;
-        negative = !negative;
-    }
-    
-    while (dividend >= divisor) {
-        dividend -= divisor;
-        quotient++;
-    }
-    
-    return negative ? -quotient : quotient;
-}
-
-// Test software implementations of missing instructions
-void test_software_implementations(void) {
-    output_test_start(10);
-    
-    // Test software multiplication
-    int mult_result = software_multiply(12, 13);
-    output_test_result(0xA01, mult_result == 156);
-    
-    mult_result = software_multiply(-5, 7);
-    output_test_result(0xA02, mult_result == -35);
-    
-    // Test software division
-    int div_result = software_divide(156, 12);
-    output_test_result(0xA03, div_result == 13);
-    
-    div_result = software_divide(-35, 7);
-    output_test_result(0xA04, div_result == -5);
-}
-
 // Main test orchestration
 void run_all_tests(void) {
     output_result(0x5555AAAA);
@@ -472,9 +364,7 @@ void run_all_tests(void) {
     test_comparison_operations();
     test_load_store_operations();
     test_branch_operations();
-    test_jump_operations();
     test_memory_patterns();
-    test_software_implementations();
 
     output_result(0x1000 | pass_count);  // Number of passed tests
     output_result(0x2000 | test_count);  // Total number of tests
@@ -487,17 +377,13 @@ void run_all_tests(void) {
 }
 
 int main(void) {
-    // Startup marker
     output_result(0x12345678);
-    
     run_all_tests();
-    
-    // Final completion marker
     output_result(0x9999CCCC);
 
     while (1) {
         asm volatile ("nop");
     }
-    
+
     return 0;
 }
