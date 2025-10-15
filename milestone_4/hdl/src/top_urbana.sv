@@ -1,7 +1,7 @@
 //-------------------------------------------------------------------------------------------------
 //
 //  File: top.sv
-//  Description: top module for testbench
+//  Description: top module for Urbana board.
 //
 //  Author:
 //      - A. Pedersen
@@ -16,18 +16,13 @@ module top
   (
     input   logic         clk,
     input   logic         rstn,
-    output  logic [31:0]  out_reg,
-    output  logic [15:0]  addr,
-    output  logic [2:0]   signals
+    output  logic [31:0]  out_reg
   );
 
-    // DUT instance
     core core_0 (
       .clk_i(clk),
       .rstn_i(rstn),
-      .reg_o(out_reg),
-      .addr_o(addr),
-      .signals_o(signals)
+      .reg_o(out_reg)
     );
 
     // Stimulus

@@ -12,12 +12,18 @@
 
 //  core core_0 (
 //    .clk_i(),
+//    .rstn_i(),
+//    .reg_o(),
+//    .addr_o(),
+//    .signals_o()
 //  );
 
 module core (
     input   logic         clk_i,
     input   logic         rstn_i,
-    output  logic [31:0]  reg_o
+    output  logic [31:0]  reg_o,
+    output  logic [15:0]  addr_o,
+    output  logic [2:0]   signals_o
   );
 
   // control signals
@@ -55,6 +61,9 @@ module core (
   logic [31:0]  mem_ext;
   logic         pc_en;
   logic [31:0]  rs2_store;
+
+  assign addr_o = alu_result[15:0];
+  assign signals = {mem_write, reg_write, branch}
 
   // I/O
   logic mem_sel_io;
@@ -139,7 +148,7 @@ module core (
   dual_port_bram #(
     .DEPTH      ( 16384                                       ),
     .WIDTH      ( 32                                          ),
-    .INIT_FILE  ( "../programs/nostdlib/out/test_program.hex" )
+    .INIT_FILE  ( "../programs/nostdlib/out/primes.hex" )
   ) data_mem_0 (
     .clka       ( clk_i         ),
     .wea        ( mem_we        ),
