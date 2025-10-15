@@ -17,6 +17,7 @@ module top
     input   logic         clk,
     input   logic         rstn,
     output  logic [31:0]  out_reg,
+    output  logic [15:0]  data,
     output  logic [15:0]  addr,
     output  logic [2:0]   signals
   );
@@ -26,6 +27,7 @@ module top
       .clk_i(clk),
       .rstn_i(rstn),
       .reg_o(out_reg),
+      .data_o(data),
       .addr_o(addr),
       .signals_o(signals)
     );

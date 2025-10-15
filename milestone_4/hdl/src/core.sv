@@ -14,6 +14,7 @@
 //    .clk_i(),
 //    .rstn_i(),
 //    .reg_o(),
+//    .data_o(),
 //    .addr_o(),
 //    .signals_o()
 //  );
@@ -23,6 +24,7 @@ module core (
     input   logic         rstn_i,
     output  logic [31:0]  reg_o,
     output  logic [15:0]  addr_o,
+    output  logic [15:0]  data_o,
     output  logic [2:0]   signals_o
   );
 
@@ -63,7 +65,8 @@ module core (
   logic [31:0]  rs2_store;
 
   assign addr_o = alu_result[15:0];
-  assign signals = {mem_write, reg_write, branch}
+  assign data_o = rs2[15:0];
+  assign signals_o = {mem_write, reg_write, branch};
 
   // I/O
   logic mem_sel_io;
