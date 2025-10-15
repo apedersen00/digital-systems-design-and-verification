@@ -46,14 +46,14 @@ VERILATOR_FLAGS += --assert -Wno-EOFNEWLINE -Wno-UNUSEDSIGNAL -Wno-IMPORTSTAR
 # Generate coverage analysis
 VERILATOR_FLAGS += --coverage
 # Set top module to 'top'
-VERILATOR_FLAGS += --top-module top
+VERILATOR_FLAGS += --top-module top_tb
 # Run Verilator in debug mode
 #VERILATOR_FLAGS += --debug
 # Add this trace to get a backtrace in gdb
 #VERILATOR_FLAGS += --gdbbt
 
 # Input files for Verilator
-VERILATOR_INPUT = src/rv32i_pkg.sv src/alu.sv src/branch_unit.sv src/controller.sv src/core.sv src/rf.sv src/sign_ext_unit.sv src/top.sv src/mux.sv src/dual_port_bram.sv src/mem_ext_unit.sv src/mem_store_unit.sv sim/sim_main.cpp
+VERILATOR_INPUT = src/rv32i_pkg.sv src/alu.sv src/branch_unit.sv src/controller.sv src/core.sv src/rf.sv src/sign_ext_unit.sv src/top_tb.sv src/mux.sv src/dual_port_bram.sv src/mem_ext_unit.sv src/mem_store_unit.sv sim/sim_main.cpp
 
 ######################################################################
 default: run
@@ -70,13 +70,13 @@ run:
 # 2. Or, run the make rules Verilator does:
 #	$(MAKE) -j -C obj_dir -f Vtop.mk
 # 3. Or, call a submakefile where we can override the rules ourselves:
-	$(MAKE) -j -C obj_dir -f Vtop.mk
+	$(MAKE) -j -C obj_dir -f Vtop_tb.mk
 
 	@echo
 	@echo "-- RUN ---------------------"
 	@rm -rf logs
 	@mkdir -p logs
-	obj_dir/Vtop +trace
+	obj_dir/Vtop_tb +trace
 
 	@echo
 	@echo "-- COVERAGE ----------------"

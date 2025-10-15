@@ -12,9 +12,9 @@
 
 #include <memory>
 #include <verilated.h>
-#include "Vtop.h"
+#include "Vtop_tb.h"
 
-void tick(const std::unique_ptr<VerilatedContext>& contextp, const std::unique_ptr<Vtop>& top) {
+void tick(const std::unique_ptr<VerilatedContext>& contextp, const std::unique_ptr<Vtop_tb>& top) {
     contextp->timeInc(5);
     top->clk = 0;
     top->eval();
@@ -33,7 +33,7 @@ int main(int argc, char** argv) {
     contextp->commandArgs(argc, argv);
     
     // create DUT instance
-    const std::unique_ptr<Vtop> top{new Vtop{contextp.get(), "TOP"}};
+    const std::unique_ptr<Vtop_tb> top{new Vtop_tb{contextp.get(), "TOP"}};
 
     // initialize
     top->clk    = 0;

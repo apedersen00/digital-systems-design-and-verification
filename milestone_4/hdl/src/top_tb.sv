@@ -12,7 +12,7 @@
 
 import rv32i_pkg::*;
 
-module top
+module top_tb
   (
     input   logic         clk,
     input   logic         rstn,
