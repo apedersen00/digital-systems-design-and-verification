@@ -194,4 +194,26 @@ Ref inv: [0.6667, -1.5000; -1.0000, 2.5000]
     \label{tab:q1_state_signals}
 \end{table}
 
+\newpage
+
+\section{Question 2}
+
+In this problem, you are to design an input wrapper and an output wrapper that connect the IMC circuit of the previous problem to a 16-bit arbitrated bus.
+
+The input wrapper waits for four 16-bit data that will be handshaked to it using a two-line \texttt{dataReady}, \texttt{dataAccept} fully responsive handshaking scheme. When such is received, it checks if the IMC circuit is ready to receive its four 16-bit inputs by monitoring the IMC's \texttt{ready} output. If so, it issues a \texttt{start} signal and allows the IMC to start its operation.
+
+The output wrapper works independently of the input wrapper. the output wrapper receives the four outputs of the IMC circuit when the IMC issues the \texttt{ready} signal. The output wrapper has an \texttt{outAvail} output that informs an external device of the availability of four 16-bit elements of the transposed matrix. When this signal is asserted, the external device may issue a start signal, \texttt{startTransmit}, to tell the output wrapper to start sending the results. The output wrapper uses \texttt{request} to get permission to use the bus, that will be responded by \texttt{grant} when the output wrapper is allowed to drive the bus. The output wrapper uses fully responsive two-line handshaking using an \texttt{outReady} output and an \texttt{outAccepted} input. The four 16-bit data outputs will be sent over the bus ina  burst fashion.
+
+\begin{enumerate}
+    \item Draw block diagrams of the input wrapper, output wrapper, and the interfacing bus, and how they wrap around the IMC circuit.
+    \item Draw the datapath of the interfacing circuits, identifying control signals that are issued by the controller.
+    \item Draw the state machines for the implementation of the inerface circuits controller.
+    \item Model your input wrapper and output wrapper in SystemVerilog.
+    \item verify your design with a testbench.
+\end{enumerate}
+
+\subsection*{Solution}
+
+
+
 \end{document}
