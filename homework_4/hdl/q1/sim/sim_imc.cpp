@@ -43,6 +43,10 @@ int main(int argc, char** argv) {
         return static_cast<float>(x) / 256.0f;
     };
 
+    auto float_to_q8_8 = [](float x) -> int16_t {
+        return static_cast<int16_t>(roundf(x * 256.0f));
+    };
+
     // Initialize signals
     top->clk    = 0;
     top->start  = 0;
@@ -58,10 +62,10 @@ int main(int argc, char** argv) {
 
     // test
     top->rstn   = 1;
-    top->a_in   = 1;
-    top->b_in   = 2;
-    top->c_in   = 2;
-    top->d_in   = 1;
+    top->a_in   = float_to_q8_8(1.0f);
+    top->b_in   = float_to_q8_8(2.0f);
+    top->c_in   = float_to_q8_8(2.0f);
+    top->d_in   = float_to_q8_8(1.0f);
     top->start  = 1;
     tick(contextp, top);
 
