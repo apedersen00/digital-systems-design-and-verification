@@ -20,7 +20,7 @@ VERILATOR_FLAGS += --trace-vcd
 VERILATOR_FLAGS += --assert -Wno-EOFNEWLINE
 
 ######################################################################
-TARGETS = mult adder
+TARGETS = mult adder imc
 
 SRC_DIR     = src
 SIM_DIR     = sim

@@ -9,13 +9,29 @@
 //-------------------------------------------------------------------------------------------------
 
 //  imc imc_0 (
-//    .sel_i(),
+//    // data inputs
+//    .clk_i(),
+//    .rstn_i(),
+//    .start_i(),
 //    .a_i(),
 //    .b_i(),
-//    .res_o()
+//    .c_i(),
+//    .d_i(),
+//    // data outputs
+//    .a_o(),
+//    .b_o(),
+//    .c_o(),
+//    .d_o(),
+//    .a_sign_o(),
+//    .b_sign_o(),
+//    .c_sign_o(),
+//    .d_sign_o(),
+//    // outputs
+//    .ready_o()
 //  );
 
 module imc (
+    // data inputs
     input   logic         clk_i,
     input   logic         rstn_i,
     input   logic         start_i,
@@ -23,7 +39,7 @@ module imc (
     input   logic [15:0]  b_i,
     input   logic [15:0]  c_i,
     input   logic [15:0]  d_i,
-    output  logic         ready,
+    // data outputs
     output  logic [15:0]  a_o,
     output  logic [15:0]  b_o,
     output  logic [15:0]  c_o,
@@ -32,106 +48,86 @@ module imc (
     output  logic         b_sign_o,
     output  logic         c_sign_o,
     output  logic         d_sign_o,
+    // outputs
+    output  logic         ready_o
   );
 
-  // control signals
-  logic en_a;
-  logic en_b;
-  logic en_c;
-  logic en_d;
-  logic en_det;
-  logic en_term;
-  logic neg_b;
-  logic neg_c;
+    logic en_a;
+    logic en_b;
+    logic en_c;
+    logic en_d;
+    logic en_det;
+    logic en_term;
+    logic neg_b;
+    logic neg_c;
+    logic sel_a;
+    logic sel_b;
+    logic sel_c;
+    logic sel_d;
+    logic sel_mul_a_0;
+    logic sel_mul_b_0;
+    logic sel_mul_a_1;
+    logic sel_mul_b_1;
 
-  // registers
-  logic [15:0] a;
-  logic [15:0] b;
-  logic [15:0] c;
-  logic [15:0] d;
-  logic [15:0] det;
-  logic [15:0] term;
-  logic [3:0]  signs; // {a, b, c, d}
-
-  // signals
-  logic [15:0]  mul_0;
-  logic [15:0]  mul_1;
-  logic [15:0]  sum;
-  logic [8:0]   recip;
-  logic [15:0]  b_val;
-  logic [15:0]  c_val;
-
-  // output assignments
-  assign a_o = a;
-  assign b_o = b;
-  assign c_o = c;
-  assign d_o = d;
-  assign a_sign_o = signs[3];
-  assign b_sign_o = signs[2];
-  assign c_sign_o = signs[1];
-  assign d_sign_o = signs[0];
-
-  always_ff @( posedge clk_i ) begin : update_registers
-
-    if (en_a) begin
-      a <= sel_a ? mul_0 : a_i;
-    end
-    if (en_b) begin
-      b <= sel_b ? mul_1 : b_i;
-    end
-    if (en_c) begin
-      c <= sel_a ? mul_0 : a_i;
-    end
-    if (en_d) begin
-      d <= sel_a ? mul_1 : a_i;
-    end
-    if (en_det) begin
-      det <= sum;
-    end
-    if (en_term) begin
-      term <= {7'd0, recip};
-    end
-
-  end
-
-  mult mult_0 (
-    .sel_i  ( 1'b0                    ),
-    .a_i    ( sel_mul_a_0 ? term : a  ),
-    .b_i    ( sel_mul_b_0 ? term : d  ),
-    .res_o  ( mul_0                   )
+  imc_controller imc_controller_0 (
+    // data inputs
+    .clk_i          ( clk_i       ),
+    .rstn_i         ( rstn_i      ),
+    .start_i        ( start_i     ),
+    // control signals
+    .en_a_o         ( en_a        ),
+    .en_b_o         ( en_b        ),
+    .en_c_o         ( en_c        ),
+    .en_d_o         ( en_d        ),
+    .en_det_o       ( en_det      ),
+    .en_term_o      ( en_term     ),
+    .neg_b_o        ( neg_b       ),
+    .neg_c_o        ( neg_c       ),
+    .sel_a_o        ( sel_a       ),
+    .sel_b_o        ( sel_b       ),
+    .sel_c_o        ( sel_c       ),
+    .sel_d_o        ( sel_d       ),
+    .sel_mul_a_0_o  ( sel_mul_a_0 ),
+    .sel_mul_b_0_o  ( sel_mul_b_0 ),
+    .sel_mul_a_1_o  ( sel_mul_a_1 ),
+    .sel_mul_b_1_o  ( sel_mul_b_1 ),
+    // outputs
+    .ready_o        ( ready_o     )
   );
 
-  mult mult_1 (
-    .sel_i  ( 1'b0                    ),
-    .a_i    ( sel_mul_a_1 ? term : b  ),
-    .b_i    ( sel_mul_b_1 ? term : c  ),
-    .res_o  ( mul_1                   )
-  );
-
-  adder adder_0 (
-    .sub_i  ( 1'b0                    ),
-    .a_i    ( mul_0                   ),
-    .b_i    ( mul_1                   ),
-    .res_o  ( sum                     )
-  );
-
-  adder adder_neg_b (
-    .sub_i  ( neg_b                   ),
-    .a_i    ( 16'd0                   ),
-    .b_i    ( b                       ),
-    .res_o  ( b_val                   )
-  );
-
-  adder adder_neg_c (
-    .sub_i  ( neg_c                   ),
-    .a_i    ( 16'd0                   ),
-    .b_i    ( c                       ),
-    .res_o  ( c_val                   )
-  );
-
-  reciprocal reciprocal_0 (
-    .x_i    ( det                     ),
-    .y_o    ( recip                   )
+  imc_dp imc_dp_0 (
+    // data inputs
+    .clk_i          ( clk_i       ),
+    .a_i            ( a_i         ),
+    .b_i            ( b_i         ),
+    .c_i            ( c_i         ),
+    .d_i            ( d_i         ),
+    // control signals
+    .en_a_i         ( en_a        ),
+    .en_b_i         ( en_b        ),
+    .en_c_i         ( en_c        ),
+    .en_d_i         ( en_d        ),
+    .en_det_i       ( en_det      ),
+    .en_term_i      ( en_term     ),
+    .neg_b_i        ( neg_b       ),
+    .neg_c_i        ( neg_c       ),
+    .sel_a_i        ( sel_a       ),
+    .sel_b_i        ( sel_b       ),
+    .sel_c_i        ( sel_c       ),
+    .sel_d_i        ( sel_d       ),
+    .sel_mul_a_0_i  ( sel_mul_a_0 ),
+    .sel_mul_b_0_i  ( sel_mul_b_0 ),
+    .sel_mul_a_1_i  ( sel_mul_a_1 ),
+    .sel_mul_b_1_i  ( sel_mul_b_1 ),
+    // data outputs
+    .a_o            ( a_o         ),
+    .b_o            ( b_o         ),
+    .c_o            ( c_o         ),
+    .d_o            ( d_o         ),
+    .a_sign_o       ( a_sign_o    ),
+    .b_sign_o       ( b_sign_o    ),
+    .c_sign_o       ( c_sign_o    ),
+    .d_sign_o       ( d_sign_o    )
   );
 
 endmodule
