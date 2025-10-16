@@ -34,7 +34,7 @@ module reciprocal (
       16'h000D: y_o = 9'h013;   // 1/13
       16'h000E: y_o = 9'h012;   // 1/14
       16'h000F: y_o = 9'h011;   // 1/15
-      default:  y_o = 9'h000;    // out of range, return 0
+      default:  y_o = 9'h000;   // out of range, return 0
     endcase
   end
 

@@ -1,10 +1,10 @@
 # import numpy as np
 
 def main():
-    a = 1
-    b = 2
-    c = 2
-    d = 1
+    a = 15
+    b = 15
+    c = 15
+    d = 13
 
     mat = {
         "a": a,
