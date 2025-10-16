@@ -4,6 +4,37 @@
 
 \section{Question 1} \label{sec:q1}
 
+Calculation of the inverse of a 2 by 2 matrix is shown below.
 
+$$
+A =
+\begin{bmatrix}
+    a & b \\
+    c & d
+\end{bmatrix}
+, \hspace{20pt} A^{-1} = \frac{1}{|A|}
+\begin{bmatrix}
+    d & -b \\
+    -d & a
+\end{bmatrix}
+= \frac{1}{ad - bc}
+\begin{bmatrix}
+    d & -b \\
+    -c & a
+\end{bmatrix}
+=
+\begin{bmatrix}
+    a_\text{out} & b_\text{out} \\
+    c_\text{out} & d_\text{out}
+\end{bmatrix}
+$$
+
+You are to design an RTL circuit for this calculation. When \texttt{start} is asserted, \texttt{aIn}, \texttt{bIn}, \texttt{cIn}, \texttt{dIn} 16-bit busses will contain the four elements of the matrix in upper left to lower right order. When the inverse calculation is completed, the IMC (Inverse Matrix Calculator) generates a 1 on \texttt{ready} and keeps this value until a new round of calculation begins. When calculation is completed, the output data becomes available on \texttt{aOut}, \texttt{bOut}, \texttt{cOut}, \texttt{dOut} output busses. Input and output data formats are 16-bit fixed point wiht eight integer bits. The inputs have only integer parts, and the outputs are 16-bit data with integer and fractional parts. The input integer part should be less than or equal to 15.
+
+You can use the following components:
+
+\begin{itemize}
+    \item 2 16-bit unisgned multipliers with 16-bit inputs and a 16-bit outputs.
+\end{itemize}
 
 \end{document}
