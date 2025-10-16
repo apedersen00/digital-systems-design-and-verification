@@ -58,7 +58,6 @@ module imc (
     logic en_d;
     logic en_det;
     logic en_term;
-    logic neg_b;
     logic sel_a;
     logic sel_b;
     logic sel_c;
@@ -80,7 +79,6 @@ module imc (
     .en_d_o         ( en_d        ),
     .en_det_o       ( en_det      ),
     .en_term_o      ( en_term     ),
-    .neg_b_o        ( neg_b       ),
     .sel_a_o        ( sel_a       ),
     .sel_b_o        ( sel_b       ),
     .sel_c_o        ( sel_c       ),
@@ -107,7 +105,6 @@ module imc (
     .en_d_i         ( en_d        ),
     .en_det_i       ( en_det      ),
     .en_term_i      ( en_term     ),
-    .neg_b_i        ( neg_b       ),
     .sel_a_i        ( sel_a       ),
     .sel_b_i        ( sel_b       ),
     .sel_c_i        ( sel_c       ),

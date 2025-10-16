@@ -22,8 +22,6 @@
 //    .en_d_i(),
 //    .en_det_i(),
 //    .en_term_i(),
-//    .neg_b_i(),
-//    .neg_c_i(),
 //    .sel_a_i(),
 //    .sel_b_i(),
 //    .sel_c_i(),
@@ -57,7 +55,6 @@ module imc_dp (
     input   logic         en_d_i,         // enable reg
     input   logic         en_det_i,       // enable reg
     input   logic         en_term_i,      // enable reg
-    input   logic         neg_b_i,        // negate b
     input   logic         sel_a_i,        // 1'b0: a_i, 1'b1: mul_0
     input   logic         sel_b_i,        // 1'b0: b_i, 1'b1: mul_1
     input   logic         sel_c_i,        // 1'b0: c_i, 1'b1: mul_0
@@ -90,7 +87,6 @@ module imc_dp (
   logic [15:0]  mul_1;
   logic [15:0]  sum;
   logic [8:0]   recip;
-  logic [15:0]  b_val;
   /* verilator lint_off UNUSEDSIGNAL */
   logic [15:0]  det_neg;
   /* verilator lint_on UNUSEDSIGNAL */
@@ -137,24 +133,17 @@ module imc_dp (
   );
 
   mult mult_1 (
-    .sel_i  ( 1'b0                          ),
-    .a_i    ( sel_mul_a_1_i ? a    : b_val  ),
-    .b_i    ( sel_mul_b_1_i ? term : c      ),
-    .res_o  ( mul_1                         )
+    .sel_i  ( 1'b0                      ),
+    .a_i    ( sel_mul_a_1_i ? a    : b  ),
+    .b_i    ( sel_mul_b_1_i ? term : c  ),
+    .res_o  ( mul_1                     )
   );
 
   adder adder_0 (
-    .sub_i  ( 1'b0                    ),
+    .sub_i  ( 1'b1                    ),
     .a_i    ( mul_0                   ),
     .b_i    ( mul_1                   ),
     .res_o  ( sum                     )
-  );
-
-  adder adder_neg_b (
-    .sub_i  ( neg_b_i                 ),
-    .a_i    ( 16'd0                   ),
-    .b_i    ( b                       ),
-    .res_o  ( b_val                   )
   );
 
   adder adder_neg_det (

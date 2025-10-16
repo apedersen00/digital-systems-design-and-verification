@@ -20,7 +20,6 @@
 //    .en_d_o(),
 //    .en_det_o(),
 //    .en_term_o(),
-//    .neg_b_o(),
 //    .sel_a_o(),
 //    .sel_b_o(),
 //    .sel_c_o(),
@@ -45,7 +44,6 @@ module imc_controller (
     output  logic en_d_o,         // enable reg
     output  logic en_det_o,       // enable reg
     output  logic en_term_o,      // enable reg
-    output  logic neg_b_o,        // negate b
     output  logic sel_a_o,        // 1'b0: a_i, 1'b1: mul_0
     output  logic sel_b_o,        // 1'b0: b_i, 1'b1: mul_1
     output  logic sel_c_o,        // 1'b0: c_i, 1'b1: mul_0
@@ -101,7 +99,6 @@ module imc_controller (
     en_d_o        = 1'b0;
     en_det_o      = 1'b0;
     en_term_o     = 1'b0;
-    neg_b_o       = 1'b0;
     sel_a_o       = 1'b0;
     sel_b_o       = 1'b0;
     sel_c_o       = 1'b0;
@@ -125,7 +122,6 @@ module imc_controller (
       STATE_DET:
       begin
         en_det_o    = 1'b1;
-        neg_b_o     = 1'b1;
       end
 
       STATE_TERM:
