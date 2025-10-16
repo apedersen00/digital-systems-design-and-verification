@@ -163,7 +163,6 @@ module imc_controller (
 
     endcase
 
-
   end
 
 endmodule
