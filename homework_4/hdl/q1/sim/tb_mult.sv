@@ -8,35 +8,27 @@
 //
 //-------------------------------------------------------------------------------------------------
 
-module top
+module tb_mult
   (
-    input   logic clk,
-    input   logic rstn,
-    input   logic seq,
-    output  logic det_struct,
-    output  logic det_behav
+    input   logic         sel,
+    input   logic [15:0]  b,
+    input   logic [15:0]  a,
+    output  logic [15:0]  res
   );
 
     // DUT instance
-    seq_detector_struct seq_detector_struct_0 (
-      .clk_i(clk),
-      .rstn_i(rstn),
-      .seq_i(seq),
-      .det_o(det_struct)
-    );
-
-    seq_detector_behav seq_detector_behav_0 (
-      .clk_i(clk),
-      .rstn_i(rstn),
-      .seq_i(seq),
-      .det_o(det_behav)
+    mult mult_0 (
+      .sel_i  ( sel ),
+      .a_i    ( a   ),
+      .b_i    ( b   ),
+      .res_o  ( res )
     );
 
     // Stimulus
     initial begin
 
       if ($test$plusargs("trace") != 0) begin
-        $dumpfile("logs/vlt_dump.vcd");
+        $dumpfile("logs/tb_mult.vcd");
         $dumpvars();
       end
 
