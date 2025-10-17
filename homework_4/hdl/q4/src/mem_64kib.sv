@@ -1,0 +1,56 @@
+//-------------------------------------------------------------------------------------------------
+//
+//  File: mem.sv
+//  Description: BRAM and controller.
+//
+//  Author(s):
+//      - A. Pedersen
+//      - J. Sadiq
+//      - J. Yang
+//
+//-------------------------------------------------------------------------------------------------
+
+//  mem_64kib mem_64kib_0 (
+//    .clk_i(),
+//    .read_en_i(),
+//    .addr_i(),
+//    .d_i(),
+//    .d_o(),
+//    .ready_o()
+//  );
+
+module mem_64kib (
+    input   logic         clk_i,
+    input   logic         read_en_i,
+    input   logic [3:0]   write_en_i,
+    input   logic [31:0]  addr_i,
+    input   logic [31:0]  d_i,
+    output  logic [31:0]  d_o,
+    output  logic         ready_o
+  );
+
+  logic mem_en;
+  logic [3:0] mem_we;
+
+  bram_64kib #(
+    .INIT_FILE("../python/rams_init_file.data")
+  ) bram_64kib_0 (
+    .clk_i      ( clk_i         ),
+    .en_i       ( mem_en        ),
+    .we_i       ( mem_we        ),
+    .addr_i     ( addr_i        ),
+    .d_i        ( d_i           ),
+    .d_o        ( d_o           )
+  );
+
+  mem_controller mem_controller_0 (
+    .clk_i      ( clk_i         ),
+    .read_en_i  ( read_en_i     ),
+    .write_en_i ( write_en_i    ),
+    .ready_o    ( ready_o       ),
+    .mem_en_o   ( mem_en        ),
+    .mem_we_o   ( mem_we        )
+  );
+
+endmodule
+

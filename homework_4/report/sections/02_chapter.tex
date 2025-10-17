@@ -508,4 +508,30 @@ The controller consists of 5 states: \texttt{IDLE}, \texttt{COLLECT}, \texttt{AC
     \label{fig:q3_wave}
 \end{figure}
 
+\newpage
+
+\section{Question 4}
+
+You are to generate constrained random test data for the CPU-memory interface shown below, which you have previously seen in Milestones 3 and 4. In this exercise, the CPU performs burst transfers when reading from or writing to memory.
+
+A burst access is a sequence of consecutive trasnfers. In this scenario, we do bursts without an explicit \texttt{burst} signal. We just handle bursts internally by generating one transaction with $\text{burst\_len} = N$, driving \texttt{read\_en} or \texttt{write\_en} high for $N$ consecutive cycles, and incrementing the address by 4 each cycle.
+
+Define the following constraints to control randomization behavior.
+
+\begin{itemize}
+    \item \textbf{Burst Length Constraint}: Limits the number of data items in a burst to between 2 and 8 transfers.
+    \item \textbf{Address Alignment Constraint}: Ensures the address is word-aligned (4-byte aligned).
+    \item \textbf{Address Range Partitioning}: Assigns different memory regions for read and write operations. Memory region for reading is \texttt{[32'h0000\_0000:32'h0000\_FFFF]}. The region for writing is \texttt{[32'h1000\_0000:32'h1000\_FFFF]}.
+    \item \textbf{Operation Probability}: Randomly selects read or write operations with weighted probability:
+    \begin{itemize}
+        \item 80\% chance to generate a read
+        \item 20\% chance to generate a write
+    \end{itemize}
+    \item \textbf{Write Enable Constraint}: Ensured valid \texttt{write\_en} values only for write transfers. At least one byte must be enabled (non-zero pattern). For read transfers, \texttt{write\_en} must be zero. The 4 bits of write enable are used for the four bytes in the addressed word. Only the 8 values 0000, 1111, 1100, 0011, 1000, 0100, 0010, and 0001 are possible, i.e. no write, write 32 bits, write upper 16 bits, write lower 16, or write a single byte, respectively.
+\end{itemize}
+
+\subsection*{Solution}
+
+
+
 \end{document}
