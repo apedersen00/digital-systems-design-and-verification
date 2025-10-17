@@ -385,4 +385,23 @@ The output wrapper must be able to store the result from the IMC when it is avai
     \label{fig:q2_out_wrapper_wave}
 \end{figure}
 
+\newpage
+
+\section{Question 3}
+
+You are to design an interface circuit for device $A$ with a 64-bit data bus (dataA) that is to write to device $B$, which receives 8-bit data through and arbitrated 8-bit shared bus (sharedBus). The interface circuit is called IAB and communicates with device $A$ by fully responsive two-line handshaking initiated by device A (readyA, when A is to write, and acceptedA when the 64-bit data is received by IAB). The interface circuit requests the use of the sharedBus by issuing reqIAB and waits for gntIAB before it can use the bus. When IAB has access to the bus, it writes the 64-bit data it received from $A$ in eigth 8-bit chunks to device $B$ in a burst. For each write to $B$, IAB communicates with device $B$ by fully responsive twoline handshaking initiated by IAB (readyI, when IAB is to wrtie, and acceptedI when the 8-bit is received by device $B$).
+
+\begin{enumerate}
+    \item Draw the block diagram of the completed system, including your circuits' input and output bus, shared bus, and the bus between thetwo devices and your interface circuit.
+    \item Draw the complete datapath of IAB, including the components and necessary internal control signals.
+    \item Draw a state diagram showing the IAB controller's behavior. In each state show the control signals that are issued.
+    \item Draw wiring between the datapath and controller.
+    \item Model the datapath, controller, and the IAB interface in SystemVerilog.
+    \item Verify the design with a testbench.
+\end{enumerate}
+
+\subsection*{Solution}
+
+
+
 \end{document}
