@@ -402,6 +402,110 @@ You are to design an interface circuit for device $A$ with a 64-bit data bus (da
 
 \subsection*{Solution}
 
+The block diagram of the system is shown in \cref{fig:q3}. The datapath consists of a single 64-bit register for storing the value from $A$, and a multiplexer and tri-state block for outputting the corresponding 8-bits to the shared 8-bit bus. The datapath and it's control signals are shown in \cref{fig:q3_dp} and \cref{tab:q3_sig}.
 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{assets/q3.png}
+    \caption{Block diagram of IAB.}
+    \label{fig:q3}
+\end{figure}
+
+\newpage
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\linewidth]{assets/q3_dp.png}
+    \caption{Datapath of IAB.}
+    \label{fig:q3_dp}
+\end{figure}
+
+\begin{table}[h]
+    \centering
+    \renewcommand{\arraystretch}{1.2}
+    \setlength{\tabcolsep}{8pt}
+
+    \begin{tabularx}{\textwidth}{@{}lX@{}}
+        \toprule
+        \textbf{Signal} & \textbf{Description} \\
+        \midrule
+        \texttt{latch}      & Stores the data from A in the register.           \\
+        \texttt{mux [2:0]}  & Outputs the corresponding 8-bits of the register. \\
+        \texttt{drive\_bus} & Enables data to pass through the tri-state block. \\
+        \bottomrule
+    \end{tabularx}
+
+    \caption{Control signals for IAB datapath.}
+    \label{tab:q3_sig}
+\end{table}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\linewidth]{assets/q3_cont.png}
+    \caption{IAB controller state transitions.}
+    \label{fig:q3_cont}
+\end{figure}
+
+The controller consists of 5 states: \texttt{IDLE}, \texttt{COLLECT}, \texttt{ACCEPT}, \texttt{REQUEST\_BUS}, and \texttt{TRANSMIT}. When $A$ signals it has data ready, the controller moves to the \texttt{COLLECT} state where the value is then stored in the datapath register. Afterwards it moves to \texttt{ACCEPT} and outputs the handshake accept signal. After accepting data from $A$, it moves to \texttt{REQUEST\_BUS} where it asserts a \texttt{bus\_req} signal and waits \texttt{bus\_grant}. When bus access has been granted, the controller switches to its last state, \texttt{TRANSMIT}, where it starts driving the shared bus. An internal counter, \texttt{data\_count}, keeps track of which 8-bit value from the 64-bit data register to output. The signals asserted in each state are summarized in \cref{tab:iab_controller_state_signals}. To verify the IAB module, a testbench was created that simulates the expected stimuli. A value of 0x1122334455667788 is sent from $A$. The testbench output and waveform is shown on the next page.
+
+\newpage
+
+\vspace{-10pt}
+\begin{table}[h]
+    \centering
+    \renewcommand{\arraystretch}{1.5}
+    \setlength{\tabcolsep}{6pt}
+
+    \begin{tabularx}{\textwidth}{@{}l X@{}}
+        \toprule
+        \textbf{State} & \textbf{Signals Active (1'b1)} \\
+        \midrule
+        \texttt{STATE\_IDLE} & 
+            None \\
+        \hline
+        \texttt{STATE\_COLLECT} & 
+            \texttt{latch} \\
+        \hline
+        \texttt{STATE\_ACCEPT} & 
+            \texttt{accepted\_a} \\
+        \hline
+        \texttt{STATE\_REQUEST\_BUS} & 
+            \texttt{bus\_req} \\
+        \hline
+        \texttt{STATE\_TRANSMIT} & 
+            \texttt{ready} \newline
+            \texttt{drive\_bus} \newline
+            \texttt{mux} (counts from 0 to 7 based on \texttt{data\_count}) \\
+        \bottomrule
+    \end{tabularx}
+
+    \caption{Signals issued in each state of the IAB controller.}
+    \label{tab:iab_controller_state_signals}
+\end{table}
+
+\vspace{-10pt}
+\begin{textcode}{q3 - IAB testbench output}
+[60] Reset...
+[80] IAB accepted 64-bit data from A
+[90] IAB requested bus
+[100] Bus granted to IAB
+[110] IAB sent 0: 0x88
+[140] IAB sent 1: 0x77
+[170] IAB sent 2: 0x66
+[200] IAB sent 3: 0x55
+[230] IAB sent 4: 0x44
+[260] IAB sent 5: 0x33
+[290] IAB sent 6: 0x22
+[320] IAB sent 7: 0x11
+[350] Completed transfer
+\end{textcode}
+
+\vspace{-10pt}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{assets/q3_wave.pdf}
+    \caption{Waveform for IAB testbench.}
+    \label{fig:q3_wave}
+\end{figure}
 
 \end{document}

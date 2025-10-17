@@ -44,36 +44,29 @@ int main(int argc, char** argv) {
     top->a_ready_i      = 0;
     top->bus_grant_i    = 0;
     top->accepted_i     = 0;
-    top->data_a_i       = 0x1122334455667788; // sample 64-bit data
+    top->data_a_i       = 0x1122334455667788;
     top->eval();
 
-    // Apply reset
     for (int i = 0; i < 5; i++) tick(contextp, top);
     top->rstn_i = 1;
     tick(contextp, top);
-    VL_PRINTF("[%0ld] Reset released\n", contextp->time());
+    VL_PRINTF("[%0ld] Reset...\n", contextp->time());
 
-    // Device A indicates data ready
     top->a_ready_i = 1;
     tick(contextp, top);
 
-    // Wait for IAB to assert accepted_a_o
     while (!top->accepted_a_o) tick(contextp, top);
     top->a_ready_i = 0;
     VL_PRINTF("[%0ld] IAB accepted 64-bit data from A\n", contextp->time());
 
-    // Wait for IAB to request the bus
     while (!top->bus_req_o) tick(contextp, top);
     VL_PRINTF("[%0ld] IAB requested bus\n", contextp->time());
 
-    // Grant bus to IAB
     top->bus_grant_i = 1;
     tick(contextp, top);
     VL_PRINTF("[%0ld] Bus granted to IAB\n", contextp->time());
 
-    // Send 8 bytes to device B
     for (int byte_idx = 0; byte_idx < 8; byte_idx++) {
-        // Wait for IAB ready to write next byte
         for (int i = 0; i < 10; i++) {
             tick(contextp, top);
             if (top->ready_o) {
@@ -81,21 +74,19 @@ int main(int argc, char** argv) {
             }
         }
 
-        VL_PRINTF("[%0ld] IAB ready to send byte %d: 0x%02X\n",
+        VL_PRINTF("[%0ld] IAB sent %d: 0x%02X\n",
                   contextp->time(), byte_idx, top->data_b_o);
 
-        // Device B acknowledges receipt
         top->accepted_i = 1;
         tick(contextp, top);
         top->accepted_i = 0;
         tick(contextp, top);
     }
 
-    // Release bus
     top->bus_grant_i = 0;
     tick(contextp, top);
 
-    VL_PRINTF("[%0ld] Completed burst transfer\n", contextp->time());
+    VL_PRINTF("[%0ld] Completed transfer\n", contextp->time());
 
     top->final();
     contextp->statsPrintSummary();
