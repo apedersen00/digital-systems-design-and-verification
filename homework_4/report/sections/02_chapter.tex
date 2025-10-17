@@ -156,37 +156,37 @@ Ref inv: [0.6667, -1.5000; -1.0000, 2.5000]
         \textbf{State} & \textbf{Signals Active (1'b1)} \\
         \midrule
         \texttt{STATE\_START} & 
-            \texttt{en\_a\_o} \newline
-            \texttt{en\_b\_o} \newline
-            \texttt{en\_c\_o} \newline
-            \texttt{en\_d\_o} \\
+            \texttt{en\_a} \newline
+            \texttt{en\_b} \newline
+            \texttt{en\_c} \newline
+            \texttt{en\_d} \\
         \hline
         \texttt{STATE\_DET} & 
-            \texttt{en\_det\_o} \\
+            \texttt{en\_det} \\
         \hline
         \texttt{STATE\_TERM} & 
-            \texttt{en\_term\_o} \\
+            \texttt{en\_term} \\
         \hline
         \texttt{STATE\_MAT\_1} & 
-            \texttt{en\_a\_o} \newline
-            \texttt{en\_d\_o} \newline
-            \texttt{sel\_a\_o} (mul\_0) \newline
-            \texttt{sel\_d\_o} (mul\_1) \newline
-            \texttt{sel\_mul\_a\_0\_o} (term) \newline
-            \texttt{sel\_mul\_a\_1\_o} (a) \newline
-            \texttt{sel\_mul\_b\_1\_o} (term) \\
+            \texttt{en\_a} \newline
+            \texttt{en\_d} \newline
+            \texttt{sel\_a} (mul\_0) \newline
+            \texttt{sel\_d} (mul\_1) \newline
+            \texttt{sel\_mul\_a\_0} (term) \newline
+            \texttt{sel\_mul\_a\_1} (a) \newline
+            \texttt{sel\_mul\_b\_1} (term) \\
         \hline
         \texttt{STATE\_MAT\_2} & 
-            \texttt{en\_b\_o} \newline
-            \texttt{en\_c\_o} \newline
-            \texttt{sel\_b\_o} (mul\_1) \newline
-            \texttt{sel\_c\_o} (mul\_0) \newline
-            \texttt{sel\_mul\_a\_0\_o} (term) \newline
-            \texttt{sel\_mul\_b\_0\_o} (c) \newline
-            \texttt{sel\_mul\_b\_1\_o} (term) \\
+            \texttt{en\_b} \newline
+            \texttt{en\_c} \newline
+            \texttt{sel\_b} (mul\_1) \newline
+            \texttt{sel\_c} (mul\_0) \newline
+            \texttt{sel\_mul\_a\_0} (term) \newline
+            \texttt{sel\_mul\_b\_0} (c) \newline
+            \texttt{sel\_mul\_b\_1} (term) \\
         \hline
         \texttt{STATE\_READY} & 
-            \texttt{ready\_o} \\
+            \texttt{ready} \\
         \bottomrule
     \end{tabularx}
 
@@ -214,6 +214,175 @@ The output wrapper works independently of the input wrapper. the output wrapper 
 
 \subsection*{Solution}
 
+The interfacing circuits (wrappers) will convert the highly parallel data stream of the IMC module typical of intra-RTL communication, to a serialized data stream suitable for a shared bus. A schematic showing the connections to the IMC is seen in \cref{fig:q2_wrap}.
 
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\linewidth]{assets/q2.png}
+    \caption{IMC with input and output wrappers for bus communication.}
+    \label{fig:q2_wrap}
+\end{figure}
+
+\newpage
+
+\subsection*{Input Wrapper}
+
+The input wrapper must be able to serially read and store the four input values for the IMC. The datapath consists of only four registers to store the inputs and is shown in \cref{fig:q2_in_wrap_dp}. The datapath has four control signals [\cref{tab:q2_in_wrap_sig}]. The controller has five states: \texttt{IDLE}, \texttt{COLLECT}, \texttt{ACCEPT}, \texttt{WAIT\_IMC}, and \texttt{START\_IMC}. When the bus asserts \texttt{dataReady} the input wrapper enters the \texttt{COLLECT} state, writing the serial data into the corresponding registers. An internal counter, \texttt{data\_count}, keeps track of which register to write to. When all data has been received, the wrapper either enters a \texttt{WAIT\_IMC} if the IMC is not yet ready to receive new data. If the IMC already assets \texttt{ready}, the input wrapper directly enters the \texttt{START\_IMC} state. The state transition diagram is shown in \cref{fig:q2_in_wrap_cont}.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\linewidth]{assets/in_wrap_dp.png}
+    \caption{Datapath for input wrapper.}
+    \label{fig:q2_in_wrap_dp}
+\end{figure}
+
+\begin{table}[h]
+    \centering
+    \renewcommand{\arraystretch}{1.2}
+    \setlength{\tabcolsep}{8pt}
+
+    \begin{tabularx}{\textwidth}{@{}lX@{}}
+        \toprule
+        \textbf{Signal} & \textbf{Description} \\
+        \midrule
+        \texttt{en\_a}          & Enable synchronized writing into the \texttt{a} register. \\
+        \texttt{en\_b}          & Enable synchronized writing into the \texttt{b} register. \\
+        \texttt{en\_c}          & Enable synchronized writing into the \texttt{c} register. \\
+        \texttt{en\_d}          & Enable synchronized writing into the \texttt{d} register. \\
+        \bottomrule
+    \end{tabularx}
+
+    \caption{Control signals for input wrapper datapath.}
+    \label{tab:q2_in_wrap_sig}
+\end{table}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\linewidth]{assets/in_wrap_cont.png}
+    \caption{Controller for input wrapper.}
+    \label{fig:q2_in_wrap_cont}
+\end{figure}
+
+\newpage
+
+The control signal asserted in each state is summarized in \cref{tab:in_wrapper_state_signals} and the testbench waveform is shown in \cref{fig:q2_in_wrapper_wave}.
+
+\begin{table}[h]
+    \centering
+    \renewcommand{\arraystretch}{1.5}
+    \setlength{\tabcolsep}{6pt}
+
+    \begin{tabularx}{\textwidth}{@{}l X@{}}
+        \toprule
+        \textbf{State} & \textbf{Signals Active (1'b1)} \\
+        \midrule
+        \texttt{STATE\_IDLE} & 
+            None \\ 
+        \hline
+        \texttt{STATE\_COLLECT} & 
+            \texttt{en\_a} (if \texttt{data\_count}=0) \newline
+            \texttt{en\_b} (if \texttt{data\_count}=1) \newline
+            \texttt{en\_c} (if \texttt{data\_count}=2) \newline
+            \texttt{en\_d} (if \texttt{data\_count}=3) \\
+        \hline
+        \texttt{STATE\_ACCEPT} & 
+            \texttt{data\_accept} \\
+        \hline
+        \texttt{STATE\_WAIT\_IMC} & 
+            None \\
+        \hline
+        \texttt{STATE\_START\_IMC} & 
+            \texttt{imc\_start} \\
+        \bottomrule
+    \end{tabularx}
+
+    \caption{Signals issued in each state of the input wrapper controller.}
+    \label{tab:in_wrapper_state_signals}
+\end{table}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\linewidth]{assets/q2_in_wrapper_wave.pdf}
+    \caption{Waveform for input wrapper testbench.}
+    \label{fig:q2_in_wrapper_wave}
+\end{figure}
+
+\newpage
+
+\subsection*{Output Wrapper}
+
+The output wrapper must be able to store the result from the IMC when it is available and signal an external device that data is available. The datapath consists of four registers to store the results, a 4-to-1 multiplexer to select one for the bus, and a tri-state block to put high-z on the output when it is not driving the bus. The datapath is shown in \cref{fig:q2_out_wrap_dp}. The datapath has three control signals [\cref{tab:q2_out_wrap_sig}]. The controller has four states: \texttt{IDLE}, \texttt{READY}, \texttt{REQUEST\_BUS}, and \texttt{TRANSMIT}. When the IMC asserts \texttt{ready}, the output wrapper latches the outputs to the internal registers and asserts \texttt{available} to external devices. When an external device then requests a transmission by \texttt{start\_transmit}, the wrapper requests access to the bus by asserting \texttt{request} in the \texttt{REQUEST\_BUS} state. When the wrapper is granted access it changes state to \texttt{TRANSMIT}, where an internal counter, \texttt{data\_count}, keeps track of which registers to output. The transition diagram is shown in \cref{fig:q2_out_wrap_cont}. The control signals asserted in each state are summarized in \cref{tab:q2_out_wrap_sig} and the testbench waveform is shown in \cref{fig:q2_out_wrapper_wave}.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\linewidth]{assets/out_wrap_dp.png}
+    \caption{Datapath for output wrapper.}
+    \label{fig:q2_out_wrap_dp}
+\end{figure}
+
+\begin{table}[h]
+    \centering
+    \renewcommand{\arraystretch}{1.2}
+    \setlength{\tabcolsep}{8pt}
+
+    \begin{tabularx}{\textwidth}{@{}lX@{}}
+        \toprule
+        \textbf{Signal} & \textbf{Description} \\
+        \midrule
+        \texttt{drive\_bus} & 1'b0: High-z, \hspace{20pt} 1'b1: Passes the MUX output to the bus \\
+        \texttt{latch\_imc} & Enable synchronized writing into the \texttt{a}, \texttt{b}, \texttt{c}, and \texttt{d} registers. \\
+        \texttt{data\_mux}  & Outputs the corresponding register to the tri-state block. \\
+        \bottomrule
+    \end{tabularx}
+
+    \caption{Control signals for input wrapper datapath.}
+    \label{tab:q2_out_wrap_sig}
+\end{table}
+
+\newpage
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\linewidth]{assets/out_wrap_cont.png}
+    \caption{Datapath for output wrapper.}
+    \label{fig:q2_out_wrap_cont}
+\end{figure}
+
+\begin{table}[h]
+    \centering
+    \renewcommand{\arraystretch}{1.5}
+    \setlength{\tabcolsep}{6pt}
+
+    \begin{tabularx}{\textwidth}{@{}l X@{}}
+        \toprule
+        \textbf{State} & \textbf{Signals Active (1'b1)} \\
+        \midrule
+        \texttt{STATE\_IDLE} & 
+            None \\ 
+        \hline
+        \texttt{STATE\_READY} & 
+            \texttt{avail} \newline
+            \texttt{latch\_imc} \\
+        \hline
+        \texttt{STATE\_REQUEST\_BUS} & 
+            \texttt{request} \\
+        \hline
+        \texttt{STATE\_TRANSMIT} & 
+            \texttt{ready} \newline
+            \texttt{drive\_bus} \newline
+            \texttt{data\_mux} (selects \texttt{a}, \texttt{b}, \texttt{c}, \texttt{d} based on \texttt{data\_count}) \\
+        \bottomrule
+    \end{tabularx}
+
+    \caption{Signals issued in each state of the output wrapper controller.}
+    \label{tab:out_wrapper_state_signals}
+\end{table}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{assets/q2_out_wrapper_wave.pdf}
+    \caption{Waveform for output wrapper testbench.}
+    \label{fig:q2_out_wrapper_wave}
+\end{figure}
 
 \end{document}

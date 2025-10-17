@@ -19,7 +19,8 @@ std::string to_binary(unsigned int value) {
     return std::bitset<N>(value).to_string();
 }
 
-void tick(const std::unique_ptr<VerilatedContext>& contextp, const std::unique_ptr<Vtb_in_wrapper>& top) {
+void tick(const std::unique_ptr<VerilatedContext>& contextp,
+          const std::unique_ptr<Vtb_in_wrapper>& top) {
     contextp->timeInc(5);
     top->clk = 0;
     top->eval();
@@ -28,6 +29,30 @@ void tick(const std::unique_ptr<VerilatedContext>& contextp, const std::unique_p
     top->clk = 1;
     top->eval();
 }
+
+void send_word(const std::unique_ptr<VerilatedContext>& contextp,
+               const std::unique_ptr<Vtb_in_wrapper>& top,
+               uint16_t value) {
+
+    top->data = value;
+    top->data_ready = 1;
+
+    bool accepted = false;
+    for (int i = 0; i < 20 && !accepted; i++) {
+        tick(contextp, top);
+        if (top->data_accept) {
+            accepted = true;
+            top->data_ready = 0;
+            tick(contextp, top);
+        }
+    }
+
+    if (accepted)
+        VL_PRINTF("[%5ld] Sent 0x%04X\n", contextp->time(), value);
+    else
+        VL_PRINTF("[%5ld] Data 0x%04X not accepted\n", contextp->time(), value);
+}
+
 int main(int argc, char** argv) {
     Verilated::mkdir("logs");
     const std::unique_ptr<VerilatedContext> contextp{new VerilatedContext};
@@ -45,100 +70,41 @@ int main(int argc, char** argv) {
     top->imc_ready  = 0;
     top->data       = 0;
     top->eval();
-    tick(contextp, top);
 
-    top->rstn       = 1;
-    top->data_ready = 1;
-    top->data       = 0xDEAD;
-    for (int i = 0; i < 10; i++){
+    for (int i = 0; i < 5; i++) {
         tick(contextp, top);
-        if (top->data_accept == 1){
-            break;
-        }
     }
 
-    top->data_ready = 1;
-    top->data       = 0xBEEF;
-    for (int i = 0; i < 10; i++){
-        tick(contextp, top);
-        if (top->data_accept == 1){
-            break;
-        }
-    }
-
-    top->data_ready = 1;
-    top->data       = 0xCAFE;
-    for (int i = 0; i < 10; i++){
-        tick(contextp, top);
-        if (top->data_accept == 1){
-            break;
-        }
-    }
-
-    top->data_ready = 1;
-    top->data       = 0xBABE;
-    for (int i = 0; i < 10; i++){
-        tick(contextp, top);
-        if (top->data_accept == 1){
-            break;
-        }
-    }
-
-    top->data_ready = 0;
-    top->imc_ready  = 1;
+    top->rstn = 1;
     tick(contextp, top);
+    VL_PRINTF("[%0ld] Reset...\n", contextp->time());
 
-    // Initialize signals
-    top->rstn       = 0;
-    top->data_ready = 0;
-    top->imc_ready  = 0;
-    top->data       = 0;
-    tick(contextp, top);
+    send_word(contextp, top, 0xDEAD);
+    send_word(contextp, top, 0xBEEF);
+    send_word(contextp, top, 0xCAFE);
+    send_word(contextp, top, 0xBABE);
+    VL_PRINTF("[%0ld] Sent 4 words...\n", contextp->time());
 
-    top->rstn       = 1;
-    top->data_ready = 1;
-    top->data       = 0x1111;
+    top->imc_ready = 1;
     tick(contextp, top);
-    for (int i = 0; i < 10; i++){
+    for (int i = 0; i < 20 && !top->imc_start; i++) {
         tick(contextp, top);
-        if (top->data_accept == 1){
-            break;
-        }
     }
+    VL_PRINTF("[%0ld] IMC start\n", contextp->time());
 
-    top->data_ready = 0;
-    tick(contextp, top);
-    tick(contextp, top);
-    top->data_ready = 1;
-    top->data       = 0x2222;
-    tick(contextp, top);
-    for (int i = 0; i < 10; i++){
-        tick(contextp, top);
-        if (top->data_accept == 1){
-            break;
-        }
-    }
+    top->imc_ready = 0;
+    send_word(contextp, top, 0x1111);
+    send_word(contextp, top, 0x2222);
+    send_word(contextp, top, 0x3333);
+    send_word(contextp, top, 0x4444);
+    VL_PRINTF("[%0ld] Sent 4 words...\n", contextp->time());
 
-    top->data_ready = 1;
-    top->data       = 0x3333;
-    for (int i = 0; i < 10; i++){
-        tick(contextp, top);
-        if (top->data_accept == 1){
-            break;
-        }
-    }
-    top->data_ready = 1;
-    top->data       = 0x4444;
-    for (int i = 0; i < 10; i++){
-        tick(contextp, top);
-        if (top->data_accept == 1){
-            break;
-        }
-    }
-
-    top->data_ready = 0;
-    top->imc_ready  = 1;
+    top->imc_ready = 1;
     tick(contextp, top);
+    for (int i = 0; i < 20 && !top->imc_start; i++) {
+        tick(contextp, top);
+    }
+    VL_PRINTF("[%0ld] IMC start\n", contextp->time());
 
     for (int i = 0; i < 3; i++) {
         tick(contextp, top);

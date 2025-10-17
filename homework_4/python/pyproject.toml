@@ -8,9 +8,15 @@ authors = [
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
-    "numpy (>=2.3.4,<3.0.0)"
+    "numpy (>=2.3.3,<3.0.0)",
+    "matplotlib (>=3.10.6,<4.0.0)",
+    "pandas (>=2.3.3,<3.0.0)",
+    "jupyterlab (>=4.4.9,<5.0.0)",
+    "vcdvcd (>=2.5.0,<3.0.0)"
 ]
 
+[tool.poetry]
+package-mode = false
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
