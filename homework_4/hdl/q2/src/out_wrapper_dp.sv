@@ -47,13 +47,18 @@ module out_wrapper_dp (
   end
 
   always_comb begin
-    case ({drive_bus_i, data_mux_i})
-      3'b100  : data_o = reg_a;
-      3'b101  : data_o = reg_b;
-      3'b110  : data_o = reg_c;
-      3'b111  : data_o = reg_d;
-      default : data_o = 16'bzzzzzzzzzzzzzzzz;
-    endcase
+    if (drive_bus_i) begin
+      case (data_mux_i)
+        2'b00   : data_o = reg_a;
+        2'b01   : data_o = reg_b;
+        2'b10   : data_o = reg_c;
+        2'b11   : data_o = reg_d;
+        default : data_o = 16'd0;
+      endcase
+    end
+    else begin
+      data_o = 16'd0;
+    end
   end
 
 endmodule

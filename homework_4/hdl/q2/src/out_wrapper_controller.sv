@@ -90,7 +90,7 @@ module out_wrapper_controller (
 
       STATE_TRANSMIT:
       begin
-        if (data_count == 2'b11) begin
+        if (data_count == 2'b11 && accepted_i) begin
           nxt_state = STATE_IDLE;
         end
         else begin
