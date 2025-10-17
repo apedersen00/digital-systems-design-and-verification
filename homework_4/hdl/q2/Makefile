@@ -20,7 +20,7 @@ VERILATOR_FLAGS += --trace-vcd
 VERILATOR_FLAGS += --assert -Wno-EOFNEWLINE
 
 ######################################################################
-TARGETS = in_wrapper
+TARGETS = in_wrapper out_wrapper
 
 SRC_DIR     = src
 SIM_DIR     = sim

@@ -10,15 +10,19 @@
 
 //  out_wrapper out_wrapper_0 (
 //    .clk_i(),
-//    .en_a_i();
-//    .en_b_i();
-//    .en_c_i();
-//    .en_d_i();
-//    .data_i(),
-//    .a_o(),
-//    .b_o(),
-//    .c_o(),
-//    .d_o()
+//    .rstn_i(),
+//    .imc_ready_i(),
+//    .start_transmit_i(),
+//    .grant_i(),
+//    .accepted_i(),
+//    .a_i(),
+//    .b_i(),
+//    .c_i(),
+//    .d_i(),
+//    .data_o(),
+//    .avail_o(),
+//    .request_o(),
+//    .ready_o()
 //  );
 
 module out_wrapper (
@@ -38,29 +42,35 @@ module out_wrapper (
     output  logic         ready_o
   );
 
-  logic [15:0]  reg_a;
-  logic [15:0]  reg_b;
-  logic [15:0]  reg_c;
-  logic [15:0]  reg_d;
+  logic drive_bus;
+  logic latch_imc;
+  logic [1:0] data_mux;
 
-  always_ff @( posedge clk_i ) begin : load_registers
-    if (en_a_i) begin
-      reg_a <= data_i;
-    end
-    if (en_b_i) begin
-      reg_b <= data_i;
-    end
-    if (en_c_i) begin
-      reg_c <= data_i;
-    end
-    if (en_d_i) begin
-      reg_d <= data_i;
-    end
-  end
+  out_wrapper_controller out_wrapper_controller_0 (
+    .clk_i            ( clk_i             ),
+    .rstn_i           ( rstn_i            ),
+    .imc_ready_i      ( imc_ready_i       ),
+    .start_transmit_i ( start_transmit_i  ),
+    .grant_i          ( grant_i           ),
+    .accepted_i       ( accepted_i        ),
+    .avail_o          ( avail_o           ),
+    .request_o        ( request_o         ),
+    .ready_o          ( ready_o           ),
+    .drive_bus_o      ( drive_bus         ),
+    .latch_imc_o      ( latch_imc         ),
+    .data_mux_o       ( data_mux          )
+  );
 
-  assign a_o = reg_a;
-  assign b_o = reg_b;
-  assign c_o = reg_c;
-  assign d_o = reg_d;
+  out_wrapper_dp out_wrapper_dp_0 (
+    .clk_i            ( clk_i             ),
+    .drive_bus_i      ( drive_bus         ),
+    .latch_imc_i      ( latch_imc         ),
+    .data_mux_i       ( data_mux          ),
+    .a_i              ( a_i               ),
+    .b_i              ( b_i               ),
+    .c_i              ( c_i               ),
+    .d_i              ( d_i               ),
+    .data_o           ( data_o            )
+  );
 
 endmodule
