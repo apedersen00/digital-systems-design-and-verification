@@ -16,6 +16,7 @@ module tb_moore_1011 ();
   logic rst_n;
   logic j;
   logic w;
+  int seed = 12345;
 
   moore_1011 dut (
     .clk    ( clk   ),
@@ -29,6 +30,8 @@ module tb_moore_1011 ();
 
   // stimulus
   initial begin
+    $dumpfile("tb_moore_1011.vcd");
+    $dumpvars(0, tb_moore_1011);
     rst_n = 0;
     j     = 0;
     repeat (2) @(posedge clk);
@@ -42,7 +45,7 @@ module tb_moore_1011 ();
 
     // random values after
     repeat (10) begin
-      j <= $urandom_range(0, 1);
+      j <= $random(seed) % 2;
       @(posedge clk);
     end
 
@@ -65,8 +68,9 @@ module tb_moore_1011 ();
     w |-> (last_4 == 4'b1011);
   endproperty
 
+  // w should only be high for one cycle
   property p_w_one_cycle;
-    @(posedge clk) disable iff(!rst_n) // <-- fixed typo ("disalbe" → "disable")
+    @(posedge clk) disable iff(!rst_n)
     w |=> !w;
   endproperty
 

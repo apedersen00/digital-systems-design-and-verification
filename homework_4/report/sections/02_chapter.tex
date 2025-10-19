@@ -227,7 +227,7 @@ The interfacing circuits (wrappers) will convert the highly parallel data stream
 
 \subsection*{Input Wrapper}
 
-The input wrapper must be able to serially read and store the four input values for the IMC. The datapath consists of only four registers to store the inputs and is shown in \cref{fig:q2_in_wrap_dp}. The datapath has four control signals [\cref{tab:q2_in_wrap_sig}]. The controller has five states: \texttt{IDLE}, \texttt{COLLECT}, \texttt{ACCEPT}, \texttt{WAIT\_IMC}, and \texttt{START\_IMC}. When the bus asserts \texttt{dataReady} the input wrapper enters the \texttt{COLLECT} state, writing the serial data into the corresponding registers. An internal counter, \texttt{data\_count}, keeps track of which register to write to. When all data has been received, the wrapper either enters a \texttt{WAIT\_IMC} if the IMC is not yet ready to receive new data. If the IMC already assets \texttt{ready}, the input wrapper directly enters the \texttt{START\_IMC} state. The state transition diagram is shown in \cref{fig:q2_in_wrap_cont}.
+The input wrapper must be able to serially read and store the four input values for the IMC. The datapath consists of only four registers to store the inputs and is shown in \cref{fig:q2_in_wrap_dp}. The datapath has four control signals [\cref{tab:q2_in_wrap_sig}]. The controller has five states: \texttt{IDLE}, \texttt{COLLECT}, \texttt{ACCEPT}, \texttt{WAIT\_IMC}, and \texttt{START\_IMC}. When the bus asserts \texttt{dataReady} the input wrapper enters the \texttt{COLLECT} state, writing the serial data into the corresponding registers. An internal counter, \texttt{data\_count}, keeps track of which register to write to. When all data has been received, the wrapper either enters a \texttt{WAIT\_IMC} if the IMC is not yet ready to receive new data. If the IMC already asserts \texttt{ready}, the input wrapper directly enters the \texttt{START\_IMC} state. The state transition diagram is shown in \cref{fig:q2_in_wrap_cont}.
 
 \begin{figure}[h]
     \centering
@@ -535,8 +535,8 @@ Define the following constraints to control randomization behavior.
 To create the burst read/write testbench we define a class, \texttt{mem\_transaction}, that contains constrained parameters for a single transaction. The values can be instantiated and used in the testbench. The memory module was then instantiated in a SystemVerilog testbench that repeats randomized burst transactions 20 times. For each iteration, the randomized transaction parameters are printed to the console. The \texttt{mem\_transaction} class is shown on the next page, but the relevant files can be found in:
 
 \begin{itemize}
-    \item \texttt{homework\_4/sim/tb\_mem\_64kib\_constraint.sv}
-    \item \texttt{homework\_4/sim/mem\_transaction.sv}
+    \item \texttt{homework\_4/hdl/q4/sim/tb\_mem\_64kib\_constraint.sv}
+    \item \texttt{homework\_4/hdl/q4/sim/mem\_transaction.sv}
 \end{itemize}
 
 \begin{svcode}{mem\_transaction.sv}
@@ -617,6 +617,85 @@ Transaction 19 ( READ): burst_len=3 addr=0x00000cf8 write_en=0000
     \includegraphics[width=\linewidth]{assets/q4_wave.pdf}
     \caption{Waveform for constrained memory testbench.}
     \label{fig:q4_wave}
+\end{figure}
+
+\newpage
+
+\section{Question 5}
+
+You are provided with the design and SystemVerilog descriptions of a Moore FSM that detects the sequence 1011. Your task is to write SystemVerilog properties to verify the correct functionality of the sequence detector. Your assertion-based verification should at least include the following properties:
+
+\begin{itemize}
+    \item Whenever the output $w$ is high, the last four input bits equal 1011.
+    \item The output $w$ is asserted for only one clock cycle per detection.
+    \item Every property you write must include a reset condition using disable \texttt{iff(!rst\_n)}.
+\end{itemize}
+
+\subsection*{Solution}
+
+To implement this assertion based testbench, we start by creating simple stimulus for the sequence detector. The stimulus consists of the 1011 sequence followed by 10 random bits:
+
+\begin{svcode}{q5 - Stimulus for Moore sequenc detector}
+  initial begin
+    rst_n = 0;
+    j     = 0;
+    repeat (2) @(posedge clk);
+    rst_n = 1;
+
+    j <= 1; @(posedge clk);
+    j <= 0; @(posedge clk);
+    j <= 1; @(posedge clk);
+    j <= 1; @(posedge clk);
+
+    repeat (10) begin
+      j <= $random(seed) % 2;
+      @(posedge clk);
+    end
+
+    $display("[%0t] Testbench done.", $time);
+    $finish;
+  end
+\end{svcode}
+
+To correctly verify that the FSM triggers on the correct sequence, the last four input bits are stored in a logic vector with the use of an \texttt{always\_ff} block:
+
+\begin{svcode}{q5 - Save last four input bits to sequence detector}
+  logic [3:0] last_4;
+  always_ff @(posedge clk or negedge rst_n) begin
+    if (!rst_n)
+      last_4 <= 4'b0000;
+    else
+      last_4 <= {last_4[2:0], j};
+  end
+\end{svcode}
+
+We can now simply define the two properties and their corresponding assertions:
+
+\begin{svcode}{q5 - Properties and assertions for verification of sequence detector}
+property p_correct_seq;
+    @(posedge clk) disable iff(!rst_n)
+    w |-> (last_4 == 4'b1011);
+endproperty
+
+property p_w_one_cycle;
+    @(posedge clk) disable iff(!rst_n)
+    w |=> !w;
+endproperty
+
+a_correct_seq: assert property (p_correct_seq)
+else $error("[%0t] Error: w is high but input sequence is not 1011", $time);
+
+a_w_one_cycle: assert property (p_w_one_cycle)
+else $error("[%0t] Error: w was high for more than one cycle", $time);
+\end{svcode}
+
+Luckily, the testbench passed without any assertions. For sanity the waveform is included and seen in \cref{fig:q5_wave}.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\linewidth]{assets/q5_wave.pdf}
+    \caption{Waveform for Moore 1011 testbench.}
+    \label{fig:q5_wave}
 \end{figure}
 
 \end{document}
