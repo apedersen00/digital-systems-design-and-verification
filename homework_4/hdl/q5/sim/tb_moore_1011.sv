@@ -12,20 +12,20 @@
 
 module tb_moore_1011 ();
 
-	logic clk;
-	logic rst_n;
-	logic j;
-	logic w;
+  logic clk;
+  logic rst_n;
+  logic j;
+  logic w;
 
-	moore_1011 dut (
-		.clk    ( clk   ),
-		.rst_n  ( rst_n ),
-		.j      ( j     ),
-		.w      ( w     )
-	);
+  moore_1011 dut (
+    .clk    ( clk   ),
+    .rst_n  ( rst_n ),
+    .j      ( j     ),
+    .w      ( w     )
+  );
 
   initial clk = 0;
-	always #5 clk = ~clk;
+  always #5 clk = ~clk;
 
   // stimulus
   initial begin
@@ -52,13 +52,11 @@ module tb_moore_1011 ();
 
   // store last 4 input bits
   logic [3:0] last_4;
-  always_ff @( posedge clk or negedge rst_n ) begin
-    if (!rst_n) begin
+  always_ff @(posedge clk or negedge rst_n) begin
+    if (!rst_n)
       last_4 <= 4'b0000;
-    end
-    else begin
+    else
       last_4 <= {last_4[2:0], j};
-    end
   end
 
   // whenever w is high, the last four input bits are equal 1011
@@ -68,14 +66,14 @@ module tb_moore_1011 ();
   endproperty
 
   property p_w_one_cycle;
-    @(posedge clk) disalbe iff(!rst_n)
+    @(posedge clk) disable iff(!rst_n) // <-- fixed typo ("disalbe" → "disable")
     w |=> !w;
   endproperty
 
   a_correct_seq: assert property (p_correct_seq)
-  else $error("[%0t] Error: w is high but input sequence is not 1011", $time);
+    else $error("[%0t] Error: w is high but input sequence is not 1011", $time);
 
   a_w_one_cycle: assert property (p_w_one_cycle)
-  else $error ("[%0t] Error: w was high for more than one cycle", $time);
+    else $error("[%0t] Error: w was high for more than one cycle", $time);
 
 endmodule
