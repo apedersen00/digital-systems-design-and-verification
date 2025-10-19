@@ -39,11 +39,8 @@ module tb_mem_64kib;
   mem_transaction tr;
 
   initial begin
-    if ($test$plusargs("trace") != 0) begin
-      $dumpfile("logs/tb_mem_64kib.vcd");
-      $dumpvars();
-    end
-
+    $dumpfile("tb_mem_64kib.vcd");
+    $dumpvars(0, tb_mem_64kib);
     $display("[%0t] Starting simulation...", $time);
 
     // Initialize signals

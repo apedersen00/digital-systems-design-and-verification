@@ -532,6 +532,91 @@ Define the following constraints to control randomization behavior.
 
 \subsection*{Solution}
 
+To create the burst read/write testbench we define a class, \texttt{mem\_transaction}, that contains constrained parameters for a single transaction. The values can be instantiated and used in the testbench. The memory module was then instantiated in a SystemVerilog testbench that repeats randomized burst transactions 20 times. For each iteration, the randomized transaction parameters are printed to the console. The \texttt{mem\_transaction} class is shown on the next page, but the relevant files can be found in:
 
+\begin{itemize}
+    \item \texttt{homework\_4/sim/tb\_mem\_64kib\_constraint.sv}
+    \item \texttt{homework\_4/sim/mem\_transaction.sv}
+\end{itemize}
+
+\begin{svcode}{mem\_transaction.sv}
+class mem_transaction;
+
+  rand bit [31:0]   addr;
+  rand bit [31:0]   data;
+  rand bit [3:0]    write_en;
+  rand bit          is_read;
+  rand int unsigned burst_len;
+
+  // burst length [2, 8]
+  constraint c_burst_len {
+    burst_len inside {[2:8]};
+  }
+
+  // word-aligned address
+  constraint c_addr_align {
+    addr[1:0] == 2'b00;
+  }
+
+  // address range
+  constraint c_addr_range {
+    if (is_read)
+      addr inside {[32'h0000_0000 : 32'h0000_FFFF]};
+    else
+      addr inside {[32'h1000_0000 : 32'h1000_FFFF]};
+  }
+
+  // write enable
+  constraint c_write_en {
+    if (is_read)
+      write_en == 4'b0000;
+    else
+      write_en inside {
+        4'b1111, 4'b1100, 4'b0011, 4'b1000,
+        4'b0100, 4'b0010, 4'b0001
+      };
+  }
+
+  // weighted probability: 80% read, 20% write
+  constraint c_rw_prob {
+    is_read dist {1 := 80, 0 := 20};
+  }
+
+endclass
+\end{svcode}
+
+\newpage
+
+Below the console output of the constrained testbench is shown. The waveform of the first three transactions are shown in \cref{fig:q4_wave}.
+
+\begin{textcode}{q4 - Constrained testbench output}
+Transaction 0 ( READ): burst_len=2 addr=0x000059bc write_en=0000
+Transaction 1 (WRITE): burst_len=2 addr=0x100010d4 write_en=0100
+Transaction 2 ( READ): burst_len=5 addr=0x00004a4c write_en=0000
+Transaction 3 ( READ): burst_len=6 addr=0x00007ae8 write_en=0000
+Transaction 4 (WRITE): burst_len=2 addr=0x1000e9bc write_en=0010
+Transaction 5 (WRITE): burst_len=5 addr=0x100082d4 write_en=0001
+Transaction 6 ( READ): burst_len=4 addr=0x0000cf58 write_en=0000
+Transaction 7 ( READ): burst_len=5 addr=0x0000bcc8 write_en=0000
+Transaction 8 (WRITE): burst_len=2 addr=0x1000172c write_en=1000
+Transaction 9 ( READ): burst_len=8 addr=0x00009568 write_en=0000
+Transaction 10 ( READ): burst_len=2 addr=0x00004a24 write_en=0000
+Transaction 11 (WRITE): burst_len=6 addr=0x1000562c write_en=0100
+Transaction 12 ( READ): burst_len=2 addr=0x00002174 write_en=0000
+Transaction 13 (WRITE): burst_len=8 addr=0x100036f8 write_en=1111
+Transaction 14 (WRITE): burst_len=6 addr=0x100099c8 write_en=0001
+Transaction 15 ( READ): burst_len=6 addr=0x0000427c write_en=0000
+Transaction 16 ( READ): burst_len=4 addr=0x0000ce80 write_en=0000
+Transaction 17 (WRITE): burst_len=2 addr=0x100060e8 write_en=0100
+Transaction 18 ( READ): burst_len=6 addr=0x00006330 write_en=0000
+Transaction 19 ( READ): burst_len=3 addr=0x00000cf8 write_en=0000
+\end{textcode}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\linewidth]{assets/q4_wave.pdf}
+    \caption{Waveform for constrained memory testbench.}
+    \label{fig:q4_wave}
+\end{figure}
 
 \end{document}

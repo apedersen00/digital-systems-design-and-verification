@@ -38,10 +38,14 @@ module bram_64kib #(
   logic [WIDTH-1:0] mem [0:DEPTH-1];
 
   initial begin
-      if (INIT_FILE != "") begin
-          $display("Loading memory from %s", INIT_FILE);
-          $readmemh(INIT_FILE, mem);
-      end
+    integer i;
+    for (i = 0; i < DEPTH; i=i+1) begin
+        mem[i] = '0;
+    end
+    if (INIT_FILE != "") begin
+        $display("Loading memory from %s", INIT_FILE);
+        $readmemh(INIT_FILE, mem);
+    end
   end
 
   always_ff @( posedge clk_i ) begin

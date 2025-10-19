@@ -54,20 +54,14 @@ module mem_controller (
         end
       end
 
-      STATE_READ  : nxt_state = STATE_IDLE;
-      STATE_WRITE : nxt_state = STATE_IDLE;
+      STATE_READ  : nxt_state = read_en_i ? STATE_READ : STATE_IDLE;
+      STATE_WRITE : nxt_state = (|write_en_i) ? STATE_WRITE : STATE_IDLE;
       default: nxt_state = STATE_IDLE;
     endcase
   end
 
-  assign ready_o  = (cur_state == STATE_IDLE)   ? 1'b1 : 1'b0;
-  assign mem_en_o = (cur_state == STATE_IDLE)   ? 1'b0 : 1'b1;
-
-  always_comb begin
-    mem_we_o = 4'b0000;
-    if (cur_state == STATE_WRITE) begin
-      mem_we_o = write_en_i;
-    end
-  end
+  assign ready_o  = (cur_state == STATE_IDLE) ? 1'b0 : 1'b1;
+  assign mem_we_o = write_en_i;
+  assign mem_en_o = 1'b1;
 
 endmodule
