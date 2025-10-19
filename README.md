@@ -14,6 +14,10 @@ Found [here](homework_2/).
 
 Found [here](homework_3/).
 
+## Homework 4
+
+Found [here](homework_4/).
+
 ## Milestone 1
 
 Found [here](milestone_1/).
