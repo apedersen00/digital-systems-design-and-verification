@@ -12,6 +12,7 @@
 
 module tb_mem_64kib;
 
+  logic [7:0]   test_num;
   logic         clk;
   logic         read_en;
   logic [3:0]   write_en;
@@ -44,6 +45,7 @@ module tb_mem_64kib;
     $display("[%0t] Starting simulation...", $time);
 
     // Initialize signals
+    test_num  = 0;
     read_en   = 0;
     write_en  = 0;
     addr      = 0;
@@ -55,9 +57,11 @@ module tb_mem_64kib;
 
     // generate random bursts
     repeat (20) begin
+      test_num <= test_num + 1;
       void'(tr.randomize());
-      $display("[%0t] Transaction: %s burst_len=%0d addr=0x%08h write_en=%b",
-                $time, (tr.is_read ? "READ" : "WRITE"), tr.burst_len, tr.addr, tr.write_en);
+        $display("[%0t] Transaction %0d (%s): burst_len=%0d addr=0x%08h write_en=%b",
+                 $time, test_num, (tr.is_read ? "READ" : "WRITE"), tr.burst_len, tr.addr, tr.write_en);
+    
 
       // Perform the burst
       for (int i = 0; i < tr.burst_len; i++) begin
