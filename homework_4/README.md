@@ -2,7 +2,7 @@
 
 Solutions for all questions in Homework 4.
 
-Report can be found [here](https://github.com/kth-ees/il2234ht25-homework-4-apedersen00/releases/download/v1.0/andreasp_hw1.pdf).
+Report can be found [here](https://github.com/kth-ees/il2234ht25-homework-4-apedersen00/releases/download/v1.0/andreasp_hw4.pdf).
 
 ## Verilator Simulation
 
