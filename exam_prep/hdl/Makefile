@@ -20,7 +20,7 @@ VERILATOR_FLAGS += --trace-vcd
 VERILATOR_FLAGS += --assert -Wno-EOFNEWLINE -Wno-UNUSEDSIGNAL -Wno-BLKSEQ
 
 ######################################################################
-TARGETS = top5
+TARGETS = top5 dflop
 
 SRC_DIR     = src
 SIM_DIR     = sim
